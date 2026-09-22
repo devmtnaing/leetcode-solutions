@@ -25,6 +25,11 @@ const $ = (sel, el = document) => el.querySelector(sel);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 export function mountLesson(cfg) {
+  // A lesson mounts itself on import, which is right in a browser and useless
+  // in a test. Setting this hook lets a checker collect the config and skip
+  // everything that needs a DOM — see scripts/check-lessons.mjs.
+  if (globalThis.__LESSON_PROBE__) return globalThis.__LESSON_PROBE__(cfg);
+
   const root = cfg.root;
   if (!root) throw new Error('mountLesson: no root element');
 

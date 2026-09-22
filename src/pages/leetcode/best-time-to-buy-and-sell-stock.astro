@@ -1,0 +1,46 @@
+---
+import Walkthrough from '../../layouts/Walkthrough.astro';
+import statement from '../../lessons/best-time-to-buy-and-sell-stock/statement.html?raw';
+
+const takeaway = `
+<p>The brute force asks a question about <strong>a pair of days</strong>: what would buying
+here and selling there have earned? There are <code>n(n-1)/2</code> pairs, so that is the cost.</p>
+
+<p>The one-pass asks a question about <strong>one day</strong>: if I sold today, what is the
+least I could have paid for the stock? That answer is the minimum of everything to the left,
+and a running minimum is one comparison per day to maintain. <code>n</code> days, one question
+each.</p>
+
+<p>The reason it is allowed to throw away the past is worth stating out loud: once a cheaper
+day appears, no later sale would ever prefer an earlier, dearer one. The old minimum is not
+just unlikely to matter, it is <em>provably</em> dominated. That argument — this candidate can
+never win again, so stop carrying it — is what licenses a single pass, and it is the same
+argument behind the monotonic stack in <strong>Trapping Rain Water</strong> and the two
+pointers in <strong>Container With Most Water</strong>.</p>
+
+<p>The shape generalises past this problem. Walk left to right, keep a small summary of the
+prefix, and at each position combine the current element with that summary:
+<strong>Maximum Subarray</strong> keeps a running sum, <strong>Product of Array Except Self</strong>
+keeps a running product, the subarray-sum problems keep a prefix-sum map. Whenever a problem
+reads as "best pair where the first index comes before the second", try asking what summary
+of the left half each right index actually needs.</p>
+
+<p>Two details the code hides. Starting <code>cheapest</code> at infinity removes the special
+case for day 0 — without it you need a separate branch for the empty prefix. And the
+<code>else</code> is not an optimisation: on a day that sets a new minimum, the profit is zero
+by construction, which can never beat a <code>best</code> that already starts at zero. Writing
+it as two independent <code>if</code>s is equally correct, just redundant.</p>`;
+---
+<Walkthrough
+  title="Best Time to Buy and Sell Stock"
+  summary="Every pair of days, or one walk holding the cheapest price so far. The difference is what each day has to know."
+  leetcodeId={121}
+  leetcodeSlug="best-time-to-buy-and-sell-stock"
+  difficulty="Easy"
+  statement={statement}
+  takeaway={takeaway}
+/>
+
+<script>
+  import '../../lessons/best-time-to-buy-and-sell-stock/lesson.js';
+</script>

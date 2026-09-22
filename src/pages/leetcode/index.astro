@@ -12,7 +12,13 @@ const lessons = await getCollection('lessons', ({ data }) => data.track === 'lee
 
 // A problem links to a lesson here only when one exists; everything else points
 // at LeetCode so the roadmap is useful long before it is complete.
-const WORKED: Record<number, string> = { 3318: '/leetcode/x-sum', 3321: '/leetcode/x-sum', 1: '/leetcode/two-sum' };
+const WORKED: Record<number, string> = {
+  1: '/leetcode/two-sum',
+  121: '/leetcode/best-time-to-buy-and-sell-stock',
+  242: '/leetcode/valid-anagram',
+  283: '/leetcode/move-zeroes',
+  3318: '/leetcode/x-sum', 3321: '/leetcode/x-sum',
+};
 
 const groups = (['EASY', 'MEDIUM', 'HARD'] as const).map((key) => ({
   key,
@@ -63,8 +69,26 @@ const worked = Object.keys(WORKED).length;
           <span class="m">1</span>
           <span class="s">Every pair, or one pass with a hash map. The difference is what question you ask.</span>
         </a>
-        <a class="lesson-row" href="/leetcode/x-sum">
+        <a class="lesson-row" href="/leetcode/best-time-to-buy-and-sell-stock">
           <span class="n">02</span>
+          <span class="t">Best Time to Buy and Sell Stock <span class="badge">interactive</span></span>
+          <span class="m">121</span>
+          <span class="s">Every pair of days, or one walk that carries the cheapest price seen so far.</span>
+        </a>
+        <a class="lesson-row" href="/leetcode/valid-anagram">
+          <span class="n">03</span>
+          <span class="t">Valid Anagram <span class="badge">interactive</span></span>
+          <span class="m">242</span>
+          <span class="s">Sort both strings, or tally once — up for one string, down for the other, and see if it lands on zero.</span>
+        </a>
+        <a class="lesson-row" href="/leetcode/move-zeroes">
+          <span class="n">04</span>
+          <span class="t">Move Zeroes <span class="badge">interactive</span></span>
+          <span class="m">283</span>
+          <span class="s">A second array, or one pointer marking the boundary where everything to its left is already right.</span>
+        </a>
+        <a class="lesson-row" href="/leetcode/x-sum">
+          <span class="n">05</span>
           <span class="t">X-Sum, Two Ways <span class="badge">interactive</span></span>
           <span class="m">3318 · 3321</span>
           <span class="s">Brute force against a sliding window, in two containers — sorted arrays, then lazy heaps. The second is what makes the hard version pass.</span>

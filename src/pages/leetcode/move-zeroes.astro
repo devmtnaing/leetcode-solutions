@@ -1,0 +1,45 @@
+---
+import Walkthrough from '../../layouts/Walkthrough.astro';
+import statement from '../../lessons/move-zeroes/statement.html?raw';
+
+const takeaway = `
+<p>The copy is not wrong, it is just answering a different question. It builds the
+answer in a second array and pastes it over the original at the end, which means
+<code>nums</code> holds garbage until the very last pass and the <code>O(n)</code> of
+extra memory is exactly the thing the problem asked you not to spend.</p>
+
+<p>The two-pointer version turns on one idea: <code>slow</code> is not really an index
+into the input, it is a <strong>boundary</strong>. Everything to its left is already
+correct and will never be touched again; everything between <code>slow</code> and
+<code>fast</code> is zeroes waiting to be swapped away; everything past
+<code>fast</code> has not been looked at. Each non-zero value <code>fast</code> finds
+gets swapped down to the boundary and the boundary moves up by one, which keeps that
+sentence true after every iteration. When <code>fast</code> runs off the end the
+sentence still holds, and a true sentence about the whole array is the answer.</p>
+
+<p>Naming the invariant is what makes this family of problems readable rather than a
+pile of index arithmetic. The same boundary appears in
+<strong>Remove Duplicates from Sorted Array</strong>, where the prefix left of
+<code>slow</code> is the deduplicated answer, and in <strong>Sort Colors</strong>, where
+two boundaries fence off the 0s at the front and the 2s at the back. Once you can state
+what is true to the left of the pointer, the loop body usually writes itself.</p>
+
+<p>On the follow-up: this version writes only when it finds a non-zero value, so an
+array of mostly zeroes costs very few swaps, and an array of no zeroes costs
+<code>n</code> swaps of a cell with itself. If those self-swaps bother you, write
+<code>nums[slow] = nums[fast]</code> and zero out the tail afterwards — same order,
+fewer writes when the array is dense, at the cost of a second loop.</p>`;
+---
+<Walkthrough
+  title="Move Zeroes"
+  summary="Build the answer in a second array, or keep a boundary that is already correct and swap across it."
+  leetcodeId={283}
+  leetcodeSlug="move-zeroes"
+  difficulty="Easy"
+  statement={statement}
+  takeaway={takeaway}
+/>
+
+<script>
+  import '../../lessons/move-zeroes/lesson.js';
+</script>

@@ -1,0 +1,47 @@
+---
+import Walkthrough from '../../layouts/Walkthrough.astro';
+import statement from '../../lessons/valid-anagram/statement.html?raw';
+
+const takeaway = `
+<p>Sorting works because it destroys the only information the question does not care
+about — the order — and leaves two strings that are equal exactly when the letter counts
+match. It is three lines and hard to get wrong, and it costs <code>O(n log n)</code> to
+rebuild something you could have counted directly.</p>
+
+<p>The tally asks a different question. For each letter of <code>t</code> it asks: <em>does
+the table still owe me one of these?</em> A lookup answers that in constant time, so the
+whole job is two linear passes. The table never holds more than 26 rows, which is why the
+space is <code>O(1)</code> rather than <code>O(n)</code>.</p>
+
+<p>That is the same move as <strong>Two Sum</strong>'s hash map and <strong>Majority
+Element</strong>'s counter: instead of comparing everything to everything, ask one question
+per element that a lookup can answer, and let a table carry the memory. Once you see it
+here, most of the "count the things" problems are the same problem.</p>
+
+<p>Two details the walkthrough makes visible. The length check is not an optimisation, it is
+what makes the rule sound: because the totals are equal, "no row went negative" is enough to
+conclude that no row was left positive either. And the early <code>false</code> on a negative
+row is safe — a row that has gone below zero can never climb back, since <code>t</code> only
+subtracts.</p>
+
+<p>The Unicode follow-up is where the two approaches separate again. A fixed
+<code>[26]int</code> stops working the moment a character is not <code>a</code>–<code>z</code>;
+swap it for a hash map keyed by code point and the algorithm is unchanged, with space now
+proportional to the number of distinct characters. Sorting adapts without any edit, which is
+its one real advantage. Grapheme clusters — an emoji with a skin-tone modifier, an accent
+written as a combining mark — are a separate problem: normalise first, then count, or you will
+call two identical-looking strings different.</p>`;
+---
+<Walkthrough
+  title="Valid Anagram"
+  summary="Sort both strings, or keep one tally. The difference is whether you rebuild the letter counts or just count them."
+  leetcodeId={242}
+  leetcodeSlug="valid-anagram"
+  difficulty="Easy"
+  statement={statement}
+  takeaway={takeaway}
+/>
+
+<script>
+  import '../../lessons/valid-anagram/lesson.js';
+</script>
