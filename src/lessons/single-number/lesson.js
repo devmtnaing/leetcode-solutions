@@ -357,6 +357,15 @@ mountLesson({
     { id: 'javascript', name: 'JavaScript' }, { id: 'go', name: 'Go' }, { id: 'rust', name: 'Rust' },
   ],
   code: CODE,
+  // How each language was actually checked. Printed as a badge on every
+  // listing in part 3, so a language nothing ran says so on the page.
+  verification: {
+    ruby: 'run here · 10,007-case shared corpus',
+    python: 'run here · 10,007-case shared corpus',
+    javascript: 'run here · 10,007-case shared corpus',
+    go: 'not compiled — no Go/Rust toolchain, Docker down',
+    rust: 'not compiled — no Go/Rust toolchain, Docker down',
+  },
   draw,
   vars,
 });

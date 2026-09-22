@@ -7,8 +7,13 @@
  * behave identically instead of fifteen slightly different ways.
  *
  *   mountLesson({
- *     root, input, modes, languages, code, draw, vars
+ *     root, input, modes, languages, code, draw, vars,
+ *     caveats, verification, solutionsRoot
  *   })
+ *
+ * `verification` maps a language id to how its listings were actually checked.
+ * It is printed as a badge on every full solution, so a language that was never
+ * run says so on the page rather than only in a commit message.
  *
  * A step generator returns an array of snapshots. A snapshot is a plain object;
  * only two keys are reserved:
@@ -229,7 +234,58 @@ export function mountLesson(cfg) {
   }
 
   rebuild();
+  renderSolutions(cfg);
   return { rebuild, go, stop, state };
+}
+
+/* Part 3 — the whole solution.
+ *
+ * The listings in the code panel are already complete submissions, so the full
+ * solution is the same data laid out to be read and copied rather than stepped.
+ * Building it from `code` rather than a second copy is what stops the two
+ * drifting apart, which is the failure the drift checks exist to catch.
+ */
+function renderSolutions(cfg) {
+  const host = document.querySelector(cfg.solutionsRoot || '#solutions');
+  if (!host) return;
+
+  const langs = cfg.languages;
+  const badge = (lang) => {
+    const how = (cfg.verification || {})[lang];
+    if (!how) return '';
+    const unrun = /not compiled|not run|unverified/i.test(how);
+    return `<span class="sol-badge${unrun ? ' unrun' : ''}">${esc(how)}</span>`;
+  };
+
+  host.innerHTML = `
+    <div class="sol-langs" role="tablist" aria-label="Language">
+      ${langs.map((l, i) => `<button class="kit-lang" role="tab" data-sol-lang="${l.id}"
+          aria-selected="${i === 0}">${esc(l.name)}</button>`).join('')}
+    </div>
+    ${cfg.modes.map((m) => `
+      <section class="sol" data-sol-mode="${m.id}">
+        <header class="sol-head">
+          <h3>${esc(m.name)}</h3>
+          <span class="sol-cost mono">${esc(m.cost || '')}</span>
+        </header>
+        ${langs.map((l, i) => `
+          <div class="sol-pane" data-sol-pane="${m.id}:${l.id}" ${i ? 'hidden' : ''}>
+            ${badge(l.id)}
+            <pre class="sol-code">${(cfg.code[m.id]?.[l.id] || [])
+              .map(([, html]) => `<div>${html}</div>`).join('')}</pre>
+          </div>`).join('')}
+      </section>`).join('')}`;
+
+  host.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-sol-lang]');
+    if (!btn) return;
+    const lang = btn.dataset.solLang;
+    host.querySelectorAll('[data-sol-lang]').forEach((b) =>
+      b.setAttribute('aria-selected', String(b.dataset.solLang === lang)));
+    host.querySelectorAll('[data-sol-pane]').forEach((pane) => {
+      pane.hidden = pane.dataset.solPane.split(':')[1] !== lang;
+    });
+  });
 }
 
 function isOnScreen(el) {

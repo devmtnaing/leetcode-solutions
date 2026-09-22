@@ -462,6 +462,15 @@ mountLesson({
     { id: 'javascript', name: 'JavaScript' }, { id: 'go', name: 'Go' }, { id: 'rust', name: 'Rust' },
   ],
   code: CODE,
+  // How each language was actually checked. Printed as a badge on every
+  // listing in part 3, so a language nothing ran says so on the page.
+  verification: {
+    ruby: 'run here · 5 examples + 10,000 random cases',
+    python: 'run here · 5 examples + 10,000 random cases',
+    javascript: 'run here · 5 examples + 10,000 random cases',
+    go: 'not compiled — no Go/Rust toolchain, Docker down',
+    rust: 'not compiled — no Go/Rust toolchain, Docker down',
+  },
   caveats: {
     recursive: {
       rust: 'Safe Rust owns each node through its predecessor&rsquo;s <code>Box</code>, so a frame cannot hold a usable back-pointer into a list it has already handed to the recursive call. The head-recursive relink-on-unwind form the narration describes is not expressible in safe <code>O(n)</code> Rust, so this listing carries <code>prev</code> down as an argument instead. It is a correct reversal, but its lines run in a different order than the steps describe.',

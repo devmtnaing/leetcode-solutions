@@ -10,10 +10,12 @@ interface Props {
   difficulty: 'Easy' | 'Medium' | 'Hard';
   /** Raw HTML of the problem statement, quoted from LeetCode. */
   statement: string;
-  /** What to take away — the sentence worth remembering after the page closes. */
+  /** What to take away. Closes part 2 — it is about the algorithm, not a part of its own. */
   takeaway: string;
+  /** Optional: traps in the wording, as HTML. Collapsed under part 1. */
+  traps?: string;
 }
-const { title, summary, leetcodeId, leetcodeSlug, difficulty, statement, takeaway } = Astro.props;
+const { title, summary, leetcodeId, leetcodeSlug, difficulty, statement, takeaway, traps } = Astro.props;
 ---
 <Lesson
   title={title}
@@ -32,6 +34,15 @@ const { title, summary, leetcodeId, leetcodeSlug, difficulty, statement, takeawa
         <span class={`diff ${difficulty.toLowerCase()}`}>{difficulty}</span>
       </p>
       <div class="statement" set:html={statement} />
+
+      {traps && (
+        <details class="traps">
+          <summary>Where the wording catches people out</summary>
+          <div set:html={traps} />
+        </details>
+      )}
+
+      <div id="question-widget"></div>
     </section>
 
     <section class="part">
@@ -41,13 +52,19 @@ const { title, summary, leetcodeId, leetcodeSlug, difficulty, statement, takeawa
         running; the stage on the left is the state it is acting on.
       </p>
       <div id="lesson">
-        <noscript><p class="part-sub">The walkthrough needs JavaScript. The solutions are on LeetCode either way.</p></noscript>
+        <noscript><p class="part-sub">The walkthrough needs JavaScript. The whole solution is in part 3 either way.</p></noscript>
       </div>
+
+      <div class="takeaway" set:html={takeaway} />
     </section>
 
     <section class="part">
-      <h2><span class="part-n">3</span> What to take away</h2>
-      <div class="takeaway" set:html={takeaway} />
+      <h2><span class="part-n">3</span> The whole solution</h2>
+      <p class="part-sub">
+        Every approach in every language, complete and paste-ready. Each carries a badge
+        saying exactly how it was checked — including the ones that were not run.
+      </p>
+      <div id="solutions"></div>
     </section>
   </div>
 </Lesson>
