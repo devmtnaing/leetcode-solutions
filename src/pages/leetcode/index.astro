@@ -12,7 +12,7 @@ const lessons = await getCollection('lessons', ({ data }) => data.track === 'lee
 
 // A problem links to a lesson here only when one exists; everything else points
 // at LeetCode so the roadmap is useful long before it is complete.
-const WORKED: Record<number, string> = { 3318: '/leetcode/x-sum', 3321: '/leetcode/x-sum' };
+const WORKED: Record<number, string> = { 3318: '/leetcode/x-sum', 3321: '/leetcode/x-sum', 1: '/leetcode/two-sum' };
 
 const groups = (['EASY', 'MEDIUM', 'HARD'] as const).map((key) => ({
   key,
@@ -57,8 +57,14 @@ const worked = Object.keys(WORKED).length;
       <h2>Walkthroughs</h2>
       <p class="note">Interactive lessons — drive the algorithm one step at a time and watch the state change.</p>
       <div class="lesson-list">
-        <a class="lesson-row" href="/leetcode/x-sum">
+        <a class="lesson-row" href="/leetcode/two-sum">
           <span class="n">01</span>
+          <span class="t">Two Sum <span class="badge">interactive</span></span>
+          <span class="m">1</span>
+          <span class="s">Every pair, or one pass with a hash map. The difference is what question you ask.</span>
+        </a>
+        <a class="lesson-row" href="/leetcode/x-sum">
+          <span class="n">02</span>
           <span class="t">X-Sum, Two Ways <span class="badge">interactive</span></span>
           <span class="m">3318 · 3321</span>
           <span class="s">Brute force against a sliding window, in two containers — sorted arrays, then lazy heaps. The second is what makes the hard version pass.</span>

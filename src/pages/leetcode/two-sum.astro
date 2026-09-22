@@ -1,0 +1,35 @@
+---
+import Walkthrough from '../../layouts/Walkthrough.astro';
+import statement from '../../lessons/two-sum/statement.html?raw';
+
+const takeaway = `
+<p>The brute force asks a question about <strong>a pair</strong>: do these two add up?
+There are <code>n(n-1)/2</code> pairs, so that is the cost.</p>
+
+<p>The hash map asks a question about <strong>one element</strong>: has the number that
+would complete me already gone by? That question is answerable in constant time, and
+there are only <code>n</code> elements to ask it of.</p>
+
+<p>That reframing — from "check every combination" to "ask each element one question a
+lookup can answer" — is the whole trick, and it is the same trick behind
+<strong>Valid Anagram</strong>, <strong>Majority Element</strong> and most of the
+subarray-sum problems. Trading <code>O(n)</code> memory for a quadratic factor of time
+is usually the right trade.</p>
+
+<p>One detail the examples hide: store the value <em>after</em> checking for its partner,
+not before. Store first and an element becomes its own partner whenever
+<code>target</code> is double it.</p>`;
+---
+<Walkthrough
+  title="Two Sum"
+  summary="Every pair, or one pass with a hash map. The difference is what question you ask."
+  leetcodeId={1}
+  leetcodeSlug="two-sum"
+  difficulty="Easy"
+  statement={statement}
+  takeaway={takeaway}
+/>
+
+<script>
+  import '../../lessons/two-sum/lesson.js';
+</script>

@@ -1,0 +1,53 @@
+---
+import Lesson from './Lesson.astro';
+import '../styles/kit.css';
+
+interface Props {
+  title: string;
+  summary: string;
+  leetcodeId: number;
+  leetcodeSlug: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  /** Raw HTML of the problem statement, quoted from LeetCode. */
+  statement: string;
+  /** What to take away — the sentence worth remembering after the page closes. */
+  takeaway: string;
+}
+const { title, summary, leetcodeId, leetcodeSlug, difficulty, statement, takeaway } = Astro.props;
+---
+<Lesson
+  title={title}
+  summary={summary}
+  track="leetcode"
+  interactive
+  up={{ href: '/leetcode', title: 'All algorithm lessons' }}
+>
+  <div class="shell">
+    <section class="part">
+      <h2><span class="part-n">1</span> The question</h2>
+      <p class="part-sub">
+        Quoted from LeetCode —
+        <a href={`https://leetcode.com/problems/${leetcodeSlug}/`} target="_blank" rel="noopener">
+          {leetcodeId}. {title}</a>
+        <span class={`diff ${difficulty.toLowerCase()}`}>{difficulty}</span>
+      </p>
+      <div class="statement" set:html={statement} />
+    </section>
+
+    <section class="part">
+      <h2><span class="part-n">2</span> The answer, step by step</h2>
+      <p class="part-sub">
+        Pick an approach, then drive it one step at a time. The highlighted line is the one
+        running; the stage on the left is the state it is acting on.
+      </p>
+      <div id="lesson">
+        <noscript><p class="part-sub">The walkthrough needs JavaScript. The solutions are on LeetCode either way.</p></noscript>
+      </div>
+    </section>
+
+    <section class="part">
+      <h2><span class="part-n">3</span> What to take away</h2>
+      <div class="takeaway" set:html={takeaway} />
+    </section>
+  </div>
+</Lesson>
