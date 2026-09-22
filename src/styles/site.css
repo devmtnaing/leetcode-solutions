@@ -24,6 +24,15 @@
 .masthead nav a:hover{background:var(--sunk);color:var(--ink)}
 .masthead nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
 
+/* Keep the sticky bar to one line on a phone: wrapped, it took 84px of a
+   fifth of the screen and never gave it back. */
+@media (max-width:560px){
+  .masthead .shell{gap:10px;padding-inline:14px}
+  .masthead nav{gap:0}
+  .masthead nav a{font-size:12.5px;padding:5px 7px}
+  .brand{font-size:15px}
+}
+
 /* ---------- theme switch ---------- */
 .theme-btn{
   display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;
@@ -132,7 +141,7 @@ table.problems .rate{font-family:"IBM Plex Mono",monospace;color:var(--ink-2);fo
 .prose blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--ink-2);font-style:italic}
 
 /* ---------- pager ---------- */
-.pager{display:flex;gap:12px;justify-content:space-between;border-top:1px solid var(--line);padding-top:20px;margin-top:8px;flex-wrap:wrap}
+.pager{display:flex;gap:12px;justify-content:space-between;border-top:1px solid var(--line);padding-top:20px;margin-top:8px;margin-bottom:64px;flex-wrap:wrap}
 .pager a{
   display:flex;flex-direction:column;gap:3px;text-decoration:none;color:var(--ink);
   border:1px solid var(--line);border-radius:var(--radius);padding:11px 15px;background:var(--surface);min-width:0;
@@ -140,6 +149,7 @@ table.problems .rate{font-family:"IBM Plex Mono",monospace;color:var(--ink-2);fo
 .pager a:hover{border-color:var(--accent);color:var(--accent)}
 .pager .dir{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
 .pager .next{text-align:right;margin-left:auto}
+.pager .up .dir::before{content:"\2190\00a0"}
 
 /* ---------- footer ---------- */
 .site-foot{border-top:1px solid var(--line);margin-top:auto;padding-block:26px 40px;color:var(--ink-3);font-size:12.5px}

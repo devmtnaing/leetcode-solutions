@@ -1,11 +1,16 @@
 /* Reset, body type, headings. Loaded on every page including the ones
    with no interactive stage. */
+/* Clear the sticky masthead so an anchor jump doesn't land underneath it.
+   Also covers keyboard focus scrolling, which a :target offset would not. */
+html{scroll-padding-top:76px}
+@media (max-width:560px){html{scroll-padding-top:96px}}
 *{box-sizing:border-box}
 /* Must outrank an element's own display: the UA's [hidden] rule does not,
    and lesson scripts hide things by setting el.hidden rather than a style. */
 [hidden]{display:none!important}
 img{max-width:100%}
 body{
+  margin:0;
   background:var(--ground);
   color:var(--ink);
   font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
