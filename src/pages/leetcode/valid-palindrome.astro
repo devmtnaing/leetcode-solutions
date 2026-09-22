@@ -1,0 +1,40 @@
+---
+import Walkthrough from '../../layouts/Walkthrough.astro';
+import statement from '../../lessons/valid-palindrome/statement.html?raw';
+
+const takeaway = `
+<p>Both approaches read every character once, so both are <code>O(n)</code> time. The
+difference is what they leave behind: the first builds a cleaned string, then a reversed
+copy of it, and compares those — two full allocations to produce one bit of answer.</p>
+
+<p>The two-pointer version never materialises either. Where the filter would have
+<em>removed</em> a comma, the pointer <em>steps over</em> it: <code>left += 1</code> and
+the character is behind you, with nothing written anywhere. That substitution — skip
+instead of filter — is the entire difference between <code>O(n)</code> space and
+<code>O(1)</code>.</p>
+
+<p>It is worth recognising as a move rather than a trick, because it reappears whenever
+the work happens at both ends of a sequence: <strong>Reverse String</strong> swaps in
+place instead of building a reversed copy, <strong>Container With Most Water</strong>
+converges two pointers instead of scoring every pair, and <strong>Valid Palindrome
+II</strong> is this same loop with one deletion allowed. The shared precondition is that
+you can decide which end to advance by looking only at the two ends.</p>
+
+<p>Two details the examples hide. The skip loops need their own <code>left &lt; right</code>
+guard, or a string of pure punctuation runs a pointer off the end. And once they are
+guarded, skipping can land both pointers on the same character; the comparison then runs
+against itself, is trivially true, and the loop exits — correct, if briefly odd to watch.</p>`;
+---
+<Walkthrough
+  title="Valid Palindrome"
+  summary="Clean the string and reverse it, or walk in from both ends and skip what does not count."
+  leetcodeId={125}
+  leetcodeSlug="valid-palindrome"
+  difficulty="Easy"
+  statement={statement}
+  takeaway={takeaway}
+/>
+
+<script>
+  import '../../lessons/valid-palindrome/lesson.js';
+</script>

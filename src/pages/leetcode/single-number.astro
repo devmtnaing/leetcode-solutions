@@ -1,0 +1,48 @@
+---
+import Walkthrough from '../../layouts/Walkthrough.astro';
+import statement from '../../lessons/single-number/statement.html?raw';
+
+const takeaway = `
+<p>Both approaches read the array once, so this pair is not a lesson about time.
+It is a lesson about <strong>space</strong>. The tally keeps a row per distinct value —
+around <code>n/2</code> rows here — and the statement's "use only constant extra space"
+clause is what rules it out. That clause is in the body of the problem, not a follow-up,
+which is the only reason the second approach is worth the cleverness.</p>
+
+<p>What XOR actually gives you is three properties. It is <strong>associative</strong> and
+<strong>commutative</strong>, so the order you fold the array in cannot change the result —
+you may as well pretend the pairs are adjacent. <code>x ^ x == 0</code>, so a pair erases
+itself. <code>x ^ 0 == x</code>, so the accumulator can start empty and the lone value
+survives untouched. Fold the whole array and every column of the result answers one
+question: did an odd number of values set this bit? Only the unpaired value did.</p>
+
+<p>That identity is the trick behind a small family: <strong>Missing Number</strong>
+(XOR the values against the indices and the gap survives), <strong>Single Number III</strong>
+(fold everything, then split the array on any set bit of the result to separate the two
+loners), and finding a swapped or duplicated pair between two collections that should
+have matched.</p>
+
+<p>Be clear with yourself that it is a trick. The counting version is what most people
+should write first — it is obvious, it survives a change to the premise (three copies
+instead of two, say) and it generalises to "which values appear an odd number of times".
+The XOR version does exactly one thing, and it does it in two locals. Know it because
+the constraint asks for it, not because it is shorter.</p>
+
+<p>One detail the stage makes visible: XOR never counts anything. It has no idea whether
+it has seen <code>2</code> twice or forty times — only whether the total is odd. Feed it
+an array that breaks the premise and it returns a number with no meaning attached,
+which is why the input control here refuses such an array rather than drawing one.</p>`;
+---
+<Walkthrough
+  title="Single Number"
+  summary="Tally every value, or fold the array with XOR. Same linear time; only one of them spends no memory."
+  leetcodeId={136}
+  leetcodeSlug="single-number"
+  difficulty="Easy"
+  statement={statement}
+  takeaway={takeaway}
+/>
+
+<script>
+  import '../../lessons/single-number/lesson.js';
+</script>

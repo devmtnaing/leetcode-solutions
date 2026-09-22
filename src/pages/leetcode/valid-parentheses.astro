@@ -1,0 +1,44 @@
+---
+import Walkthrough from '../../layouts/Walkthrough.astro';
+import statement from '../../lessons/valid-parentheses/statement.html?raw';
+
+const takeaway = `
+<p>Stripping works, and it is worth seeing work. <code>()</code>, <code>[]</code> and
+<code>{}</code> are closed pairs wherever they appear, cutting one out cannot change
+the answer, and whatever was outside it becomes adjacent in turn. Delete until nothing
+changes; the string is valid exactly when nothing is left.</p>
+
+<p>What it costs is the restart. Every deletion makes two characters adjacent that were
+not adjacent before, including characters to the left of the cut, so the scan has to
+begin again at position 0. That is a pass per deletion — <code>O(n²)</code>.</p>
+
+<p>The stack removes the rescan by keeping the one fact the scan was rediscovering:
+<strong>which opener is still waiting</strong>. When a closer arrives, the only opener it
+is allowed to close is the most recent one nobody has closed yet, and the top of a stack
+is that element by construction. So each character is read once, the check is a single
+comparison, and the whole thing is <code>O(n)</code>.</p>
+
+<p>That is the shape to recognise, not the bracket table. Whenever the thing you have to
+match is <em>the most recent unmatched thing</em>, a stack is the structure that has it in
+hand: <strong>Min Stack</strong> keeps the smallest value of the most recent unpopped
+prefix, <strong>Daily Temperatures</strong> resolves each day against the most recent
+warmer-than-nothing day still waiting, and evaluating an expression closes each operator
+against the most recent operands pushed. Same question, same answer.</p>
+
+<p>Two edges the examples hide. A closer arriving at an empty stack is a failure, not a
+no-op — pop before comparing and an empty pop has to count as a mismatch. And a stack that
+still holds openers at the end is also a failure: the string ran out before they did.</p>`;
+---
+<Walkthrough
+  title="Valid Parentheses"
+  summary="Delete closed pairs until the string stops changing, or keep the unclosed openers on a stack. The stack already knows what the rescan was looking for."
+  leetcodeId={20}
+  leetcodeSlug="valid-parentheses"
+  difficulty="Easy"
+  statement={statement}
+  takeaway={takeaway}
+/>
+
+<script>
+  import '../../lessons/valid-parentheses/lesson.js';
+</script>

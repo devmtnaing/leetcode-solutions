@@ -17,6 +17,9 @@ const WORKED: Record<number, string> = {
   121: '/leetcode/best-time-to-buy-and-sell-stock',
   242: '/leetcode/valid-anagram',
   283: '/leetcode/move-zeroes',
+  20: '/leetcode/valid-parentheses',
+  125: '/leetcode/valid-palindrome',
+  136: '/leetcode/single-number',
   3318: '/leetcode/x-sum', 3321: '/leetcode/x-sum',
 };
 
@@ -87,8 +90,26 @@ const worked = Object.keys(WORKED).length;
           <span class="m">283</span>
           <span class="s">A second array, or one pointer marking the boundary where everything to its left is already right.</span>
         </a>
-        <a class="lesson-row" href="/leetcode/x-sum">
+        <a class="lesson-row" href="/leetcode/valid-parentheses">
           <span class="n">05</span>
+          <span class="t">Valid Parentheses <span class="badge">interactive</span></span>
+          <span class="m">20</span>
+          <span class="s">Delete matching pairs until nothing changes, or push openers on a stack and check each closer against the top.</span>
+        </a>
+        <a class="lesson-row" href="/leetcode/valid-palindrome">
+          <span class="n">06</span>
+          <span class="t">Valid Palindrome <span class="badge">interactive</span></span>
+          <span class="m">125</span>
+          <span class="s">Build the cleaned string and reverse it, or walk in from both ends and skip the punctuation where it stands.</span>
+        </a>
+        <a class="lesson-row" href="/leetcode/single-number">
+          <span class="n">07</span>
+          <span class="t">Single Number <span class="badge">interactive</span></span>
+          <span class="m">136</span>
+          <span class="s">Tally every value, or fold the array with XOR and let each pair cancel itself out. The difference is space, not time.</span>
+        </a>
+        <a class="lesson-row" href="/leetcode/x-sum">
+          <span class="n">08</span>
           <span class="t">X-Sum, Two Ways <span class="badge">interactive</span></span>
           <span class="m">3318 · 3321</span>
           <span class="s">Brute force against a sliding window, in two containers — sorted arrays, then lazy heaps. The second is what makes the hard version pass.</span>
