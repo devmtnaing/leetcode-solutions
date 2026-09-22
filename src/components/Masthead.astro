@@ -1,0 +1,18 @@
+---
+import { TRACKS } from '../data/tracks';
+import ThemeToggle from './ThemeToggle.astro';
+
+const { pathname } = Astro.url;
+const active = (id: string) => pathname === `/${id}` || pathname.startsWith(`/${id}/`);
+---
+<header class="masthead">
+  <div class="shell">
+    <a class="brand" href="/"><span class="dot"></span>learn</a>
+    <nav>
+      {TRACKS.map((t) => (
+        <a href={`/${t.id}`} aria-current={active(t.id) ? 'page' : undefined}>{t.name}</a>
+      ))}
+    </nav>
+    <ThemeToggle />
+  </div>
+</header>

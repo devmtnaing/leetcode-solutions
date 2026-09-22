@@ -1,0 +1,45 @@
+---
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/site.css';
+import Masthead from '../components/Masthead.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Walkthrough pages pull in the stage/transport stylesheet; prose pages don't. */
+  interactive?: boolean;
+}
+const { title, description, interactive = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='52' font-size='52'>📐</text></svg>" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600&family=Noto+Sans+Myanmar:wght@400;500;600&display=swap" />
+  <!-- Blocking on purpose: a stored theme has to land on <html> before the
+       first paint, or every visit starts with a flash of the wrong one. -->
+  <script is:inline>
+    try {
+      var t = localStorage.getItem('learn-theme');
+      if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  </script>
+</head>
+<body class={interactive ? 'has-stage' : undefined}>
+  <Masthead />
+  <main><slot /></main>
+  <SiteFooter />
+</body>
+</html>

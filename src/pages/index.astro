@@ -1,0 +1,51 @@
+---
+import Base from '../layouts/Base.astro';
+import { TRACKS } from '../data/tracks';
+import { getCollection } from 'astro:content';
+import problems from '../data/problems.json';
+
+const lessons = await getCollection('lessons', ({ data }) => !data.draft);
+// x-sum is a hand-built walkthrough page rather than a collection entry, so the
+// counts add the interactive lessons each track ships separately.
+const HANDBUILT: Record<string, number> = { leetcode: 1 };
+const total = Object.values(problems).flat().length;
+const count = (id: string) =>
+  lessons.filter((l) => l.data.track === id).length + (HANDBUILT[id] ?? 0);
+---
+<Base
+  title="learn — Ruby, Rails and algorithms, worked out in full"
+  description="Lessons that show the work: every algorithm animated step by step, every solution compiled and run before it was published."
+>
+  <div class="shell">
+    <section class="hero">
+      <h1>Lessons that show the work.</h1>
+      <p>
+        Most tutorials hand you a finished answer. These ones run it in front of you — one
+        step at a time, with the state of every variable on screen while the code moves.
+        Every solution here was compiled and executed before it was published.
+      </p>
+    </section>
+
+    <div class="tracks">
+      {TRACKS.map((t) => (
+        <a class="track" href={`/${t.id}`} style={`--tone:${t.accent}`}>
+          <span class="count">
+            {count(t.id) === 0 ? 'in progress' : `${count(t.id)} lesson${count(t.id) === 1 ? '' : 's'}`}
+          </span>
+          <h2>{t.name}</h2>
+          <p class="tagline">{t.tagline}</p>
+          <p class="outcome">{t.outcome}</p>
+        </a>
+      ))}
+    </div>
+
+    <section class="roadmap">
+      <h2>What's here so far</h2>
+      <p class="note">
+        The algorithms track is built against a list of {total} interview problems, chosen
+        where three separate study plans agree. Worked lessons land in the order below.
+      </p>
+      <p class="note"><a href="/leetcode" style="color:var(--accent)">See the full roadmap →</a></p>
+    </section>
+  </div>
+</Base>

@@ -1,0 +1,37 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { trackById } from '../../data/tracks';
+
+const track = trackById('ruby')!;
+const lessons = (await getCollection('lessons', ({ data }) => data.track === 'ruby' && !data.draft))
+  .sort((a, b) => a.data.order - b.data.order);
+---
+<Base title={`${track.name} · learn`} description={track.tagline}>
+  <div class="shell">
+    <div class="page-head">
+      <h1>{track.name}</h1>
+      <p class="lede">{track.tagline}. {track.outcome}</p>
+    </div>
+
+    {lessons.length > 0 ? (
+      <div class="lesson-list">
+        {lessons.map((l, i) => (
+          <a class="lesson-row" href={`/ruby/${l.id.replace(/\.mdx?$/, '')}`}>
+            <span class="n">{String(i + 1).padStart(2, '0')}</span>
+            <span class="t">{l.data.title}</span>
+            <span class="m">{l.data.minutes ? `${l.data.minutes} min` : ''}</span>
+            <span class="s">{l.data.summary}</span>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="empty">
+        <b>No lessons here yet.</b>
+        Add one by dropping a file in <code>src/content/lessons/ruby/</code>. It appears in
+        this list and gets its own page as soon as the build runs — nothing else to wire up.
+      </div>
+    )}
+    <div style="height:56px"></div>
+  </div>
+</Base>

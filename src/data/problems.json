@@ -1,0 +1,626 @@
+{
+ "EASY": [
+  {
+   "id": 1,
+   "title": "Two Sum",
+   "slug": "two-sum",
+   "difficulty": "Easy",
+   "paid": false,
+   "acRate": "57.9%",
+   "tags": [
+    "Array",
+    "Hash Table"
+   ]
+  },
+  {
+   "id": 20,
+   "title": "Valid Parentheses",
+   "slug": "valid-parentheses",
+   "difficulty": "Easy",
+   "paid": false,
+   "acRate": "44.9%",
+   "tags": [
+    "String",
+    "Stack",
+    "Bracket Sequences"
+   ]
+  },
+  {
+   "id": 21,
+   "title": "Merge Two Sorted Lists",
+   "slug": "merge-two-sorted-lists",
+   "difficulty": "Easy",
+   "paid": false,
+   "acRate": "68.9%",
+   "tags": [
+    "Linked List",
+    "Recursion"
+   ]
+  },
+  {
+   "id": 121,
+   "title": "Best Time to Buy and Sell Stock",
+   "slug": "best-time-to-buy-and-sell-stock",
+   "difficulty": "Easy",
+   "paid": false,
+   "acRate": "57.4%",
+   "tags": [
+    "Array",
+    "Dynamic Programming"
+   ]
+  },
+  {
+   "id": 141,
+   "title": "Linked List Cycle",
+   "slug": "linked-list-cycle",
+   "difficulty": "Easy",
+   "paid": false,
+   "acRate": "55.1%",
+   "tags": [
+    "Hash Table",
+    "Linked List",
+    "Two Pointers",
+    "Floyd's Cycle Finding Algorithm"
+   ]
+  },
+  {
+   "id": 206,
+   "title": "Reverse Linked List",
+   "slug": "reverse-linked-list",
+   "difficulty": "Easy",
+   "paid": false,
+   "acRate": "81.1%",
+   "tags": [
+    "Linked List",
+    "Recursion"
+   ]
+  },
+  {
+   "id": 226,
+   "title": "Invert Binary Tree",
+   "slug": "invert-binary-tree",
+   "difficulty": "Easy",
+   "paid": false,
+   "acRate": "80.5%",
+   "tags": [
+    "Tree",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Binary Tree"
+   ]
+  },
+  {
+   "id": 104,
+   "title": "Maximum Depth of Binary Tree",
+   "slug": "maximum-depth-of-binary-tree",
+   "difficulty": "Easy",
+   "paid": false,
+   "acRate": "78.6%",
+   "tags": [
+    "Tree",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Binary Tree"
+   ]
+  },
+  {
+   "id": 136,
+   "title": "Single Number",
+   "slug": "single-number",
+   "difficulty": "Easy",
+   "paid": false,
+   "acRate": "78.3%",
+   "tags": [
+    "Array",
+    "Bit Manipulation"
+   ]
+  },
+  {
+   "id": 242,
+   "title": "Valid Anagram",
+   "slug": "valid-anagram",
+   "difficulty": "Easy",
+   "paid": false,
+   "acRate": "68.7%",
+   "tags": [
+    "Hash Table",
+    "String",
+    "Sorting"
+   ]
+  },
+  {
+   "id": 70,
+   "title": "Climbing Stairs",
+   "slug": "climbing-stairs",
+   "difficulty": "Easy",
+   "paid": false,
+   "acRate": "54.3%",
+   "tags": [
+    "Math",
+    "Dynamic Programming",
+    "Memoization"
+   ]
+  },
+  {
+   "id": 169,
+   "title": "Majority Element",
+   "slug": "majority-element",
+   "difficulty": "Easy",
+   "paid": false,
+   "acRate": "66.5%",
+   "tags": [
+    "Array",
+    "Hash Table",
+    "Divide and Conquer",
+    "Sorting",
+    "Counting",
+    "Boyer\u2013Moore Majority Vote Algorithm"
+   ]
+  },
+  {
+   "id": 283,
+   "title": "Move Zeroes",
+   "slug": "move-zeroes",
+   "difficulty": "Easy",
+   "paid": false,
+   "acRate": "64.4%",
+   "tags": [
+    "Array",
+    "Two Pointers"
+   ]
+  },
+  {
+   "id": 125,
+   "title": "Valid Palindrome",
+   "slug": "valid-palindrome",
+   "difficulty": "Easy",
+   "paid": false,
+   "acRate": "54.3%",
+   "tags": [
+    "Two Pointers",
+    "String"
+   ]
+  },
+  {
+   "id": 543,
+   "title": "Diameter of Binary Tree",
+   "slug": "diameter-of-binary-tree",
+   "difficulty": "Easy",
+   "paid": false,
+   "acRate": "66.3%",
+   "tags": [
+    "Tree",
+    "Depth-First Search",
+    "Binary Tree",
+    "DP on Trees"
+   ]
+  }
+ ],
+ "MEDIUM": [
+  {
+   "id": 3,
+   "title": "Longest Substring Without Repeating Characters",
+   "slug": "longest-substring-without-repeating-characters",
+   "difficulty": "Medium",
+   "paid": false,
+   "acRate": "39.9%",
+   "tags": [
+    "Hash Table",
+    "String",
+    "Sliding Window"
+   ]
+  },
+  {
+   "id": 15,
+   "title": "3Sum",
+   "slug": "3sum",
+   "difficulty": "Medium",
+   "paid": false,
+   "acRate": "39.9%",
+   "tags": [
+    "Array",
+    "Two Pointers",
+    "Sorting"
+   ]
+  },
+  {
+   "id": 33,
+   "title": "Search in Rotated Sorted Array",
+   "slug": "search-in-rotated-sorted-array",
+   "difficulty": "Medium",
+   "paid": false,
+   "acRate": "45.7%",
+   "tags": [
+    "Array",
+    "Binary Search"
+   ]
+  },
+  {
+   "id": 46,
+   "title": "Permutations",
+   "slug": "permutations",
+   "difficulty": "Medium",
+   "paid": false,
+   "acRate": "82.4%",
+   "tags": [
+    "Array",
+    "Backtracking"
+   ]
+  },
+  {
+   "id": 48,
+   "title": "Rotate Image",
+   "slug": "rotate-image",
+   "difficulty": "Medium",
+   "paid": false,
+   "acRate": "80.7%",
+   "tags": [
+    "Array",
+    "Math",
+    "Matrix"
+   ]
+  },
+  {
+   "id": 53,
+   "title": "Maximum Subarray",
+   "slug": "maximum-subarray",
+   "difficulty": "Medium",
+   "paid": false,
+   "acRate": "53.9%",
+   "tags": [
+    "Array",
+    "Divide and Conquer",
+    "Dynamic Programming"
+   ]
+  },
+  {
+   "id": 56,
+   "title": "Merge Intervals",
+   "slug": "merge-intervals",
+   "difficulty": "Medium",
+   "paid": false,
+   "acRate": "52.9%",
+   "tags": [
+    "Array",
+    "Sorting",
+    "Quicksort"
+   ]
+  },
+  {
+   "id": 146,
+   "title": "LRU Cache",
+   "slug": "lru-cache",
+   "difficulty": "Medium",
+   "paid": false,
+   "acRate": "48.1%",
+   "tags": [
+    "Hash Table",
+    "Linked List",
+    "Design",
+    "Doubly-Linked List"
+   ]
+  },
+  {
+   "id": 200,
+   "title": "Number of Islands",
+   "slug": "number-of-islands",
+   "difficulty": "Medium",
+   "paid": false,
+   "acRate": "65.2%",
+   "tags": [
+    "Array",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union-Find",
+    "Matrix"
+   ]
+  },
+  {
+   "id": 207,
+   "title": "Course Schedule",
+   "slug": "course-schedule",
+   "difficulty": "Medium",
+   "paid": false,
+   "acRate": "52.3%",
+   "tags": [
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Graph Theory",
+    "Topological Sort",
+    "Directed Acyclic Graph"
+   ]
+  },
+  {
+   "id": 208,
+   "title": "Implement Trie (Prefix Tree)",
+   "slug": "implement-trie-prefix-tree",
+   "difficulty": "Medium",
+   "paid": false,
+   "acRate": "70.1%",
+   "tags": [
+    "Hash Table",
+    "String",
+    "Design",
+    "Trie"
+   ]
+  },
+  {
+   "id": 215,
+   "title": "Kth Largest Element in an Array",
+   "slug": "kth-largest-element-in-an-array",
+   "difficulty": "Medium",
+   "paid": false,
+   "acRate": "69.3%",
+   "tags": [
+    "Array",
+    "Divide and Conquer",
+    "Sorting",
+    "Heap (Priority Queue)",
+    "Quickselect"
+   ]
+  },
+  {
+   "id": 236,
+   "title": "Lowest Common Ancestor of a Binary Tree",
+   "slug": "lowest-common-ancestor-of-a-binary-tree",
+   "difficulty": "Medium",
+   "paid": false,
+   "acRate": "70.1%",
+   "tags": [
+    "Tree",
+    "Depth-First Search",
+    "Binary Tree",
+    "Binary Lifting",
+    "Lowest Common Ancestor"
+   ]
+  },
+  {
+   "id": 238,
+   "title": "Product of Array Except Self",
+   "slug": "product-of-array-except-self",
+   "difficulty": "Medium",
+   "paid": false,
+   "acRate": "69.3%",
+   "tags": [
+    "Array",
+    "Prefix Sum"
+   ]
+  },
+  {
+   "id": 322,
+   "title": "Coin Change",
+   "slug": "coin-change",
+   "difficulty": "Medium",
+   "paid": false,
+   "acRate": "49.2%",
+   "tags": [
+    "Array",
+    "Dynamic Programming",
+    "Breadth-First Search",
+    "Knapsack Problem",
+    "Complete Knapsack"
+   ]
+  }
+ ],
+ "HARD": [
+  {
+   "id": 4,
+   "title": "Median of Two Sorted Arrays",
+   "slug": "median-of-two-sorted-arrays",
+   "difficulty": "Hard",
+   "paid": false,
+   "acRate": "47.6%",
+   "tags": [
+    "Array",
+    "Binary Search",
+    "Divide and Conquer"
+   ]
+  },
+  {
+   "id": 23,
+   "title": "Merge k Sorted Lists",
+   "slug": "merge-k-sorted-lists",
+   "difficulty": "Hard",
+   "paid": false,
+   "acRate": "60.6%",
+   "tags": [
+    "Linked List",
+    "Divide and Conquer",
+    "Heap (Priority Queue)",
+    "Merge Sort",
+    "Tournament Sort"
+   ]
+  },
+  {
+   "id": 25,
+   "title": "Reverse Nodes in k-Group",
+   "slug": "reverse-nodes-in-k-group",
+   "difficulty": "Hard",
+   "paid": false,
+   "acRate": "67.3%",
+   "tags": [
+    "Linked List",
+    "Recursion"
+   ]
+  },
+  {
+   "id": 42,
+   "title": "Trapping Rain Water",
+   "slug": "trapping-rain-water",
+   "difficulty": "Hard",
+   "paid": false,
+   "acRate": "68.3%",
+   "tags": [
+    "Array",
+    "Two Pointers",
+    "Dynamic Programming",
+    "Stack",
+    "Monotonic Stack"
+   ]
+  },
+  {
+   "id": 76,
+   "title": "Minimum Window Substring",
+   "slug": "minimum-window-substring",
+   "difficulty": "Hard",
+   "paid": false,
+   "acRate": "48.5%",
+   "tags": [
+    "Hash Table",
+    "String",
+    "Sliding Window"
+   ]
+  },
+  {
+   "id": 84,
+   "title": "Largest Rectangle in Histogram",
+   "slug": "largest-rectangle-in-histogram",
+   "difficulty": "Hard",
+   "paid": false,
+   "acRate": "50.9%",
+   "tags": [
+    "Array",
+    "Stack",
+    "Monotonic Stack",
+    "Range Minimum/Maximum Query"
+   ]
+  },
+  {
+   "id": 124,
+   "title": "Binary Tree Maximum Path Sum",
+   "slug": "binary-tree-maximum-path-sum",
+   "difficulty": "Hard",
+   "paid": false,
+   "acRate": "42.8%",
+   "tags": [
+    "Dynamic Programming",
+    "Tree",
+    "Depth-First Search",
+    "Binary Tree",
+    "DP on Trees"
+   ]
+  },
+  {
+   "id": 127,
+   "title": "Word Ladder",
+   "slug": "word-ladder",
+   "difficulty": "Hard",
+   "paid": false,
+   "acRate": "46.6%",
+   "tags": [
+    "Hash Table",
+    "String",
+    "Breadth-First Search",
+    "Bidirectional Search"
+   ]
+  },
+  {
+   "id": 212,
+   "title": "Word Search II",
+   "slug": "word-search-ii",
+   "difficulty": "Hard",
+   "paid": false,
+   "acRate": "38.9%",
+   "tags": [
+    "Array",
+    "String",
+    "Backtracking",
+    "Trie",
+    "Matrix"
+   ]
+  },
+  {
+   "id": 224,
+   "title": "Basic Calculator",
+   "slug": "basic-calculator",
+   "difficulty": "Hard",
+   "paid": false,
+   "acRate": "47.2%",
+   "tags": [
+    "Math",
+    "String",
+    "Stack",
+    "Recursion"
+   ]
+  },
+  {
+   "id": 239,
+   "title": "Sliding Window Maximum",
+   "slug": "sliding-window-maximum",
+   "difficulty": "Hard",
+   "paid": false,
+   "acRate": "49.3%",
+   "tags": [
+    "Array",
+    "Queue",
+    "Sliding Window",
+    "Heap (Priority Queue)",
+    "Monotonic Queue",
+    "Range Minimum/Maximum Query"
+   ]
+  },
+  {
+   "id": 295,
+   "title": "Find Median from Data Stream",
+   "slug": "find-median-from-data-stream",
+   "difficulty": "Hard",
+   "paid": false,
+   "acRate": "55.0%",
+   "tags": [
+    "Two Pointers",
+    "Design",
+    "Sorting",
+    "Heap (Priority Queue)",
+    "Data Stream"
+   ]
+  },
+  {
+   "id": 297,
+   "title": "Serialize and Deserialize Binary Tree",
+   "slug": "serialize-and-deserialize-binary-tree",
+   "difficulty": "Hard",
+   "paid": false,
+   "acRate": "61.2%",
+   "tags": [
+    "String",
+    "Tree",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Design",
+    "Binary Tree"
+   ]
+  },
+  {
+   "id": 329,
+   "title": "Longest Increasing Path in a Matrix",
+   "slug": "longest-increasing-path-in-a-matrix",
+   "difficulty": "Hard",
+   "paid": false,
+   "acRate": "57.1%",
+   "tags": [
+    "Array",
+    "Dynamic Programming",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Graph Theory",
+    "Topological Sort",
+    "Memoization",
+    "Matrix",
+    "Directed Acyclic Graph"
+   ]
+  },
+  {
+   "id": 51,
+   "title": "N-Queens",
+   "slug": "n-queens",
+   "difficulty": "Hard",
+   "paid": false,
+   "acRate": "76.5%",
+   "tags": [
+    "Array",
+    "Backtracking",
+    "Algorithm X"
+   ]
+  }
+ ]
+}

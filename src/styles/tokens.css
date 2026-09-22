@@ -1,0 +1,63 @@
+/* Palette and shape, in all three theme states: system, forced light,
+   forced dark. Every other stylesheet reads colour only through these. */
+:root{
+  --ground:#EEF2F2;
+  --surface:#FFFFFF;
+  --sunk:#E3E9EA;
+  --ink:#0F1A1E;
+  --ink-2:#4B5D64;
+  --ink-3:#7C8F96;
+  --line:#CCD7D9;
+  --line-2:#B4C3C6;
+  --accent:#0E7C86;
+  --accent-soft:#D8EDEE;
+  --amber:#9E5F09;
+  --amber-soft:#F6E7CD;
+  --up:#1B7A55;
+  --up-soft:#D6EDE2;
+  --down:#A63A2B;
+  --down-soft:#F6DED9;
+  --shadow:0 1px 2px rgba(15,26,30,.07), 0 10px 24px -16px rgba(15,26,30,.35);
+  --radius:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1315;
+    --surface:#141E21;
+    --sunk:#0F1A1D;
+    --ink:#E7EFF0;
+    --ink-2:#A2B5BB;
+    --ink-3:#7A8D94;
+    --line:#26363A;
+    --line-2:#33474C;
+    --accent:#4FC0C9;
+    --accent-soft:#103539;
+    --amber:#DFA94C;
+    --amber-soft:#332815;
+    --up:#4FC08A;
+    --up-soft:#11312450;
+    --down:#E07C64;
+    --down-soft:#3A1E1750;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 24px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1315;
+  --surface:#141E21;
+  --sunk:#0F1A1D;
+  --ink:#E7EFF0;
+  --ink-2:#A2B5BB;
+  --ink-3:#7A8D94;
+  --line:#26363A;
+  --line-2:#33474C;
+  --accent:#4FC0C9;
+  --accent-soft:#103539;
+  --amber:#DFA94C;
+  --amber-soft:#332815;
+  --up:#4FC08A;
+  --up-soft:#11312450;
+  --down:#E07C64;
+  --down-soft:#3A1E1750;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 24px -16px rgba(0,0,0,.8);
+}
+

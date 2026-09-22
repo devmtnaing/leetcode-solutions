@@ -1,0 +1,107 @@
+---
+import Base from '../../layouts/Base.astro';
+import problems from '../../data/problems.json';
+import { getCollection } from 'astro:content';
+
+interface Problem {
+  id: number; title: string; slug: string; difficulty: string;
+  paid: boolean; acRate: string; tags: string[];
+}
+
+const lessons = await getCollection('lessons', ({ data }) => data.track === 'leetcode' && !data.draft);
+
+// A problem links to a lesson here only when one exists; everything else points
+// at LeetCode so the roadmap is useful long before it is complete.
+const WORKED: Record<number, string> = { 3318: '/leetcode/x-sum', 3321: '/leetcode/x-sum' };
+
+const groups = (['EASY', 'MEDIUM', 'HARD'] as const).map((key) => ({
+  key,
+  label: key[0] + key.slice(1).toLowerCase(),
+  rows: (problems as Record<string, Problem[]>)[key] ?? [],
+}));
+const total = groups.reduce((n, g) => n + g.rows.length, 0);
+const worked = Object.keys(WORKED).length;
+---
+<Base
+  title="Algorithms · learn"
+  description="A roadmap of interview problems, worked one at a time — each with an interactive walkthrough and verified solutions in five languages."
+>
+  <div class="shell">
+    <div class="page-head">
+      <h1>Algorithms</h1>
+      <p class="lede">
+        {total} problems, split evenly across easy, medium and hard, chosen where three
+        separate study plans agree. Each worked lesson animates the algorithm step by step
+        and ships solutions in Ruby, Python, JavaScript, Go and Rust — all of them compiled
+        and run against the examples plus 25,000 randomised cases.
+      </p>
+    </div>
+
+    {lessons.length > 0 && (
+      <section class="roadmap">
+        <h2>Written lessons</h2>
+        <div class="lesson-list">
+          {lessons.sort((a, b) => a.data.order - b.data.order).map((l, i) => (
+            <a class="lesson-row" href={`/leetcode/${l.id.replace(/\.mdx?$/, '')}`}>
+              <span class="n">{String(i + 1).padStart(2, '0')}</span>
+              <span class="t">{l.data.title}</span>
+              <span class="m">{l.data.minutes ? `${l.data.minutes} min` : ''}</span>
+              <span class="s">{l.data.summary}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="roadmap">
+      <h2>Walkthroughs</h2>
+      <p class="note">Interactive lessons — drive the algorithm one step at a time and watch the state change.</p>
+      <div class="lesson-list">
+        <a class="lesson-row" href="/leetcode/x-sum">
+          <span class="n">01</span>
+          <span class="t">X-Sum, Two Ways <span class="badge">interactive</span></span>
+          <span class="m">3318 · 3321</span>
+          <span class="s">Brute force against a sliding window, in two containers — sorted arrays, then lazy heaps. The second is what makes the hard version pass.</span>
+        </a>
+      </div>
+    </section>
+
+    {groups.map((g) => (
+      <section class="roadmap">
+        <h2>{g.label} <span class="num" style="color:var(--ink-3);font-weight:400;font-size:15px">— {g.rows.length} problems</span></h2>
+        <div class="tablewrap">
+          <table class="problems">
+            <thead>
+              <tr>
+                <th style="width:1%">#</th>
+                <th>Problem</th>
+                <th>Pattern</th>
+                <th style="width:1%">Level</th>
+                <th style="width:1%;text-align:right">Accepted</th>
+              </tr>
+            </thead>
+            <tbody>
+              {g.rows.map((p) => (
+                <tr>
+                  <td class="num">{p.id}</td>
+                  <td>
+                    <a href={`https://leetcode.com/problems/${p.slug}/`} target="_blank" rel="noopener">{p.title}</a>
+                    {WORKED[p.id] && <a class="done" href={WORKED[p.id]}>· worked →</a>}
+                  </td>
+                  <td class="tags">{p.tags.slice(0, 3).join(' · ')}</td>
+                  <td><span class={`diff ${p.difficulty.toLowerCase()}`}>{p.difficulty}</span></td>
+                  <td class="rate">{p.acRate}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    ))}
+
+    <p class="note" style="color:var(--ink-3);font-size:13px;padding-bottom:50px">
+      {worked} of {total} problems have a worked lesson. Metadata pulled from LeetCode and
+      verified problem by problem — difficulty labels here match the site, not folklore.
+    </p>
+  </div>
+</Base>

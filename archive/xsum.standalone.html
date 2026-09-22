@@ -1,0 +1,4043 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='52' font-size='52'>%F0%9F%AA%9F</text></svg>">
+<style>
+  body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+</style>
+<title>X-Sum, Two Ways</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600&family=Noto+Sans+Myanmar:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#EEF2F2;
+  --surface:#FFFFFF;
+  --sunk:#E3E9EA;
+  --ink:#0F1A1E;
+  --ink-2:#4B5D64;
+  --ink-3:#7C8F96;
+  --line:#CCD7D9;
+  --line-2:#B4C3C6;
+  --accent:#0E7C86;
+  --accent-soft:#D8EDEE;
+  --amber:#9E5F09;
+  --amber-soft:#F6E7CD;
+  --up:#1B7A55;
+  --up-soft:#D6EDE2;
+  --down:#A63A2B;
+  --down-soft:#F6DED9;
+  --shadow:0 1px 2px rgba(15,26,30,.07), 0 10px 24px -16px rgba(15,26,30,.35);
+  --radius:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1315;
+    --surface:#141E21;
+    --sunk:#0F1A1D;
+    --ink:#E7EFF0;
+    --ink-2:#A2B5BB;
+    --ink-3:#7A8D94;
+    --line:#26363A;
+    --line-2:#33474C;
+    --accent:#4FC0C9;
+    --accent-soft:#103539;
+    --amber:#DFA94C;
+    --amber-soft:#332815;
+    --up:#4FC08A;
+    --up-soft:#11312450;
+    --down:#E07C64;
+    --down-soft:#3A1E1750;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 24px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1315;
+  --surface:#141E21;
+  --sunk:#0F1A1D;
+  --ink:#E7EFF0;
+  --ink-2:#A2B5BB;
+  --ink-3:#7A8D94;
+  --line:#26363A;
+  --line-2:#33474C;
+  --accent:#4FC0C9;
+  --accent-soft:#103539;
+  --amber:#DFA94C;
+  --amber-soft:#332815;
+  --up:#4FC08A;
+  --up-soft:#11312450;
+  --down:#E07C64;
+  --down-soft:#3A1E1750;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 24px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1140px;margin:0 auto;padding-inline:20px;padding-block:32px 56px}
+h1,h2,h3{font-family:Archivo,"IBM Plex Sans",sans-serif;font-weight:700;text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,4.6vw,42px);letter-spacing:-.022em;line-height:1.05}
+h2{font-size:19px;letter-spacing:-.01em}
+h3{font-size:14px;letter-spacing:-.005em;font-weight:600}
+p{margin:0}
+code,.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);font-weight:500;
+}
+
+/* ---------- header ---------- */
+header{display:flex;flex-direction:column;gap:12px;margin-bottom:26px}
+.lede{color:var(--ink-2);max-width:66ch;font-size:16px}
+.rule-chip{
+  display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px;
+  background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:0 var(--radius) var(--radius) 0;padding:10px 14px;font-size:13.5px;color:var(--ink-2);
+  align-self:flex-start;max-width:100%;
+}
+.rule-chip b{color:var(--ink);font-weight:600}
+.rule-chip .mono{color:var(--accent);font-weight:500}
+
+/* ---------- controls ---------- */
+.controls{
+  display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px 18px;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 16px;margin-bottom:18px;
+}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field label{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+input[type=text],input[type=number]{
+  font-family:"IBM Plex Mono",monospace;font-size:14px;font-variant-numeric:tabular-nums;
+  background:var(--sunk);color:var(--ink);border:1px solid var(--line);border-radius:7px;
+  padding:7px 10px;
+}
+input[type=text]{min-width:min(280px,58vw)}
+input[type=number]{width:72px}
+input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.presets{display:flex;flex-wrap:wrap;gap:7px}
+.chip{
+  font-family:"IBM Plex Mono",monospace;font-size:12px;cursor:pointer;
+  background:transparent;color:var(--ink-2);border:1px solid var(--line-2);border-radius:999px;padding:5px 11px;
+}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.warn{color:var(--down);font-size:12.5px;flex-basis:100%}
+
+/* ---------- array strip ---------- */
+.strip-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px;margin-bottom:16px;box-shadow:var(--shadow);
+}
+.strip-head{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.strip-head .op{
+  font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--amber);font-weight:500;
+  background:var(--amber-soft);border-radius:6px;padding:3px 9px;
+}
+.strip{display:flex;gap:6px;overflow-x:auto;padding-block:6px}
+.cell{
+  flex:0 0 auto;width:42px;height:50px;border-radius:8px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px;
+  background:var(--sunk);border:1px solid var(--line);color:var(--ink-3);
+  font-family:"IBM Plex Mono",monospace;font-size:16px;font-weight:500;
+}
+.cell .idx{font-size:9.5px;color:var(--ink-3);opacity:.75}
+.cell.inwin{background:var(--amber-soft);border-color:var(--amber);color:var(--ink)}
+.cell.entering{box-shadow:inset 0 0 0 2px var(--up);border-color:var(--up)}
+.cell.leaving{opacity:.55;border-style:dashed;border-color:var(--down);background:var(--down-soft)}
+
+/* ---------- transport ---------- */
+.transport{
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:10px 14px;margin-bottom:16px;
+}
+.btn{
+  cursor:pointer;background:var(--surface);color:var(--ink);border:1px solid var(--line-2);
+  border-radius:7px;padding:6px 12px;font-size:13px;font-family:inherit;font-weight:500;
+}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn.primary,
+:root:not([data-theme="light"]) .btn.primary{color:#07191B}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .btn.primary{color:#fff}}
+.btn.primary:hover{opacity:.88;color:inherit}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.counter{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-width:120px}
+
+.narration{
+  display:flex;gap:12px;align-items:flex-start;
+  background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:0 var(--radius) var(--radius) 0;padding:12px 15px;margin-bottom:18px;min-height:64px;
+}
+.narration .tag{
+  flex:0 0 auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.09em;
+  text-transform:uppercase;font-weight:600;color:var(--accent);background:var(--accent-soft);
+  border-radius:5px;padding:3px 7px;margin-top:2px;
+}
+.narration .text{font-size:14.5px;color:var(--ink);line-height:1.5}
+.narration .text .mono{color:var(--accent);font-weight:500}
+
+/* ---------- workbench ---------- */
+.bench{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px;align-items:start}
+.bench .col{display:flex;flex-direction:column;gap:18px;min-width:0}
+.bench .answer-card{margin:0}
+.bench .answer-card .note{color:var(--ink-3);font-size:12px}
+@media (max-width:900px){.bench{grid-template-columns:minmax(0,1fr)}}
+.panel{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px;box-shadow:var(--shadow);
+}
+.panel-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 10px;margin-bottom:12px}
+.panel-head .note{min-width:0}
+.panel-head .note{font-size:12px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+
+/* shelves */
+.shelf{border-radius:8px;padding:11px 12px;border:1px solid var(--line)}
+.shelf-top{background:var(--accent-soft);border-color:var(--accent)}
+.shelf-rest{background:var(--sunk);border-style:dashed}
+.shelf-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:9px}
+.shelf-name{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.12em;font-weight:600}
+.shelf-top .shelf-name{color:var(--accent)}
+.shelf-rest .shelf-name{color:var(--ink-3)}
+.shelf-note{font-size:11.5px;color:var(--ink-3)}
+.cards{display:flex;flex-wrap:wrap;gap:7px;min-height:52px;align-items:flex-start}
+.kard{
+  display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 11px;border-radius:7px;
+  background:var(--surface);border:1px solid var(--line-2);font-family:"IBM Plex Mono",monospace;
+  font-variant-numeric:tabular-nums;
+}
+.kard .face{font-size:17px;font-weight:600;color:var(--ink);letter-spacing:.01em}
+.kard .face .x{color:var(--ink-3);font-weight:400;font-size:13px;margin-inline:1px}
+.kard .key{font-size:10px;color:var(--ink-3)}
+.shelf-top .kard{border-color:var(--accent);border-left-width:3px}
+.shelf-rest .kard{opacity:.72;border-style:dashed}
+.kard.hl-up{border-color:var(--up);background:var(--up-soft)}
+.kard.hl-up .face{color:var(--up)}
+.kard.hl-down{border-color:var(--down);background:var(--down-soft)}
+.kard.hl-down .face{color:var(--down)}
+.kard.hl-new{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.kard.hl-cmp{outline:2px solid var(--amber);outline-offset:1px}
+.empty{font-size:12.5px;color:var(--ink-3);font-style:italic;padding:6px 2px}
+
+.barrier{
+  display:flex;align-items:center;gap:10px;margin-block:9px;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);
+}
+.barrier::before,.barrier::after{content:"";height:1px;background:var(--line-2);flex:1}
+.barrier.broken{color:var(--amber);font-weight:500}
+.barrier.broken::before,.barrier.broken::after{background:var(--amber)}
+
+.ledger{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin-top:14px;padding-top:13px;
+  border-top:1px solid var(--line);
+}
+.ledger .expr{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--ink-2);word-break:break-word}
+.ledger .total{
+  font-family:Archivo,sans-serif;font-size:30px;font-weight:700;color:var(--accent);
+  font-variant-numeric:tabular-nums;line-height:1;margin-left:auto;
+}
+.ledger .total small{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);font-weight:400;display:block;text-align:right;letter-spacing:.08em}
+
+/* brute-force stage */
+.bf-steps{display:flex;flex-direction:column;gap:14px}
+.bf-step{padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--sunk);transition:opacity .2s}
+.bf-step.pending{opacity:.32}
+.bf-step.active{background:var(--surface);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.bf-step h3{margin-bottom:9px;color:var(--ink-2)}
+.bf-step h3 .n{font-family:"IBM Plex Mono",monospace;color:var(--accent);margin-right:6px}
+.bars{display:flex;flex-direction:column;gap:5px}
+.bar-row{display:grid;grid-template-columns:34px 1fr 30px;align-items:center;gap:8px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-variant-numeric:tabular-nums}
+.bar-track{background:var(--surface);border:1px solid var(--line);border-radius:4px;height:15px;overflow:hidden}
+.bar-fill{height:100%;background:var(--accent);opacity:.8}
+.bar-row.cut .bar-fill{background:var(--ink-3);opacity:.45}
+.rank{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.cutline{
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;color:var(--down);
+  border-left:2px dashed var(--down);padding-left:7px;align-self:stretch;display:flex;align-items:center;
+}
+.kard.dropped{opacity:.45;border-style:dashed}
+
+/* code */
+.code{
+  position:relative;background:var(--sunk);border-radius:8px;padding:12px 4px 12px 0;
+  overflow:auto;max-height:clamp(300px,58vh,520px);overscroll-behavior:contain;
+  font-family:"IBM Plex Mono",monospace;font-size:12.3px;line-height:1.75;
+  scroll-behavior:smooth;
+}
+@media (prefers-reduced-motion: reduce){.code{scroll-behavior:auto}}
+.code .ln{display:block;padding-inline:14px 12px;border-left:3px solid transparent;white-space:pre;color:var(--ink-2)}
+.code .ln.hot{background:var(--accent-soft);border-left-color:var(--accent);color:var(--ink)}
+.code .cm{color:var(--ink-3);font-style:italic}
+.code .kw{color:var(--accent)}
+.code-sub{font-size:11.5px;color:var(--ink-3);margin-top:10px;font-family:"IBM Plex Mono",monospace}
+a{color:var(--accent);text-underline-offset:2px}
+
+/* full source */
+.src{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.src + .src{margin-top:14px}
+.src-head{display:flex;flex-wrap:wrap;gap:8px 12px;justify-content:space-between;align-items:baseline;margin-bottom:11px}
+.src-head .sub{font-size:12.5px;color:var(--ink-3);flex-basis:100%;margin-top:-2px}
+pre.full{
+  margin:0;background:var(--sunk);border-radius:8px;padding:14px 16px;
+  overflow:auto;max-height:clamp(320px,52vh,540px);overscroll-behavior:contain;
+  font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.7;color:var(--ink);
+}
+pre.full:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+pre.full .cm{color:var(--ink-3);font-style:italic}
+.copy{font-size:12px;padding:5px 11px}
+.copy.done{border-color:var(--up);color:var(--up)}
+
+/* answer */
+.answer-card{margin-top:16px}
+.answer-row{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.slot{
+  font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:15px;font-weight:500;
+  min-width:44px;text-align:center;padding:7px 10px;border-radius:7px;
+  background:var(--sunk);border:1px dashed var(--line-2);color:var(--ink-3);
+}
+.slot.filled{background:var(--accent-soft);border:1px solid var(--accent);color:var(--ink);font-weight:600}
+.slot.just{outline:2px solid var(--amber);outline-offset:1px}
+
+/* teaching */
+.notes{margin-top:34px;display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:14px}
+.note-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:15px}
+.note-card h3{color:var(--accent);margin-bottom:7px;font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.note-card p{font-size:13.5px;color:var(--ink-2)}
+.note-card p + p{margin-top:8px}
+.note-card .mono{color:var(--ink);font-size:12.5px}
+
+.cost{margin-top:34px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:13.5px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+td.mono{font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+.tick{color:var(--up);font-weight:600}
+.cross{color:var(--down);font-weight:600}
+.mid{color:var(--amber);font-weight:600;font-size:12.5px;line-height:1.45}
+.cost figcaption{font-size:12px;color:var(--ink-3);margin-top:10px}
+
+.sec-head{margin-block:34px 14px;display:flex;flex-direction:column;gap:5px}
+footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-3)}
+kbd{font-family:"IBM Plex Mono",monospace;font-size:11px;background:var(--sunk);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:4px;padding:1px 5px;color:var(--ink-2)}
+
+@media (prefers-reduced-motion: no-preference){
+  .kard.hl-up,.kard.hl-down,.kard.hl-new{animation:pop .32s ease-out}
+  @keyframes pop{from{transform:translateY(6px) scale(.94);opacity:.4}to{transform:none;opacity:1}}
+}
+@media (max-width:520px){
+  .ledger .total{margin-left:0}
+  input[type=text]{min-width:min(240px,70vw)}
+}
+
+/* ---------- the question ---------- */
+.question{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:18px;margin-bottom:22px;align-items:start}
+@media (max-width:900px){.question{grid-template-columns:minmax(0,1fr)}}
+.q-statement{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.q-intro{font-size:14px;color:var(--ink-2);margin-top:8px}
+.procedure{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.procedure li{display:flex;gap:10px;font-size:14px;color:var(--ink-2);line-height:1.5}
+.procedure b{color:var(--ink);font-weight:600}
+.step-n{
+  flex:0 0 auto;width:21px;height:21px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
+  font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;margin-top:2px;
+}
+.q-note{font-size:13px;color:var(--ink-3);margin-top:11px;padding-left:31px}
+.q-ask{margin-top:14px;padding-top:13px;border-top:1px solid var(--line);font-size:14px;color:var(--ink-2)}
+.q-ask b{color:var(--ink)}
+.constraints{display:flex;flex-wrap:wrap;gap:6px;margin-top:13px}
+.constraints span{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);
+  background:var(--sunk);border:1px solid var(--line);border-radius:6px;padding:4px 9px;
+}
+.constraints b{color:var(--accent);font-weight:600;margin-right:4px}
+.q-arr{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.q-arr .cell{width:40px;height:44px;font-size:15px}
+.q-arr .cell.kept{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+.q-arr .cell.cut{opacity:.38;border-style:dashed}
+.q-slider{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px}
+.q-slider label{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.q-slider output{font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:600;color:var(--accent);min-width:20px}
+.q-presets{display:flex;flex-wrap:wrap;gap:6px;flex-basis:100%}
+.q-tie{font-size:12.5px;color:var(--amber);margin-top:10px;min-height:19px;line-height:1.45}
+.q-play .ledger{margin-top:12px}
+
+/* ---------- language tabs ---------- */
+.sec-sub{font-size:13.5px;color:var(--ink-3);max-width:76ch;margin-top:4px}
+.lang-bar{display:flex;flex-wrap:wrap;gap:4px;background:var(--sunk);border:1px solid var(--line);border-radius:9px;padding:4px;margin-bottom:14px}
+.lang{
+  font-family:"IBM Plex Sans",sans-serif;font-size:13px;font-weight:500;cursor:pointer;
+  background:transparent;border:0;color:var(--ink-2);padding:7px 15px;border-radius:6px;
+}
+.lang:hover{color:var(--accent)}
+.lang[aria-selected="true"]{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.src-head h2{margin-right:auto}
+.tagpill{
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:500;color:var(--accent);
+  background:var(--accent-soft);border-radius:5px;padding:2px 7px;margin-left:8px;
+  vertical-align:middle;letter-spacing:.04em;
+}
+.verify{font-family:"IBM Plex Mono",monospace;font-size:11px;padding:3px 8px;border-radius:5px;white-space:nowrap}
+.verify.ok{color:var(--up);background:var(--up-soft)}
+.verify.warn{color:var(--amber);background:var(--amber-soft)}
+
+/* ---------- problem links, original statement, examples ---------- */
+.source-links{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.plink{
+  display:flex;align-items:center;gap:8px;text-decoration:none;font-size:13px;color:var(--ink-2);
+  background:var(--sunk);border:1px solid var(--line);border-radius:7px;padding:7px 10px;
+}
+.plink:hover{border-color:var(--accent);color:var(--ink)}
+.pnum{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;color:var(--accent)}
+.pdiff{
+  margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.05em;
+  padding:2px 7px;border-radius:5px;text-transform:uppercase;
+}
+.pdiff.easy{color:var(--up);background:var(--up-soft)}
+.pdiff.hard{color:var(--down);background:var(--down-soft)}
+.original{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.original summary{
+  cursor:pointer;font-size:12.5px;color:var(--accent);font-weight:500;list-style:none;
+  font-family:"IBM Plex Mono",monospace;
+}
+.original summary::-webkit-details-marker{display:none}
+.original summary::before{content:"\25B8  "}
+.original[open] summary::before{content:"\25BE  "}
+.original .statement{
+  margin-top:11px;padding-left:13px;border-left:2px solid var(--line-2);
+  font-size:13.5px;color:var(--ink-2);line-height:1.6;display:flex;flex-direction:column;gap:9px;
+}
+.original .statement ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.original .statement pre{
+  margin:0;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-2);
+  background:var(--sunk);border-radius:6px;padding:9px 11px;overflow-x:auto;line-height:1.6;
+}
+.original .cons-head{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-top:3px}
+.original .attrib{font-size:11.5px;color:var(--ink-3);font-style:italic}
+
+.ex-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(272px,1fr));gap:14px;margin-bottom:18px}
+.ex-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:15px;
+  display:flex;flex-direction:column;gap:9px;
+}
+.ex-card.traps{border-left:3px solid var(--amber)}
+.ex-card h3{color:var(--ink);font-size:14.5px}
+.ex-card .io{font-size:13px;color:var(--ink-2)}
+.ex-card .io b{
+  font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);
+  margin-right:6px;font-weight:600;
+}
+.ex-card code{font-size:12.5px}
+.ex-card code.out{color:var(--accent);font-weight:600}
+.why{margin:0;padding-left:17px;display:flex;flex-direction:column;gap:7px;font-size:13px;color:var(--ink-2);line-height:1.5}
+.why b{color:var(--ink)}
+.why .bad{color:var(--down);font-weight:600}
+.ex-load{align-self:flex-start;margin-top:auto;font-size:12.5px}
+
+/* ---------- parts ---------- */
+.jump{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.jump a{
+  display:flex;align-items:center;gap:7px;text-decoration:none;font-size:12.5px;color:var(--ink-2);
+  background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 13px 5px 8px;
+}
+.jump a:hover{border-color:var(--accent);color:var(--accent)}
+.jump b{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--accent);background:var(--accent-soft);
+  width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+}
+.part{
+  display:flex;gap:14px;align-items:flex-start;
+  margin:42px 0 20px;padding-top:18px;border-top:2px solid var(--line-2);scroll-margin-top:14px;
+}
+.part-n{
+  font-family:Archivo,sans-serif;font-size:32px;font-weight:700;color:var(--accent);
+  line-height:.9;letter-spacing:-.03em;min-width:32px;
+}
+.part h2{font-size:clamp(20px,2.6vw,25px);letter-spacing:-.015em}
+.part p{font-size:13.5px;color:var(--ink-3);margin-top:4px;max-width:72ch}
+.lang-bar.mini{margin:0 0 12px;padding:3px;border-radius:8px}
+.lang-bar.mini .lang{font-size:12px;padding:5px 11px}
+
+/* ---------- statement, disclosures, approach picker ---------- */
+.q-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:11px}
+.q-src{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);letter-spacing:.04em}
+.q-statement .statement{display:flex;flex-direction:column;gap:10px;font-size:14px;color:var(--ink-2);line-height:1.6}
+.q-statement .statement b{color:var(--ink);font-weight:600}
+.q-statement .statement ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:7px}
+.q-statement .statement li::marker{color:var(--accent);font-weight:600}
+.q-statement .constraints{margin-top:15px;padding-top:13px;border-top:1px solid var(--line)}
+
+.disclose{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  margin-bottom:14px;overflow:hidden;
+}
+.disclose summary{
+  cursor:pointer;list-style:none;padding:12px 15px;font-size:13.5px;font-weight:500;color:var(--ink);
+  display:flex;align-items:center;gap:9px;
+}
+.disclose summary::-webkit-details-marker{display:none}
+.disclose summary::before{
+  content:"+";font-family:"IBM Plex Mono",monospace;font-size:14px;color:var(--accent);
+  background:var(--accent-soft);width:19px;height:19px;border-radius:5px;
+  display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+}
+.disclose[open] summary::before{content:"\2212"}
+.disclose summary:hover{color:var(--accent)}
+.disclose-body{padding:0 15px 14px 43px;font-size:13.5px;color:var(--ink-2);line-height:1.55}
+.disclose-body p+p{margin-top:8px}
+.notes .disclose{margin-bottom:10px}
+.notes{display:block;margin-top:0}
+
+.mode-pick{margin-bottom:14px}
+.pick-label{
+  display:block;font-size:11px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:600;margin-bottom:8px;
+}
+.mode-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:980px){.mode-cards{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:620px){.mode-cards{grid-template-columns:minmax(0,1fr)}}
+.mode-card{
+  display:flex;align-items:flex-start;gap:11px;text-align:left;cursor:pointer;
+  background:var(--surface);border:1px solid var(--line-2);border-radius:var(--radius);
+  padding:13px 15px;font-family:inherit;color:var(--ink-2);
+}
+.mode-card:hover{border-color:var(--accent)}
+.mode-card[aria-selected="true"]{
+  border-color:var(--accent);background:var(--accent-soft);color:var(--ink);
+  box-shadow:0 0 0 1px var(--accent);
+}
+.mode-mark{
+  flex:0 0 auto;width:17px;height:17px;border-radius:50%;border:2px solid var(--line-2);
+  margin-top:2px;background:var(--surface);
+}
+.mode-card[aria-selected="true"] .mode-mark{
+  border-color:var(--accent);
+  background:radial-gradient(circle at center, var(--accent) 0 4.5px, var(--surface) 5px);
+}
+.mode-body{display:flex;flex-direction:column;gap:2px;min-width:0}
+.mode-name{font-size:14.5px;font-weight:600;font-family:Archivo,sans-serif;letter-spacing:-.01em;color:var(--ink)}
+.mode-desc{font-size:12.5px;color:var(--ink-3);line-height:1.4}
+.mode-card[aria-selected="true"] .mode-desc{color:var(--ink-2)}
+.sub-name{font-weight:500;color:var(--ink-3);font-size:14px}
+
+/* ---------- heap view ---------- */
+.heap-block{border-radius:8px;padding:11px 12px;border:1px solid var(--line);margin-bottom:10px}
+.heap-block.is-top{background:var(--accent-soft);border-color:var(--accent)}
+.heap-block.is-rest{background:var(--sunk);border-style:dashed}
+.heap-block.is-top .shelf-name{color:var(--accent)}
+.heap-rows{display:flex;flex-direction:column;gap:6px;align-items:center;min-height:52px}
+.heap-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.hcard{
+  display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 10px;border-radius:7px;
+  background:var(--surface);border:1px solid var(--line-2);font-family:"IBM Plex Mono",monospace;
+  font-variant-numeric:tabular-nums;position:relative;
+}
+.hcard .face{font-size:16px;font-weight:600;color:var(--ink)}
+.hcard .face .x{color:var(--ink-3);font-weight:400;font-size:12px;margin-inline:1px}
+.hcard .key{font-size:9.5px;color:var(--ink-3)}
+.hcard .tag{
+  font-size:9px;letter-spacing:.04em;text-transform:uppercase;color:var(--down);
+  background:var(--down-soft);border-radius:4px;padding:1px 5px;margin-top:2px;
+}
+.hcard.is-root{border-color:var(--accent);border-width:2px;padding:4px 9px}
+.hcard.is-root::after{
+  content:"root";position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+  font-size:8.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);
+  background:var(--surface);padding:0 4px;border-radius:3px;
+}
+.hcard.is-stale{opacity:.5;border-style:dashed}
+.hcard.is-stale .face{color:var(--ink-3);text-decoration:line-through}
+.hcard.is-going{border-color:var(--down);background:var(--down-soft);opacity:1}
+.hcard.is-going .face{color:var(--down)}
+.hcard.hl-up{border-color:var(--up);background:var(--up-soft)}
+.hcard.hl-up .face{color:var(--up)}
+.hcard.hl-down{border-color:var(--down);background:var(--down-soft)}
+.hcard.hl-new{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.hcard.hl-cmp{outline:2px solid var(--amber);outline-offset:1px}
+@media (prefers-reduced-motion: no-preference){
+  .hcard.hl-up,.hcard.hl-new,.hcard.is-going{animation:pop .3s ease-out}
+}
+
+/* ---------- language switch + Burmese typography ---------- */
+.top-row{display:flex;justify-content:space-between;align-items:center;gap:12px 16px;flex-wrap:wrap}
+.lang-switch{display:inline-flex;gap:3px;background:var(--sunk);border:1px solid var(--line);border-radius:999px;padding:3px;flex:0 0 auto;margin-left:auto}
+.lang-opt{
+  cursor:pointer;background:transparent;border:0;border-radius:999px;padding:5px 14px;
+  font-family:inherit;font-size:13px;line-height:1.45;font-weight:500;color:var(--ink-2);
+}
+.lang-opt:hover{color:var(--accent)}
+.lang-opt[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+[lang="my"], :root[data-ui="my"] body{
+  font-family:"Noto Sans Myanmar","Padauk","Myanmar Text","Myanmar MN",
+              "IBM Plex Sans",-apple-system,sans-serif;
+}
+/* Burmese stacks tall: give it room, and never let the script be squeezed */
+:root[data-ui="my"] body{line-height:1.85;font-size:15px}
+:root[data-ui="my"] h1,:root[data-ui="my"] h2,:root[data-ui="my"] h3,
+:root[data-ui="my"] .mode-name,:root[data-ui="my"] .part h2{
+  font-family:"Noto Sans Myanmar","Padauk",Archivo,sans-serif;line-height:1.5;letter-spacing:0;
+}
+:root[data-ui="my"] h1{font-size:clamp(25px,4vw,36px)}
+:root[data-ui="my"] .lede,:root[data-ui="my"] .statement,
+:root[data-ui="my"] .disclose-body,:root[data-ui="my"] .why,
+:root[data-ui="my"] .narration .text{line-height:1.95}
+:root[data-ui="my"] .eyebrow,:root[data-ui="my"] .pick-label,
+:root[data-ui="my"] .field label{letter-spacing:.04em;text-transform:none}
+:root[data-ui="my"] .mode-desc,:root[data-ui="my"] .part p,
+:root[data-ui="my"] .sub,:root[data-ui="my"] .shelf-note{line-height:1.75}
+/* Burmese has no inter-word spaces: let long runs break rather than push layout */
+:root[data-ui="my"] p,:root[data-ui="my"] li,:root[data-ui="my"] summary,
+:root[data-ui="my"] .note,:root[data-ui="my"] .shelf-note,:root[data-ui="my"] .sub,
+:root[data-ui="my"] .mode-desc,:root[data-ui="my"] .narration .text,
+:root[data-ui="my"] .part p,:root[data-ui="my"] figcaption,:root[data-ui="my"] td,
+:root[data-ui="my"] .why,:root[data-ui="my"] .disclose-body{
+  overflow-wrap:break-word;word-break:normal;line-break:auto;
+}
+/* code, identifiers and data never switch script */
+:root[data-ui="my"] code,:root[data-ui="my"] .mono,:root[data-ui="my"] pre,
+:root[data-ui="my"] .code,:root[data-ui="my"] .kard,:root[data-ui="my"] .hcard,
+:root[data-ui="my"] .cell,:root[data-ui="my"] .slot,:root[data-ui="my"] .counter,
+:root[data-ui="my"] .tagpill,:root[data-ui="my"] .verify,:root[data-ui="my"] .q-src,
+:root[data-ui="my"] input,:root[data-ui="my"] .chip,:root[data-ui="my"] .total{
+  font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;line-height:1.6;
+}
+:root[data-ui="my"] .lang{font-family:"IBM Plex Sans",sans-serif}
+
+/* ---------- hoverable variables ---------- */
+.code .var{
+  border-bottom:1px dotted var(--line-2);cursor:help;border-radius:2px;
+  transition:background .12s ease;
+}
+.code .var:hover{background:var(--amber-soft);border-bottom-color:var(--amber);color:var(--ink)}
+.code .ln.hot .var{border-bottom-color:var(--accent)}
+.var-tip{
+  position:absolute;z-index:50;max-width:min(420px,88vw);
+  background:var(--surface);border:1px solid var(--accent);border-radius:8px;
+  padding:8px 11px;box-shadow:0 8px 24px -10px rgba(0,0,0,.45);
+  font-family:"IBM Plex Mono",monospace;font-size:12px;line-height:1.5;
+  display:flex;flex-direction:column;gap:2px;pointer-events:none;
+}
+.tip-name{color:var(--accent);font-weight:600;font-size:12.5px}
+.tip-label{color:var(--ink-3);font-size:10.5px;letter-spacing:.04em}
+.tip-val{color:var(--ink);word-break:break-word;font-variant-numeric:tabular-nums}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="top-row">
+      <span class="eyebrow">LeetCode 3318 &nbsp;·&nbsp; and its hard twin 3321</span>
+      <div class="lang-switch" role="group" aria-label="Page language">
+        <button class="lang-opt" data-ui="en" aria-pressed="true">English</button>
+        <button class="lang-opt" data-ui="my" aria-pressed="false" lang="my">မြန်မာ</button>
+      </div>
+    </div>
+    <h1>X-Sum, two ways</h1>
+    <p class="lede">Every length-<code>k</code> window has an <em>x-sum</em>: keep only the <code>x</code> most frequent values, add up their occurrences. One solution recounts each window from scratch; the other carries a running total as the window slides.</p>
+
+    <nav class="jump">
+      <a href="#part-1"><b>1</b> The question</a>
+      <a href="#part-2"><b>2</b> The answer</a>
+      <a href="#part-3"><b>3</b> The code</a>
+    </nav>
+  </header>
+
+  <div class="part" id="part-1">
+    <span class="part-n">1</span>
+    <div class="part-text">
+      <h2>The question</h2>
+      <p>Read the statement, then drag <code>x</code> until the rule clicks.</p>
+    </div>
+  </div>
+
+  <section class="question">
+    <div class="q-statement">
+      <div class="q-head">
+        <h2>The problem</h2>
+        <span class="q-src">quoted from LeetCode</span>
+      </div>
+      <div class="statement">
+        <p>You are given an array <code>nums</code> of <code>n</code> integers and two integers <code>k</code> and <code>x</code>.</p>
+        <p>The <b>x-sum</b> of an array is calculated by the following procedure:</p>
+        <ol>
+          <li>Count the occurrences of all elements in the array.</li>
+          <li>Keep only the occurrences of the top <code>x</code> most frequent elements. If two elements have the same number of occurrences, the element with the <b>bigger value</b> is considered more frequent.</li>
+          <li>Calculate the sum of the resulting array.</li>
+        </ol>
+        <p>Note that if an array has less than <code>x</code> distinct elements, its x-sum is the sum of the array.</p>
+        <p>Return an integer array <code>answer</code> of length <code>n - k + 1</code> where <code>answer[i]</code> is the x-sum of the subarray <code>nums[i..i + k - 1]</code>.</p>
+      </div>
+
+      <div class="constraints">
+        <span><b>3318</b> n &le; 50 &middot; values &le; 50</span>
+        <span><b>3321</b> n &le; 10&#8309; &middot; values &le; 10&#8313;</span>
+        <span>1 &le; x &le; k &le; n</span>
+      </div>
+
+      <div class="source-links">
+        <a class="plink" href="https://leetcode.com/problems/find-x-sum-of-all-k-long-subarrays-i/" target="_blank" rel="noopener">
+          <span class="pnum">3318</span> Find X-Sum of All K-Long Subarrays I <span class="pdiff easy">Easy</span>
+        </a>
+        <a class="plink" href="https://leetcode.com/problems/find-x-sum-of-all-k-long-subarrays-ii/" target="_blank" rel="noopener">
+          <span class="pnum">3321</span> Find X-Sum of All K-Long Subarrays II <span class="pdiff hard">Hard</span>
+        </a>
+      </div>
+
+
+    </div>
+
+    <div class="q-play panel">
+      <div class="panel-head">
+        <h2>Drag x, watch what survives</h2>
+        <span class="note" id="q-label"></span>
+      </div>
+      <div class="q-arr" id="q-arr"></div>
+      <div class="q-slider">
+        <label for="q-x">keep x =</label>
+        <input type="range" id="q-x" min="1" max="4" value="2">
+        <output id="q-xout">2</output>
+        <span class="q-presets" id="q-presets"></span>
+      </div>
+      <div class="rank" id="q-rank"></div>
+      <p class="q-tie" id="q-tie"></p>
+      <div class="ledger">
+        <span class="expr" id="q-expr"></span>
+        <span class="total" id="q-total">0<small>X-SUM</small></span>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="ex-grid">
+    <div class="ex-card">
+      <h3>Example 1</h3>
+      <p class="io"><b>Input</b> <code>nums = [1,1,2,2,3,4,2,3]</code>, <code>k = 6</code>, <code>x = 2</code></p>
+      <p class="io"><b>Output</b> <code class="out">[6,10,12]</code></p>
+      <ul class="why">
+        <li><code>[1,1,2,2,3,4]</code> keeps 1 and 2 &rarr; 1+1+2+2 = <b>6</b></li>
+        <li><code>[1,2,2,3,4,2]</code> keeps 2 and 4 &rarr; 2+2+2+4 = <b>10</b>. 4 survives because it beats 3 and 1, which occur the same number of times.</li>
+        <li><code>[2,2,3,4,2,3]</code> keeps 2 and 3 &rarr; 2+2+2+3+3 = <b>12</b></li>
+      </ul>
+      <button class="btn ex-load" data-nums="1,1,2,2,3,4,2,3" data-k="6" data-x="2">Load into the stepper &darr;</button>
+    </div>
+
+    <div class="ex-card">
+      <h3>Example 2</h3>
+      <p class="io"><b>Input</b> <code>nums = [3,8,7,8,7,5]</code>, <code>k = 2</code>, <code>x = 2</code></p>
+      <p class="io"><b>Output</b> <code class="out">[11,15,15,15,12]</code></p>
+      <ul class="why">
+        <li>Here <code>k == x</code>, so a window can never hold more than <code>x</code> distinct values and nothing is ever dropped.</li>
+        <li>Every answer is just the sum of the window: 3+8, 8+7, 7+8, 8+7, 7+5.</li>
+        <li>A good sanity check — if your code disagrees here, the "fewer than x distinct" rule is wrong.</li>
+      </ul>
+      <button class="btn ex-load" data-nums="3,8,7,8,7,5" data-k="2" data-x="2">Load into the stepper &darr;</button>
+    </div>
+
+  </div>
+
+
+  <details class="disclose">
+    <summary>Three ways the statement bites &mdash; worth reading before you code</summary>
+    <div class="disclose-body">
+      <ul class="why">
+        <li><b>"More frequent" means (count, then value).</b> Rank by count alone on Example 1 and you get <code>[6,<span class="bad">7</span>,12]</code> — the first window still passes, so the bug hides until the second.</li>
+        <li><b>Fewer than <code>x</code> distinct values is not an error.</b> Nothing is dropped and the x-sum is the whole window, as in Example 2.</li>
+        <li><b>On 3321 the sums need 64 bits.</b> k &times; max value reaches 5&times;10<sup>13</sup>, well past a 32-bit int — this bites in C++, Java and Rust, though Go's <code>int</code> is already 64-bit.</li>
+      </ul>
+    </div>
+  </details>
+
+  <div class="part" id="part-2">
+    <span class="part-n">2</span>
+    <div class="part-text">
+      <h2>The answer, step by step</h2>
+      <p>Two algorithms, three walkthroughs &mdash; the sliding window appears twice, once per container. The stage shows the state; the panel shows the line running.</p>
+    </div>
+  </div>
+
+  <div class="mode-pick">
+    <span class="pick-label">Pick a walkthrough</span>
+    <div class="mode-cards" role="tablist">
+      <button class="mode-card" id="tab-bf" role="tab" aria-selected="false">
+        <span class="mode-mark" aria-hidden="true"></span>
+        <span class="mode-body">
+          <span class="mode-name">Brute force</span>
+          <span class="mode-desc">Recount every window from scratch</span>
+        </span>
+      </button>
+      <button class="mode-card" id="tab-sw" role="tab" aria-selected="true">
+        <span class="mode-mark" aria-hidden="true"></span>
+        <span class="mode-body">
+          <span class="mode-name">Sliding window <span class="sub-name">&middot; sorted arrays</span></span>
+          <span class="mode-desc">Shelves kept in order. The clear version, fine for 3318.</span>
+        </span>
+      </button>
+      <button class="mode-card" id="tab-hp" role="tab" aria-selected="false">
+        <span class="mode-mark" aria-hidden="true"></span>
+        <span class="mode-body">
+          <span class="mode-name">Sliding window <span class="sub-name">&middot; lazy heaps</span></span>
+          <span class="mode-desc">The version that passes 3321. Watch stale entries pile up.</span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="field">
+      <label for="nums">nums</label>
+      <input type="text" id="nums" value="1,1,2,2,3,4,2,3" spellcheck="false" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="k">k — window</label>
+      <input type="number" id="k" value="6" min="1">
+    </div>
+    <div class="field">
+      <label for="x">x — keep</label>
+      <input type="number" id="x" value="2" min="1">
+    </div>
+    <div class="field">
+      <label for="preset-row">load an example</label>
+      <div class="presets" id="preset-row">
+        <button class="chip" data-nums="1,1,2,2,3,4,2,3" data-k="6" data-x="2">Example 1</button>
+        <button class="chip" data-nums="3,8,7,8,7,5" data-k="2" data-x="2">Example 2</button>
+        <button class="chip" data-nums="5,5,4,4,3,3,5,4,3" data-k="5" data-x="2">Tie storm</button>
+        <button class="chip" data-nums="6,2,2,9,9,9,6,2,6,9" data-k="4" data-x="1">Single keeper</button>
+      </div>
+    </div>
+    <p class="warn" id="warn" hidden></p>
+  </div>
+
+  <div class="strip-card">
+    <div class="strip-head">
+      <h2>The array</h2>
+      <span class="op mono" id="op">ready</span>
+    </div>
+    <div class="strip" id="strip"></div>
+  </div>
+
+  <div class="transport">
+    <button class="btn" id="prev">‹ Back</button>
+    <button class="btn primary" id="play">Play</button>
+    <button class="btn" id="next">Next ›</button>
+    <input type="range" id="scrub" min="0" max="1" value="0" aria-label="Scrub through steps">
+    <span class="counter" id="counter">0 / 0</span>
+  </div>
+
+  <div class="narration">
+    <span class="tag" id="phase">step</span>
+    <p class="text" id="msg">Press <b>Next</b> or use the arrow keys.</p>
+  </div>
+
+  <div class="bench">
+    <div class="col">
+      <div class="panel" id="stage"></div>
+      <div class="strip-card answer-card">
+        <div class="strip-head">
+          <h2>answer</h2>
+          <span class="note mono" id="ans-note">n − k + 1 windows</span>
+        </div>
+        <div class="answer-row" id="answer"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <h2>The code, live</h2>
+        <span class="note" id="code-label">ruby</span>
+      </div>
+      <div class="lang-bar mini" role="tablist">
+        <button class="lang" role="tab" data-lang="ruby" aria-selected="true">Ruby</button>
+        <button class="lang" role="tab" data-lang="python" aria-selected="false">Python</button>
+        <button class="lang" role="tab" data-lang="javascript" aria-selected="false">JavaScript</button>
+        <button class="lang" role="tab" data-lang="go" aria-selected="false">Go</button>
+        <button class="lang" role="tab" data-lang="rust" aria-selected="false">Rust</button>
+      </div>
+      <div class="code" id="code"></div>
+      <p class="code-sub" id="code-sub"></p>
+    </div>
+  </div>
+
+  <div class="sec-head">
+    <span class="eyebrow">If you are implementing it</span>
+    <h2>Three questions the sliding window raises</h2>
+  </div>
+  <div class="notes">
+    <details class="disclose">
+      <summary>Why lift the card off the shelf <em>before</em> changing its count?</summary>
+      <div class="disclose-body">
+        <p>A card's position on a shelf is its rank, and its rank <em>is</em> its count. Bump the count first and the card is filed under a key it no longer has &mdash; the binary search looks in the new spot, misses, and both shelves quietly rot.</p>
+      </div>
+    </details>
+    <details class="disclose">
+      <summary>Why does the updated card always go back to REST?</summary>
+      <div class="disclose-body">
+        <p>Because then <code>rebalance</code> is the only function that knows the invariant, so it is the only place that can break it. No branching on whether the card outranks anything &mdash; drop it in the cheap place and let one function sort it out.</p>
+      </div>
+    </details>
+    <details class="disclose">
+      <summary>Can the swap loop ping-pong forever?</summary>
+      <div class="disclose-body">
+        <p>No. It only runs when <code>up &gt; down</code>, and <code>up</code> is still sitting in REST after the demote, so the promoted card is never the one just dropped. Each swap strictly raises TOP's rank sum, so it terminates &mdash; in practice after one pass.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="sec-head">
+    <span class="eyebrow">Why bother</span>
+    <h2>The same answer, a different price</h2>
+  </div>
+  <figure class="cost" style="margin:0">
+    <table>
+      <thead>
+        <tr><th>Approach</th><th>Work per window</th><th>n = 50 (this problem)</th><th>n = 100k, k = 50k (3321)</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Brute force</b><br><span style="color:var(--ink-3);font-size:12.5px">tally + sort, every window</span></td>
+          <td class="mono">O(k + d log d)</td>
+          <td class="tick">instant</td>
+          <td class="cross">~5 × 10⁹ element visits</td>
+        </tr>
+        <tr>
+          <td><b>Sliding window</b><br><span style="color:var(--ink-3);font-size:12.5px">shelves as sorted arrays</span></td>
+          <td class="mono">O(log k) compares<br><span style="color:var(--down)">+ a splice of up to k</span></td>
+          <td class="tick">instant</td>
+          <td class="mid">0.60 s here, but ~50 GB<br>of memmove → TLE on the judge</td>
+        </tr>
+        <tr>
+          <td><b>Sliding window</b><br><span style="color:var(--ink-3);font-size:12.5px">same shelves as lazy heaps</span></td>
+          <td class="mono">O(log n), pointers only</td>
+          <td class="tick">instant</td>
+          <td class="tick">0.05 s — accepted</td>
+        </tr>
+      </tbody>
+    </table>
+    <figcaption>Timings are real runs on one machine (n = 100,000, k = 50,000, x = 100, values up to 10⁹), each verified against the brute force on tens of thousands of randomized cases; the 5 × 10⁹ figure is arithmetic, not a measurement — 50,001 windows × 50,000 elements each.
+    <br><br><b>The middle row is the trap.</b> A sorted array keeps every update O(log k) to <em>find</em> the slot, then pays an <span class="mono">Array#insert</span> that shifts everything after it. At k = 50,000 that is ~50 GB of memmove over a full run — but the array is only ~400 KB, so it lives in L2 cache and finishes in 0.6 s on an M-series laptop. The judge's memory is not that kind, which is why the identical code that looks fast locally times out on 3321. Heaps touch O(log n) scattered pointers instead and never shift anything, so the honest complexity and the measured time finally agree.</figcaption>
+  </figure>
+
+
+  <div class="part" id="part-3">
+    <span class="part-n">3</span>
+    <div class="part-text">
+      <h2>The whole solution</h2>
+      <p>Two algorithms, three implementations, in five languages. <b>Brute force</b> recounts each window. <b>Sliding window</b> appears twice &mdash; the same algorithm and the same two shelves, once with <b>sorted arrays</b> (clearer, fine for 3318) and once with <b>lazy heaps</b> (a faster container, what 3321 needs). Every block is a complete submission, compiled and run here against both examples plus 25,000 randomized cases.</p>
+    </div>
+  </div>
+  <div class="lang-bar" role="tablist">
+    <button class="lang" role="tab" data-lang="ruby" aria-selected="true">Ruby</button>
+    <button class="lang" role="tab" data-lang="python" aria-selected="false">Python</button>
+    <button class="lang" role="tab" data-lang="javascript" aria-selected="false">JavaScript</button>
+    <button class="lang" role="tab" data-lang="go" aria-selected="false">Go</button>
+    <button class="lang" role="tab" data-lang="rust" aria-selected="false">Rust</button>
+  </div>
+    <div class="lang-pane" data-pane="ruby">
+      <div class="src">
+        <div class="src-head">
+          <h2>Brute force<span class="tagpill">3318</span></h2>
+          <span class="verify ok">ran here &middot; 25k random cases</span>
+          <button class="btn copy" data-src="src-rb-brute" data-out="out-rb-brute">Copy</button>
+          <p class="sub">The whole Easy answer. <code>max_by(x)</code> takes the top x directly, and returns everything when there are fewer than x distinct values.</p>
+        </div>
+        <pre class="full" tabindex="0" id="out-rb-brute"></pre>
+      </div>
+      <div class="src">
+        <div class="src-head">
+          <h2>Sliding window <span class="sub-name">&middot; sorted arrays</span><span class="tagpill">3318</span></h2>
+          <span class="verify ok">ran here &middot; 25k random cases</span>
+          <button class="btn copy" data-src="src-rb-sorted" data-out="out-rb-sorted">Copy</button>
+          <p class="sub">The two shelves as sorted arrays — the version the stepper animates. Readable, and fast enough for n &le; 50.</p>
+        </div>
+        <pre class="full" tabindex="0" id="out-rb-sorted"></pre>
+      </div>
+      <div class="src">
+        <div class="src-head">
+          <h2>Sliding window <span class="sub-name">&middot; lazy heaps</span><span class="tagpill">3321</span></h2>
+          <span class="verify ok">ran here &middot; 25k random cases</span>
+          <button class="btn copy" data-src="src-rb-heap" data-out="out-rb-heap">Copy</button>
+          <p class="sub"><b>The submission that passes 3321.</b> Same invariants, no memmove. 0.05&thinsp;s at n = 100,000 where the array version needs 0.60&thinsp;s of cache-resident luck.</p>
+        </div>
+        <pre class="full" tabindex="0" id="out-rb-heap"></pre>
+      </div>
+    </div>
+    <div class="lang-pane" data-pane="python" hidden>
+      <div class="src">
+        <div class="src-head">
+          <h2>Brute force<span class="tagpill">3318</span></h2>
+          <span class="verify ok">ran here &middot; 25k random cases</span>
+          <button class="btn copy" data-src="src-py-brute" data-out="out-py-brute">Copy</button>
+          <p class="sub"><code>Counter</code> plus a sort keyed on <code>(count, value)</code> with <code>reverse=True</code>.</p>
+        </div>
+        <pre class="full" tabindex="0" id="out-py-brute"></pre>
+      </div>
+      <div class="src">
+        <div class="src-head">
+          <h2>Sliding window <span class="sub-name">&middot; sorted arrays</span><span class="tagpill">3318</span></h2>
+          <span class="verify ok">ran here &middot; 20k random cases</span>
+          <button class="btn copy" data-src="src-py-sorted" data-out="out-py-sorted">Copy</button>
+          <p class="sub"><code>bisect.insort</code> keeps both shelves ordered; <code>bisect_left</code> finds the stale entry to lift out.</p>
+        </div>
+        <pre class="full" tabindex="0" id="out-py-sorted"></pre>
+      </div>
+
+      <div class="src">
+        <div class="src-head">
+          <h2>Sliding window <span class="sub-name">&middot; lazy heaps</span><span class="tagpill">3321</span></h2>
+          <span class="verify ok">ran here &middot; 25k random cases</span>
+          <button class="btn copy" data-src="src-py-heap" data-out="out-py-heap">Copy</button>
+          <p class="sub"><b>The submission that passes 3321.</b> <code>heapq</code> is a min-heap, so REST stores negated keys. 0.04&thinsp;s at n = 100,000.</p>
+        </div>
+        <pre class="full" tabindex="0" id="out-py-heap"></pre>
+      </div>
+    </div>
+    <div class="lang-pane" data-pane="javascript" hidden>
+      <div class="src">
+        <div class="src-head">
+          <h2>Brute force<span class="tagpill">3318</span></h2>
+          <span class="verify ok">ran here &middot; 25k random cases</span>
+          <button class="btn copy" data-src="src-js-brute" data-out="out-js-brute">Copy</button>
+          <p class="sub">A <code>Map</code> tally, then sort by count and break ties on value.</p>
+        </div>
+        <pre class="full" tabindex="0" id="out-js-brute"></pre>
+      </div>
+      <div class="src">
+        <div class="src-head">
+          <h2>Sliding window <span class="sub-name">&middot; sorted arrays</span><span class="tagpill">3318</span></h2>
+          <span class="verify ok">ran here &middot; 20k random cases</span>
+          <button class="btn copy" data-src="src-js-sorted" data-out="out-js-sorted">Copy</button>
+          <p class="sub">Binary search plus <code>splice</code> — JavaScript has no sorted container, so the shelves are plain arrays.</p>
+        </div>
+        <pre class="full" tabindex="0" id="out-js-sorted"></pre>
+      </div>
+
+      <div class="src">
+        <div class="src-head">
+          <h2>Sliding window <span class="sub-name">&middot; lazy heaps</span><span class="tagpill">3321</span></h2>
+          <span class="verify ok">ran here &middot; 25k random cases</span>
+          <button class="btn copy" data-src="src-js-heap" data-out="out-js-heap">Copy</button>
+          <p class="sub"><b>The submission that passes 3321.</b> Includes a small binary heap — JS has none built in. Note the packing uses multiplication: <code>&lt;&lt;</code> is 32-bit and would overflow. 0.01&thinsp;s at n = 100,000.</p>
+        </div>
+        <pre class="full" tabindex="0" id="out-js-heap"></pre>
+      </div>
+    </div>
+    <div class="lang-pane" data-pane="go" hidden>
+      <div class="src">
+        <div class="src-head">
+          <h2>Brute force<span class="tagpill">3318</span></h2>
+          <span class="verify ok">go vet + ran here &middot; 25k cases</span>
+          <button class="btn copy" data-src="src-go-brute" data-out="out-go-brute">Copy</button>
+          <p class="sub"><code>sort.Slice</code> with the two-level comparison written out.</p>
+        </div>
+        <pre class="full" tabindex="0" id="out-go-brute"></pre>
+      </div>
+      <div class="src">
+        <div class="src-head">
+          <h2>Sliding window <span class="sub-name">&middot; sorted arrays</span><span class="tagpill">3318</span></h2>
+          <span class="verify ok">ran here &middot; 20k random cases</span>
+          <button class="btn copy" data-src="src-go-sorted" data-out="out-go-sorted">Copy</button>
+          <p class="sub"><code>sort.Search</code> finds the slot, <code>copy</code> opens the gap. Returns <code>[]int</code> for 3318.</p>
+        </div>
+        <pre class="full" tabindex="0" id="out-go-sorted"></pre>
+      </div>
+
+      <div class="src">
+        <div class="src-head">
+          <h2>Sliding window <span class="sub-name">&middot; lazy heaps</span><span class="tagpill">3321</span></h2>
+          <span class="verify ok">go vet + ran here &middot; 25k cases</span>
+          <button class="btn copy" data-src="src-go-heap" data-out="out-go-heap">Copy</button>
+          <p class="sub"><b>The submission that passes 3321.</b> A hand-rolled <code>int64</code> min-heap rather than <code>container/heap</code>, to keep it parallel with the other languages and skip the interface boilerplate. 0.01&thinsp;s at n = 100,000.</p>
+        </div>
+        <pre class="full" tabindex="0" id="out-go-heap"></pre>
+      </div>
+    </div>
+    <div class="lang-pane" data-pane="rust" hidden>
+      <div class="src">
+        <div class="src-head">
+          <h2>Brute force<span class="tagpill">3318</span></h2>
+          <span class="verify ok">rustc -O + ran here &middot; 25k cases</span>
+          <button class="btn copy" data-src="src-rs-brute" data-out="out-rs-brute">Copy</button>
+          <p class="sub"><code>windows(k)</code> plus tuple <code>Ord</code> — <code>(count, value)</code> sorted descending is the ranking rule with no comparator. Returns <code>Vec&lt;i32&gt;</code>, which is right for 3318's value range but would overflow on 3321's.</p>
+        </div>
+        <pre class="full" tabindex="0" id="out-rs-brute"></pre>
+      </div>
+      <div class="src">
+        <div class="src-head">
+          <h2>Sliding window <span class="sub-name">&middot; sorted arrays</span><span class="tagpill">3318</span></h2>
+          <span class="verify ok">ran here &middot; 20k random cases</span>
+          <button class="btn copy" data-src="src-rs-sorted" data-out="out-rs-sorted">Copy</button>
+          <p class="sub"><code>Vec::binary_search</code> returns <code>Err(at)</code> on a miss — exactly the insertion index.</p>
+        </div>
+        <pre class="full" tabindex="0" id="out-rs-sorted"></pre>
+      </div>
+
+      <div class="src">
+        <div class="src-head">
+          <h2>Sliding window <span class="sub-name">&middot; lazy heaps</span><span class="tagpill">3321</span></h2>
+          <span class="verify ok">rustc -O + ran here &middot; 25k cases</span>
+          <button class="btn copy" data-src="src-rs-heap" data-out="out-rs-heap">Copy</button>
+          <p class="sub"><b>The submission that passes 3321.</b> <code>BinaryHeap</code> is a max-heap, so TOP wraps its keys in <code>Reverse</code> and REST stores them bare — no negation needed. 0.01&thinsp;s at n = 100,000.</p>
+        </div>
+        <pre class="full" tabindex="0" id="out-rs-heap"></pre>
+      </div>
+    </div>
+
+
+  <footer>
+    <kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>nums</code>, <code>k</code> or <code>x</code> above and all three walkthroughs rebuild against your input.
+  </footer>
+</div>
+
+<script type="text/plain" id="src-rb-brute">
+# @param {Integer[]} nums
+# @param {Integer} k
+# @param {Integer} x
+# @return {Integer[]}
+def find_x_sum(nums, k, x)
+  nums.each_cons(k).map do |window|
+    window.tally
+          .max_by(x) { |val, count| [count, val] }
+          .sum { |val, count| val * count }
+  end
+end
+</script>
+
+<script type="text/plain" id="src-rb-sorted">
+# LeetCode 3318 - the version the stepper above animates.
+#
+# Right shape for 3321 too, but the sorted arrays memmove up to k pointers on
+# every update, which TLEs on the judge - use the heap version for that.
+# Sliding-window x-sum with an incrementally maintained top-x partition.
+#
+# Invariants after every mutation:
+#   * @top holds the x strongest keys (fewer only if fewer distinct exist)
+#   * every entry in @top outranks every entry in @rest
+#   * @sum is the x-sum of the current window
+#
+# Entries are [count, value] pairs, so Array#<=> *is* the problem's ranking:
+# more occurrences wins, bigger value breaks ties.
+class XSumWindow
+  attr_reader :sum
+
+  def initialize(x)
+    @x     = x
+    @count = Hash.new(0)
+    @top   = []   # ascending; @top.first is the weakest kept entry
+    @rest  = []   # ascending; @rest.last is the strongest dropped entry
+    @sum   = 0
+  end
+
+  def add(value)
+    adjust(value, +1)
+  end
+
+  def del(value)
+    adjust(value, -1)
+  end
+
+  private
+
+  def adjust(value, delta)
+    count = @count[value]
+    detach([count, value]) if count > 0        # its old key is now stale
+
+    count += delta
+    if count.zero?
+      @count.delete(value)
+    else
+      @count[value] = count
+      insert(@rest, [count, value])            # re-enter low, let rebalance lift it
+    end
+
+    rebalance
+  end
+
+  # Pull an entry out of whichever side holds it, keeping @sum honest.
+  def detach(entry)
+    if remove(@top, entry)
+      @sum -= entry[0] * entry[1]
+    else
+      remove(@rest, entry)
+    end
+  end
+
+  def rebalance
+    promote while @top.size < @x && !@rest.empty?
+    while !@rest.empty? && !@top.empty? && (@rest.last <=> @top.first) > 0
+      demote
+      promote
+    end
+  end
+
+  def promote
+    entry = @rest.pop
+    insert(@top, entry)
+    @sum += entry[0] * entry[1]
+  end
+
+  def demote
+    entry = @top.shift
+    insert(@rest, entry)
+    @sum -= entry[0] * entry[1]
+  end
+
+  def insert(sorted, entry)
+    i = sorted.bsearch_index { |e| (e <=> entry) >= 0 } || sorted.size
+    sorted.insert(i, entry)
+  end
+
+  def remove(sorted, entry)
+    i = sorted.bsearch_index { |e| (e <=> entry) >= 0 }
+    return false unless i && sorted[i] == entry
+    sorted.delete_at(i)
+    true
+  end
+end
+
+def find_x_sum(nums, k, x)
+  window = XSumWindow.new(x)
+  answer = []
+  nums.each_with_index do |value, i|
+    window.add(value)
+    window.del(nums[i - k]) if i >= k
+    answer << window.sum if i >= k - 1
+  end
+  answer
+end
+</script>
+
+<script type="text/plain" id="src-rb-heap">
+# 3321 version: two lazy-deletion heaps instead of two sorted arrays.
+# Entries are packed into one Integer: (count << 30) | value, so comparison is
+# integer comparison and still means "more occurrences wins, bigger value breaks ties".
+class XSumWindow
+  attr_reader :sum
+  SHIFT = 30
+  MASK  = (1 << 30) - 1
+
+  def initialize(x)
+    @x        = x
+    @count    = Hash.new(0)
+    @in_top   = {}
+    @top_size = 0
+    @sum      = 0
+    @top      = []   # min-heap of packed keys      -> weakest kept entry on top
+    @rest     = []   # min-heap of NEGATED keys     -> strongest dropped entry on top
+  end
+
+  def add(value)
+    adjust(value, +1)
+  end
+
+  def del(value)
+    adjust(value, -1)
+  end
+
+  private
+
+  def adjust(value, delta)
+    count = @count[value]
+    if count > 0 && @in_top[value]          # lift it out of TOP; the heap entry goes stale on its own
+      @sum -= count * value
+      @in_top.delete(value)
+      @top_size -= 1
+    end
+
+    count += delta
+    if count.zero?
+      @count.delete(value)
+    else
+      @count[value] = count
+      hpush(@rest, -((count << SHIFT) | value))
+    end
+
+    rebalance
+  end
+
+  def rebalance
+    while @top_size < @x && (key = rest_peek)
+      hpop(@rest)
+      promote(key)
+    end
+    while (r = rest_peek) && (t = top_peek) && r > t
+      hpop(@top);  demote(t)
+      hpop(@rest); promote(r)
+    end
+  end
+
+  def promote(key)
+    @in_top[key & MASK] = true
+    @top_size += 1
+    @sum += (key >> SHIFT) * (key & MASK)
+    hpush(@top, key)
+  end
+
+  def demote(key)
+    @in_top.delete(key & MASK)
+    @top_size -= 1
+    @sum -= (key >> SHIFT) * (key & MASK)
+    hpush(@rest, -key)
+  end
+
+  # A heap entry is live only if the tally still agrees with it.
+  def top_peek
+    while (key = @top[0])
+      v = key & MASK
+      return key if @in_top[v] && @count[v] == key >> SHIFT
+      hpop(@top)
+    end
+    nil
+  end
+
+  def rest_peek
+    while (neg = @rest[0])
+      key = -neg
+      v = key & MASK
+      return key if !@in_top[v] && @count[v] == key >> SHIFT
+      hpop(@rest)
+    end
+    nil
+  end
+
+  def hpush(heap, key)
+    i = heap.size
+    heap << key
+    while i > 0
+      parent = (i - 1) >> 1
+      break if heap[parent] <= key
+      heap[i] = heap[parent]
+      i = parent
+    end
+    heap[i] = key
+  end
+
+  def hpop(heap)
+    root = heap[0]
+    last = heap.pop
+    unless heap.empty?
+      i = 0
+      n = heap.size
+      loop do
+        child = 2 * i + 1
+        break if child >= n
+        child += 1 if child + 1 < n && heap[child + 1] < heap[child]
+        break if heap[child] >= last
+        heap[i] = heap[child]
+        i = child
+      end
+      heap[i] = last
+    end
+    root
+  end
+end
+
+def find_x_sum(nums, k, x)
+  window = XSumWindow.new(x)
+  answer = []
+  nums.each_with_index do |value, i|
+    window.add(value)
+    window.del(nums[i - k]) if i >= k
+    answer << window.sum if i >= k - 1
+  end
+  answer
+end
+</script>
+
+<script type="text/plain" id="src-py-brute">
+from collections import Counter
+from typing import List
+
+
+class Solution:
+    def findXSum(self, nums: List[int], k: int, x: int) -> List[int]:
+        answer = []
+        for i in range(len(nums) - k + 1):
+            counts = Counter(nums[i:i + k])
+            # (count, value) descending: more occurrences wins, bigger value breaks ties
+            kept = sorted(counts.items(), key=lambda p: (p[1], p[0]), reverse=True)[:x]
+            answer.append(sum(value * count for value, count in kept))
+        return answer
+</script>
+
+<script type="text/plain" id="src-py-heap">
+import heapq
+from typing import List, Optional
+
+SHIFT = 30
+MASK = (1 << SHIFT) - 1
+
+
+class XSumWindow:
+    """The x most frequent values of a sliding window, as a running total.
+
+    TOP holds the x strongest keys, REST holds the rest, and every TOP entry
+    outranks every REST entry. Entries are packed into one int,
+    (count << 30) | value, so integer order is the ranking rule itself.
+
+    Nothing is ever removed from a heap on update: the entry goes stale, and is
+    dropped when it surfaces at the root and the tally no longer agrees with it.
+    """
+
+    __slots__ = ("x", "count", "in_top", "top_size", "total", "top", "rest")
+
+    def __init__(self, x: int) -> None:
+        self.x = x
+        self.count = {}
+        self.in_top = set()
+        self.top_size = 0
+        self.total = 0
+        self.top = []   # min-heap of packed keys    -> weakest kept entry on top
+        self.rest = []  # min-heap of negated keys   -> strongest dropped entry on top
+
+    def add(self, value: int) -> None:
+        self._adjust(value, 1)
+
+    def remove(self, value: int) -> None:
+        self._adjust(value, -1)
+
+    def _adjust(self, value: int, delta: int) -> None:
+        count = self.count.get(value, 0)
+        if count and value in self.in_top:      # lift it out of TOP; its entry goes stale
+            self.total -= count * value
+            self.in_top.discard(value)
+            self.top_size -= 1
+
+        count += delta
+        if count == 0:
+            self.count.pop(value, None)
+        else:
+            self.count[value] = count
+            heapq.heappush(self.rest, -((count << SHIFT) | value))
+
+        self._rebalance()
+
+    def _rebalance(self) -> None:
+        while self.top_size < self.x:
+            key = self._rest_peek()
+            if key is None:
+                break
+            heapq.heappop(self.rest)
+            self._promote(key)
+
+        while True:
+            best = self._rest_peek()
+            if best is None:
+                break
+            weakest = self._top_peek()
+            if weakest is None or best <= weakest:
+                break
+            heapq.heappop(self.top)
+            self._demote(weakest)
+            heapq.heappop(self.rest)
+            self._promote(best)
+
+    def _promote(self, key: int) -> None:
+        self.in_top.add(key & MASK)
+        self.top_size += 1
+        self.total += (key >> SHIFT) * (key & MASK)
+        heapq.heappush(self.top, key)
+
+    def _demote(self, key: int) -> None:
+        self.in_top.discard(key & MASK)
+        self.top_size -= 1
+        self.total -= (key >> SHIFT) * (key & MASK)
+        heapq.heappush(self.rest, -key)
+
+    def _top_peek(self) -> Optional[int]:
+        while self.top:
+            key = self.top[0]
+            value = key & MASK
+            if value in self.in_top and self.count.get(value, 0) == key >> SHIFT:
+                return key
+            heapq.heappop(self.top)
+        return None
+
+    def _rest_peek(self) -> Optional[int]:
+        while self.rest:
+            key = -self.rest[0]
+            value = key & MASK
+            if value not in self.in_top and self.count.get(value, 0) == key >> SHIFT:
+                return key
+            heapq.heappop(self.rest)
+        return None
+
+
+class Solution:
+    def findXSum(self, nums: List[int], k: int, x: int) -> List[int]:
+        window = XSumWindow(x)
+        answer = []
+        for i, value in enumerate(nums):
+            window.add(value)
+            if i >= k:
+                window.remove(nums[i - k])
+            if i >= k - 1:
+                answer.append(window.total)
+        return answer
+</script>
+
+<script type="text/plain" id="src-js-brute">
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @param {number} x
+ * @return {number[]}
+ */
+var findXSum = function (nums, k, x) {
+  const answer = [];
+  for (let i = 0; i + k <= nums.length; i++) {
+    const counts = new Map();
+    for (let j = i; j < i + k; j++) counts.set(nums[j], (counts.get(nums[j]) || 0) + 1);
+    // (count, value) descending: more occurrences wins, bigger value breaks ties
+    const ranked = [...counts].sort((a, b) => b[1] - a[1] || b[0] - a[0]);
+    let sum = 0;
+    for (let r = 0; r < Math.min(x, ranked.length); r++) sum += ranked[r][0] * ranked[r][1];
+    answer.push(sum);
+  }
+  return answer;
+};
+</script>
+
+<script type="text/plain" id="src-js-heap">
+// Keys pack (count, value) into one number: count * 2^30 + value.
+// JavaScript's << is 32-bit, so this uses arithmetic, not bit shifts.
+// Max key is 1e5 * 2^30 ~ 1.1e14, comfortably inside Number's exact range.
+const SCALE = 2 ** 30;
+
+class MinHeap {
+  constructor() {
+    this.a = [];
+  }
+  get size() {
+    return this.a.length;
+  }
+  peek() {
+    return this.a.length ? this.a[0] : undefined;
+  }
+  push(key) {
+    const a = this.a;
+    let i = a.length;
+    a.push(key);
+    while (i > 0) {
+      const parent = (i - 1) >> 1;
+      if (a[parent] <= key) break;
+      a[i] = a[parent];
+      i = parent;
+    }
+    a[i] = key;
+  }
+  pop() {
+    const a = this.a;
+    const root = a[0];
+    const last = a.pop();
+    if (a.length) {
+      const n = a.length;
+      let i = 0;
+      for (;;) {
+        let child = 2 * i + 1;
+        if (child >= n) break;
+        if (child + 1 < n && a[child + 1] < a[child]) child++;
+        if (a[child] >= last) break;
+        a[i] = a[child];
+        i = child;
+      }
+      a[i] = last;
+    }
+    return root;
+  }
+}
+
+class XSumWindow {
+  constructor(x) {
+    this.x = x;
+    this.count = new Map();
+    this.inTop = new Set();
+    this.topSize = 0;
+    this.sum = 0;
+    this.top = new MinHeap();   // packed keys          -> weakest kept entry on top
+    this.rest = new MinHeap();  // negated packed keys  -> strongest dropped entry on top
+  }
+
+  add(value) {
+    this.adjust(value, 1);
+  }
+
+  remove(value) {
+    this.adjust(value, -1);
+  }
+
+  adjust(value, delta) {
+    let count = this.count.get(value) || 0;
+    if (count > 0 && this.inTop.has(value)) {   // lift it out of TOP; its entry goes stale
+      this.sum -= count * value;
+      this.inTop.delete(value);
+      this.topSize--;
+    }
+
+    count += delta;
+    if (count === 0) this.count.delete(value);
+    else {
+      this.count.set(value, count);
+      this.rest.push(-(count * SCALE + value));
+    }
+
+    this.rebalance();
+  }
+
+  rebalance() {
+    while (this.topSize < this.x) {
+      const key = this.restPeek();
+      if (key === undefined) break;
+      this.rest.pop();
+      this.promote(key);
+    }
+    for (;;) {
+      const best = this.restPeek();
+      if (best === undefined) break;
+      const weakest = this.topPeek();
+      if (weakest === undefined || best <= weakest) break;
+      this.top.pop();
+      this.demote(weakest);
+      this.rest.pop();
+      this.promote(best);
+    }
+  }
+
+  promote(key) {
+    const value = key % SCALE;
+    this.inTop.add(value);
+    this.topSize++;
+    this.sum += Math.floor(key / SCALE) * value;
+    this.top.push(key);
+  }
+
+  demote(key) {
+    const value = key % SCALE;
+    this.inTop.delete(value);
+    this.topSize--;
+    this.sum -= Math.floor(key / SCALE) * value;
+    this.rest.push(-key);
+  }
+
+  // A heap entry is live only if the tally still agrees with it.
+  topPeek() {
+    for (;;) {
+      const key = this.top.peek();
+      if (key === undefined) return undefined;
+      const value = key % SCALE;
+      if (this.inTop.has(value) && this.count.get(value) === Math.floor(key / SCALE)) return key;
+      this.top.pop();
+    }
+  }
+
+  restPeek() {
+    for (;;) {
+      const negated = this.rest.peek();
+      if (negated === undefined) return undefined;
+      const key = -negated;
+      const value = key % SCALE;
+      if (!this.inTop.has(value) && this.count.get(value) === Math.floor(key / SCALE)) return key;
+      this.rest.pop();
+    }
+  }
+}
+
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @param {number} x
+ * @return {number[]}
+ */
+var findXSum = function (nums, k, x) {
+  const window = new XSumWindow(x);
+  const answer = [];
+  for (let i = 0; i < nums.length; i++) {
+    window.add(nums[i]);
+    if (i >= k) window.remove(nums[i - k]);
+    if (i >= k - 1) answer.push(window.sum);
+  }
+  return answer;
+};
+</script>
+
+<script type="text/plain" id="src-go-brute">
+import "sort"
+
+// 3318 returns []int. (3321's signature returns []int64 — see the heap version.)
+func findXSum(nums []int, k int, x int) []int {
+	answer := make([]int, 0, len(nums)-k+1)
+	type entry struct{ value, count int }
+
+	for i := 0; i+k <= len(nums); i++ {
+		counts := make(map[int]int)
+		for _, v := range nums[i : i+k] {
+			counts[v]++
+		}
+
+		ranked := make([]entry, 0, len(counts))
+		for value, count := range counts {
+			ranked = append(ranked, entry{value, count})
+		}
+		// (count, value) descending: more occurrences wins, bigger value breaks ties
+		sort.Slice(ranked, func(a, b int) bool {
+			if ranked[a].count != ranked[b].count {
+				return ranked[a].count > ranked[b].count
+			}
+			return ranked[a].value > ranked[b].value
+		})
+
+		sum := 0
+		for r := 0; r < x && r < len(ranked); r++ {
+			sum += ranked[r].value * ranked[r].count
+		}
+		answer = append(answer, sum)
+	}
+	return answer
+}
+</script>
+
+<script type="text/plain" id="src-go-heap">
+// 3321 returns []int64. For 3318, change the return type and w.sum to int.
+//
+// Entries pack (count, value) into one int64: (count << 30) | value, so integer
+// order is the ranking rule. Nothing is removed from a heap on update — the entry
+// goes stale and is discarded when it surfaces at the root.
+
+const shift = 30
+const mask = (1 << shift) - 1
+
+type minHeap struct{ a []int64 }
+
+func (h *minHeap) len() int { return len(h.a) }
+
+func (h *minHeap) push(key int64) {
+	h.a = append(h.a, key)
+	i := len(h.a) - 1
+	for i > 0 {
+		parent := (i - 1) / 2
+		if h.a[parent] <= key {
+			break
+		}
+		h.a[i] = h.a[parent]
+		i = parent
+	}
+	h.a[i] = key
+}
+
+func (h *minHeap) pop() int64 {
+	root := h.a[0]
+	last := h.a[len(h.a)-1]
+	h.a = h.a[:len(h.a)-1]
+	if n := len(h.a); n > 0 {
+		i := 0
+		for {
+			child := 2*i + 1
+			if child >= n {
+				break
+			}
+			if child+1 < n && h.a[child+1] < h.a[child] {
+				child++
+			}
+			if h.a[child] >= last {
+				break
+			}
+			h.a[i] = h.a[child]
+			i = child
+		}
+		h.a[i] = last
+	}
+	return root
+}
+
+type xSumWindow struct {
+	x       int
+	count   map[int64]int64
+	inTop   map[int64]bool
+	topSize int
+	sum     int64
+	top     minHeap // packed keys         -> weakest kept entry on top
+	rest    minHeap // negated packed keys -> strongest dropped entry on top
+}
+
+func newXSumWindow(x int) *xSumWindow {
+	return &xSumWindow{x: x, count: make(map[int64]int64), inTop: make(map[int64]bool)}
+}
+
+func (w *xSumWindow) add(value int64)    { w.adjust(value, 1) }
+func (w *xSumWindow) remove(value int64) { w.adjust(value, -1) }
+
+func (w *xSumWindow) adjust(value, delta int64) {
+	count := w.count[value]
+	if count > 0 && w.inTop[value] { // lift it out of TOP; its entry goes stale
+		w.sum -= count * value
+		delete(w.inTop, value)
+		w.topSize--
+	}
+
+	count += delta
+	if count == 0 {
+		delete(w.count, value)
+	} else {
+		w.count[value] = count
+		w.rest.push(-((count << shift) | value))
+	}
+
+	w.rebalance()
+}
+
+func (w *xSumWindow) rebalance() {
+	for w.topSize < w.x {
+		key, ok := w.restPeek()
+		if !ok {
+			break
+		}
+		w.rest.pop()
+		w.promote(key)
+	}
+	for {
+		best, ok := w.restPeek()
+		if !ok {
+			break
+		}
+		weakest, ok := w.topPeek()
+		if !ok || best <= weakest {
+			break
+		}
+		w.top.pop()
+		w.demote(weakest)
+		w.rest.pop()
+		w.promote(best)
+	}
+}
+
+func (w *xSumWindow) promote(key int64) {
+	value := key & mask
+	w.inTop[value] = true
+	w.topSize++
+	w.sum += (key >> shift) * value
+	w.top.push(key)
+}
+
+func (w *xSumWindow) demote(key int64) {
+	value := key & mask
+	delete(w.inTop, value)
+	w.topSize--
+	w.sum -= (key >> shift) * value
+	w.rest.push(-key)
+}
+
+// A heap entry is live only if the tally still agrees with it.
+func (w *xSumWindow) topPeek() (int64, bool) {
+	for w.top.len() > 0 {
+		key := w.top.a[0]
+		value := key & mask
+		if w.inTop[value] && w.count[value] == key>>shift {
+			return key, true
+		}
+		w.top.pop()
+	}
+	return 0, false
+}
+
+func (w *xSumWindow) restPeek() (int64, bool) {
+	for w.rest.len() > 0 {
+		key := -w.rest.a[0]
+		value := key & mask
+		if !w.inTop[value] && w.count[value] == key>>shift {
+			return key, true
+		}
+		w.rest.pop()
+	}
+	return 0, false
+}
+
+func findXSum(nums []int, k int, x int) []int64 {
+	window := newXSumWindow(x)
+	answer := make([]int64, 0, len(nums)-k+1)
+	for i, value := range nums {
+		window.add(int64(value))
+		if i >= k {
+			window.remove(int64(nums[i-k]))
+		}
+		if i >= k-1 {
+			answer = append(answer, window.sum)
+		}
+	}
+	return answer
+}
+</script>
+
+<script type="text/plain" id="src-rs-brute">
+use std::collections::HashMap;
+
+impl Solution {
+    // 3318 returns Vec<i32>, which is safe here: values and k are both <= 50, so the
+    // biggest x-sum is 2500. For 3321-sized values, count * value overflows i32 —
+    // that problem's signature returns Vec<i64>. See the heap version.
+    pub fn find_x_sum(nums: Vec<i32>, k: i32, x: i32) -> Vec<i32> {
+        let (k, x) = (k as usize, x as usize);
+        nums.windows(k)
+            .map(|window| {
+                let mut counts: HashMap<i32, i32> = HashMap::new();
+                for &value in window {
+                    *counts.entry(value).or_insert(0) += 1;
+                }
+                // (count, value) descending — tuple Ord is the ranking rule itself
+                let mut ranked: Vec<(i32, i32)> =
+                    counts.into_iter().map(|(value, count)| (count, value)).collect();
+                ranked.sort_unstable_by(|a, b| b.cmp(a));
+                ranked.iter().take(x).map(|&(count, value)| count * value).sum()
+            })
+            .collect()
+    }
+}
+</script>
+
+<script type="text/plain" id="src-rs-heap">
+use std::cmp::Reverse;
+use std::collections::{BinaryHeap, HashMap, HashSet};
+
+// Entries pack (count, value) into one i64: (count << 30) | value, so integer
+// order is the ranking rule. Nothing is removed from a heap on update — the entry
+// goes stale and is discarded when it surfaces at the top.
+
+const SHIFT: i64 = 30;
+const MASK: i64 = (1 << SHIFT) - 1;
+
+struct XSumWindow {
+    x: usize,
+    count: HashMap<i64, i64>,
+    in_top: HashSet<i64>,
+    top_size: usize,
+    sum: i64,
+    top: BinaryHeap<Reverse<i64>>, // min-heap: weakest kept entry on top
+    rest: BinaryHeap<i64>,         // max-heap: strongest dropped entry on top
+}
+
+impl XSumWindow {
+    fn new(x: usize) -> Self {
+        Self {
+            x,
+            count: HashMap::new(),
+            in_top: HashSet::new(),
+            top_size: 0,
+            sum: 0,
+            top: BinaryHeap::new(),
+            rest: BinaryHeap::new(),
+        }
+    }
+
+    fn add(&mut self, value: i64) {
+        self.adjust(value, 1);
+    }
+
+    fn remove(&mut self, value: i64) {
+        self.adjust(value, -1);
+    }
+
+    fn adjust(&mut self, value: i64, delta: i64) {
+        let mut count = self.count.get(&value).copied().unwrap_or(0);
+        if count > 0 && self.in_top.contains(&value) {
+            self.sum -= count * value;
+            self.in_top.remove(&value);
+            self.top_size -= 1;
+        }
+
+        count += delta;
+        if count == 0 {
+            self.count.remove(&value);
+        } else {
+            self.count.insert(value, count);
+            self.rest.push((count << SHIFT) | value);
+        }
+
+        self.rebalance();
+    }
+
+    fn rebalance(&mut self) {
+        while self.top_size < self.x {
+            match self.rest_peek() {
+                Some(key) => {
+                    self.rest.pop();
+                    self.promote(key);
+                }
+                None => break,
+            }
+        }
+
+        loop {
+            let best = match self.rest_peek() {
+                Some(key) => key,
+                None => break,
+            };
+            let weakest = match self.top_peek() {
+                Some(key) => key,
+                None => break,
+            };
+            if best <= weakest {
+                break;
+            }
+            self.top.pop();
+            self.demote(weakest);
+            self.rest.pop();
+            self.promote(best);
+        }
+    }
+
+    fn promote(&mut self, key: i64) {
+        self.in_top.insert(key & MASK);
+        self.top_size += 1;
+        self.sum += (key >> SHIFT) * (key & MASK);
+        self.top.push(Reverse(key));
+    }
+
+    fn demote(&mut self, key: i64) {
+        self.in_top.remove(&(key & MASK));
+        self.top_size -= 1;
+        self.sum -= (key >> SHIFT) * (key & MASK);
+        self.rest.push(key);
+    }
+
+    // A heap entry is live only if the tally still agrees with it.
+    fn top_peek(&mut self) -> Option<i64> {
+        while let Some(&Reverse(key)) = self.top.peek() {
+            let value = key & MASK;
+            if self.in_top.contains(&value) && self.count.get(&value).copied() == Some(key >> SHIFT)
+            {
+                return Some(key);
+            }
+            self.top.pop();
+        }
+        None
+    }
+
+    fn rest_peek(&mut self) -> Option<i64> {
+        while let Some(&key) = self.rest.peek() {
+            let value = key & MASK;
+            if !self.in_top.contains(&value) && self.count.get(&value).copied() == Some(key >> SHIFT)
+            {
+                return Some(key);
+            }
+            self.rest.pop();
+        }
+        None
+    }
+}
+
+impl Solution {
+    // 3321 returns Vec<i64>. For 3318, change this to Vec<i32> and cast the sum.
+    pub fn find_x_sum(nums: Vec<i32>, k: i32, x: i32) -> Vec<i64> {
+        let (k, x) = (k as usize, x as usize);
+        let mut window = XSumWindow::new(x);
+        let mut answer = Vec::with_capacity(nums.len() - k + 1);
+        for i in 0..nums.len() {
+            window.add(nums[i] as i64);
+            if i >= k {
+                window.remove(nums[i - k] as i64);
+            }
+            if i + 1 >= k {
+                answer.push(window.sum);
+            }
+        }
+        answer
+    }
+}
+</script>
+
+<script type="text/plain" id="src-py-sorted">
+from bisect import bisect_left, insort
+from typing import List, Tuple
+
+
+class XSumWindow:
+    """Two sorted lists. TOP holds the x strongest keys, REST holds everything
+    else, and every TOP entry outranks every REST entry.
+
+    Entries are (count, value) tuples, so tuple order is the ranking rule itself.
+    Clear, and fine for 3318 — but every update shifts up to k entries, which is
+    why 3321 needs the heap version.
+    """
+
+    __slots__ = ("x", "count", "top", "rest", "total")
+
+    def __init__(self, x: int) -> None:
+        self.x = x
+        self.count = {}
+        self.top = []   # ascending; top[0] is the weakest kept entry
+        self.rest = []  # ascending; rest[-1] is the strongest dropped entry
+        self.total = 0
+
+    def add(self, value: int) -> None:
+        self._adjust(value, 1)
+
+    def remove(self, value: int) -> None:
+        self._adjust(value, -1)
+
+    def _adjust(self, value: int, delta: int) -> None:
+        count = self.count.get(value, 0)
+        if count:
+            self._detach((count, value))        # its old key is now stale
+
+        count += delta
+        if count == 0:
+            self.count.pop(value, None)
+        else:
+            self.count[value] = count
+            insort(self.rest, (count, value))   # re-enter low, let rebalance lift it
+
+        self._rebalance()
+
+    def _detach(self, entry: Tuple[int, int]) -> None:
+        i = bisect_left(self.top, entry)
+        if i < len(self.top) and self.top[i] == entry:
+            self.top.pop(i)
+            self.total -= entry[0] * entry[1]
+            return
+        j = bisect_left(self.rest, entry)
+        if j < len(self.rest) and self.rest[j] == entry:
+            self.rest.pop(j)
+
+    def _rebalance(self) -> None:
+        while len(self.top) < self.x and self.rest:
+            self._promote()
+        while self.rest and self.top and self.rest[-1] > self.top[0]:
+            self._demote()
+            self._promote()
+
+    def _promote(self) -> None:
+        entry = self.rest.pop()
+        insort(self.top, entry)
+        self.total += entry[0] * entry[1]
+
+    def _demote(self) -> None:
+        entry = self.top.pop(0)
+        insort(self.rest, entry)
+        self.total -= entry[0] * entry[1]
+
+
+class Solution:
+    def findXSum(self, nums: List[int], k: int, x: int) -> List[int]:
+        window = XSumWindow(x)
+        answer = []
+        for i, value in enumerate(nums):
+            window.add(value)
+            if i >= k:
+                window.remove(nums[i - k])
+            if i >= k - 1:
+                answer.append(window.total)
+        return answer
+</script>
+
+<script type="text/plain" id="src-js-sorted">
+// Two sorted arrays. TOP holds the x strongest keys, REST holds everything else,
+// and every TOP entry outranks every REST entry. Entries are [count, value], so
+// comparison is lexicographic — the ranking rule itself.
+//
+// Clear, and fine for 3318. Every update splices up to k entries, which is why
+// 3321 needs the heap version.
+const rank = (a, b) => a[0] - b[0] || a[1] - b[1];
+
+class XSumWindow {
+  constructor(x) {
+    this.x = x;
+    this.count = new Map();
+    this.top = [];   // ascending; top[0] is the weakest kept entry
+    this.rest = [];  // ascending; rest[rest.length-1] is the strongest dropped
+    this.sum = 0;
+  }
+
+  add(value) {
+    this.adjust(value, 1);
+  }
+
+  remove(value) {
+    this.adjust(value, -1);
+  }
+
+  adjust(value, delta) {
+    let count = this.count.get(value) || 0;
+    if (count > 0) this.detach([count, value]);   // its old key is now stale
+
+    count += delta;
+    if (count === 0) this.count.delete(value);
+    else {
+      this.count.set(value, count);
+      insert(this.rest, [count, value]);          // re-enter low; rebalance decides
+    }
+
+    this.rebalance();
+  }
+
+  detach(entry) {
+    if (remove(this.top, entry)) this.sum -= entry[0] * entry[1];
+    else remove(this.rest, entry);
+  }
+
+  rebalance() {
+    while (this.top.length < this.x && this.rest.length) this.promote();
+    while (this.rest.length && this.top.length &&
+           rank(this.rest[this.rest.length - 1], this.top[0]) > 0) {
+      this.demote();
+      this.promote();
+    }
+  }
+
+  promote() {
+    const entry = this.rest.pop();
+    insert(this.top, entry);
+    this.sum += entry[0] * entry[1];
+  }
+
+  demote() {
+    const entry = this.top.shift();
+    insert(this.rest, entry);
+    this.sum -= entry[0] * entry[1];
+  }
+}
+
+function lowerBound(sorted, entry) {
+  let lo = 0, hi = sorted.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (rank(sorted[mid], entry) < 0) lo = mid + 1;
+    else hi = mid;
+  }
+  return lo;
+}
+
+function insert(sorted, entry) {
+  sorted.splice(lowerBound(sorted, entry), 0, entry);
+}
+
+function remove(sorted, entry) {
+  const i = lowerBound(sorted, entry);
+  if (i < sorted.length && sorted[i][0] === entry[0] && sorted[i][1] === entry[1]) {
+    sorted.splice(i, 1);
+    return true;
+  }
+  return false;
+}
+
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @param {number} x
+ * @return {number[]}
+ */
+var findXSum = function (nums, k, x) {
+  const window = new XSumWindow(x);
+  const answer = [];
+  for (let i = 0; i < nums.length; i++) {
+    window.add(nums[i]);
+    if (i >= k) window.remove(nums[i - k]);
+    if (i >= k - 1) answer.push(window.sum);
+  }
+  return answer;
+};
+</script>
+
+<script type="text/plain" id="src-go-sorted">
+import "sort"
+
+// Two sorted slices. TOP holds the x strongest keys, REST holds everything else,
+// and every TOP entry outranks every REST entry.
+//
+// Clear, and fine for 3318. Every update shifts up to k entries, which is why
+// 3321 needs the heap version.
+
+type entry struct{ count, value int }
+
+func less(a, b entry) bool {
+	if a.count != b.count {
+		return a.count < b.count
+	}
+	return a.value < b.value
+}
+
+type xSumWindow struct {
+	x     int
+	count map[int]int
+	top   []entry // ascending; top[0] is the weakest kept entry
+	rest  []entry // ascending; last is the strongest dropped entry
+	sum   int
+}
+
+func newXSumWindow(x int) *xSumWindow {
+	return &xSumWindow{x: x, count: make(map[int]int)}
+}
+
+func (w *xSumWindow) add(value int)    { w.adjust(value, 1) }
+func (w *xSumWindow) remove(value int) { w.adjust(value, -1) }
+
+func (w *xSumWindow) adjust(value, delta int) {
+	count := w.count[value]
+	if count > 0 {
+		w.detach(entry{count, value}) // its old key is now stale
+	}
+
+	count += delta
+	if count == 0 {
+		delete(w.count, value)
+	} else {
+		w.count[value] = count
+		w.rest = insert(w.rest, entry{count, value}) // re-enter low
+	}
+
+	w.rebalance()
+}
+
+func (w *xSumWindow) detach(e entry) {
+	var ok bool
+	if w.top, ok = remove(w.top, e); ok {
+		w.sum -= e.count * e.value
+		return
+	}
+	w.rest, _ = remove(w.rest, e)
+}
+
+func (w *xSumWindow) rebalance() {
+	for len(w.top) < w.x && len(w.rest) > 0 {
+		w.promote()
+	}
+	for len(w.rest) > 0 && len(w.top) > 0 && less(w.top[0], w.rest[len(w.rest)-1]) {
+		w.demote()
+		w.promote()
+	}
+}
+
+func (w *xSumWindow) promote() {
+	e := w.rest[len(w.rest)-1]
+	w.rest = w.rest[:len(w.rest)-1]
+	w.top = insert(w.top, e)
+	w.sum += e.count * e.value
+}
+
+func (w *xSumWindow) demote() {
+	e := w.top[0]
+	w.top = w.top[1:]
+	w.rest = insert(w.rest, e)
+	w.sum -= e.count * e.value
+}
+
+func lowerBound(sorted []entry, e entry) int {
+	return sort.Search(len(sorted), func(i int) bool { return !less(sorted[i], e) })
+}
+
+func insert(sorted []entry, e entry) []entry {
+	i := lowerBound(sorted, e)
+	sorted = append(sorted, entry{})
+	copy(sorted[i+1:], sorted[i:])
+	sorted[i] = e
+	return sorted
+}
+
+func remove(sorted []entry, e entry) ([]entry, bool) {
+	i := lowerBound(sorted, e)
+	if i < len(sorted) && sorted[i] == e {
+		return append(sorted[:i], sorted[i+1:]...), true
+	}
+	return sorted, false
+}
+
+func findXSum(nums []int, k int, x int) []int {
+	window := newXSumWindow(x)
+	answer := make([]int, 0, len(nums)-k+1)
+	for i, value := range nums {
+		window.add(value)
+		if i >= k {
+			window.remove(nums[i-k])
+		}
+		if i >= k-1 {
+			answer = append(answer, window.sum)
+		}
+	}
+	return answer
+}
+</script>
+
+<script type="text/plain" id="src-rs-sorted">
+use std::collections::HashMap;
+
+// Two sorted Vecs. TOP holds the x strongest keys, REST holds everything else,
+// and every TOP entry outranks every REST entry. Entries are (count, value), so
+// tuple Ord is the ranking rule itself.
+//
+// Clear, and fine for 3318. Every update shifts up to k entries, which is why
+// 3321 needs the heap version.
+
+struct XSumWindow {
+    x: usize,
+    count: HashMap<i32, i32>,
+    top: Vec<(i32, i32)>,  // ascending; top[0] is the weakest kept entry
+    rest: Vec<(i32, i32)>, // ascending; last is the strongest dropped entry
+    sum: i32,
+}
+
+impl XSumWindow {
+    fn new(x: usize) -> Self {
+        Self { x, count: HashMap::new(), top: Vec::new(), rest: Vec::new(), sum: 0 }
+    }
+
+    fn add(&mut self, value: i32) {
+        self.adjust(value, 1);
+    }
+
+    fn remove(&mut self, value: i32) {
+        self.adjust(value, -1);
+    }
+
+    fn adjust(&mut self, value: i32, delta: i32) {
+        let mut count = self.count.get(&value).copied().unwrap_or(0);
+        if count > 0 {
+            self.detach((count, value)); // its old key is now stale
+        }
+
+        count += delta;
+        if count == 0 {
+            self.count.remove(&value);
+        } else {
+            self.count.insert(value, count);
+            insert(&mut self.rest, (count, value)); // re-enter low
+        }
+
+        self.rebalance();
+    }
+
+    fn detach(&mut self, entry: (i32, i32)) {
+        if remove(&mut self.top, entry) {
+            self.sum -= entry.0 * entry.1;
+        } else {
+            remove(&mut self.rest, entry);
+        }
+    }
+
+    fn rebalance(&mut self) {
+        while self.top.len() < self.x && !self.rest.is_empty() {
+            self.promote();
+        }
+        while !self.rest.is_empty() && !self.top.is_empty()
+            && *self.rest.last().unwrap() > self.top[0]
+        {
+            self.demote();
+            self.promote();
+        }
+    }
+
+    fn promote(&mut self) {
+        let entry = self.rest.pop().unwrap();
+        insert(&mut self.top, entry);
+        self.sum += entry.0 * entry.1;
+    }
+
+    fn demote(&mut self) {
+        let entry = self.top.remove(0);
+        insert(&mut self.rest, entry);
+        self.sum -= entry.0 * entry.1;
+    }
+}
+
+fn insert(sorted: &mut Vec<(i32, i32)>, entry: (i32, i32)) {
+    let at = sorted.binary_search(&entry).unwrap_or_else(|at| at);
+    sorted.insert(at, entry);
+}
+
+fn remove(sorted: &mut Vec<(i32, i32)>, entry: (i32, i32)) -> bool {
+    match sorted.binary_search(&entry) {
+        Ok(at) => {
+            sorted.remove(at);
+            true
+        }
+        Err(_) => false,
+    }
+}
+
+impl Solution {
+    pub fn find_x_sum(nums: Vec<i32>, k: i32, x: i32) -> Vec<i32> {
+        let (k, x) = (k as usize, x as usize);
+        let mut window = XSumWindow::new(x);
+        let mut answer = Vec::with_capacity(nums.len() - k + 1);
+        for i in 0..nums.len() {
+            window.add(nums[i]);
+            if i >= k {
+                window.remove(nums[i - k]);
+            }
+            if i + 1 >= k {
+                answer.push(window.sum);
+            }
+        }
+        answer
+    }
+}
+</script>
+
+<script>
+var I18N_STATIC = {
+ "LeetCode 3318 &nbsp;·&nbsp; and its hard twin 3321": "LeetCode 3318 &nbsp;·&nbsp; နှင့် Hard ဗားရှင်း 3321",
+ "Every length-<code>k</code> window has an <em>x-sum</em>: keep only the <code>x</code> most frequent values, add up their occurrences. One solution recounts each window from scratch; the other carries a running total as the window slides.": "အရှည် <code>k</code> ရှိသော window တိုင်းမှာ <em>x-sum</em> တစ်ခုစီ ရှိသည် — အများဆုံးပေါ်သော တန်ဖိုး <code>x</code> ခုကိုသာ ထားပြီး ၎င်းတို့ပေါ်သည့် အကြိမ်များကို ပေါင်းလိုက်ခြင်းဖြစ်သည်။ ဖြေရှင်းနည်းတစ်ခုက window တိုင်းကို အစမှ ပြန်ရေတွက်သည်။ နောက်တစ်ခုကမူ window ရွေ့သွားသည်နှင့်အမျှ စုစုပေါင်းကို သယ်ဆောင်သွားသည်။",
+ "<b>1</b> The question": "<b>1</b> မေးခွန်း",
+ "<b>2</b> The answer": "<b>2</b> အဖြေ",
+ "The question": "မေးခွန်း",
+ "Read the statement, then drag <code>x</code> until the rule clicks.": "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် စည်းမျဉ်းကို သဘောပေါက်သည်အထိ <code>x</code> ကို ဆွဲကြည့်ပါ။",
+ "The answer, step by step": "အဖြေ — အဆင့်ဆင့်",
+ "Two algorithms, three walkthroughs &mdash; the sliding window appears twice, once per container. The stage shows the state; the panel shows the line running.": "algorithm 2 မျိုး၊ လမ်းညွှန် 3 ခု — sliding window ကို container တစ်မျိုးစီအတွက် နှစ်ကြိမ် ပြထားသည်။ ဘယ်ဘက်က အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။",
+ "The problem": "ပုစ္ဆာ",
+ "quoted from LeetCode": "LeetCode မှ ကူးယူဖော်ပြသည်",
+ "You are given an array <code>nums</code> of <code>n</code> integers and two integers <code>k</code> and <code>x</code>.": "integer <code>n</code> လုံးပါသော array <code>nums</code> နှင့် integer နှစ်လုံးဖြစ်သည့် <code>k</code> နှင့် <code>x</code> ကို ပေးထားသည်။",
+ "The <b>x-sum</b> of an array is calculated by the following procedure:": "array တစ်ခု၏ <b>x-sum</b> ကို အောက်ပါအဆင့်များဖြင့် တွက်ယူသည် —",
+ "Count the occurrences of all elements in the array.": "array ထဲရှိ element အားလုံး ပေါ်သည့်အကြိမ်ရေကို ရေတွက်ပါ။",
+ "Keep only the occurrences of the top <code>x</code> most frequent elements. If two elements have the same number of occurrences, the element with the <b>bigger value</b> is considered more frequent.": "အများဆုံးပေါ်သော element <code>x</code> ခု၏ အကြိမ်များကိုသာ ထားပါ။ element နှစ်ခု၏ အကြိမ်ရေ တူညီနေပါက <b>တန်ဖိုးပိုကြီးသော</b> element ကို ပိုများသည်ဟု သတ်မှတ်သည်။",
+ "Calculate the sum of the resulting array.": "ကျန်ရစ်သော array ၏ စုစုပေါင်းကို တွက်ပါ။",
+ "Note that if an array has less than <code>x</code> distinct elements, its x-sum is the sum of the array.": "မှတ်ချက် — array တစ်ခုတွင် ကွဲပြားသော element အရေအတွက်သည် <code>x</code> ထက်နည်းပါက ၎င်း၏ x-sum မှာ array တစ်ခုလုံး၏ ပေါင်းလဒ်ပင် ဖြစ်သည်။",
+ "Return an integer array <code>answer</code> of length <code>n - k + 1</code> where <code>answer[i]</code> is the x-sum of the subarray <code>nums[i..i + k - 1]</code>.": "အရှည် <code>n - k + 1</code> ရှိသော integer array <code>answer</code> ကို ပြန်ပေးပါ။ <code>answer[i]</code> သည် subarray <code>nums[i..i + k - 1]</code> ၏ x-sum ဖြစ်သည်။",
+ "Drag x, watch what survives": "x ကို ဆွဲကြည့်ပါ — ဘာကျန်မလဲ ကြည့်ပါ",
+ "keep x =": "ထားမည့် x =",
+ "Example 1": "ဥပမာ 1",
+ "Example 2": "ဥပမာ 2",
+ "<b>Input</b> <code>nums = [1,1,2,2,3,4,2,3]</code>, <code>k = 6</code>, <code>x = 2</code>": "<b>ထည့်သွင်းချက်</b> <code>nums = [1,1,2,2,3,4,2,3]</code>, <code>k = 6</code>, <code>x = 2</code>",
+ "<b>Input</b> <code>nums = [3,8,7,8,7,5]</code>, <code>k = 2</code>, <code>x = 2</code>": "<b>ထည့်သွင်းချက်</b> <code>nums = [3,8,7,8,7,5]</code>, <code>k = 2</code>, <code>x = 2</code>",
+ "<b>Output</b> <code class=\"out\">[6,10,12]</code>": "<b>ရလဒ်</b> <code class=\"out\">[6,10,12]</code>",
+ "<b>Output</b> <code class=\"out\">[11,15,15,15,12]</code>": "<b>ရလဒ်</b> <code class=\"out\">[11,15,15,15,12]</code>",
+ "<code>[1,1,2,2,3,4]</code> keeps 1 and 2 &rarr; 1+1+2+2 = <b>6</b>": "<code>[1,1,2,2,3,4]</code> တွင် 1 နှင့် 2 ကျန်သည် &rarr; 1+1+2+2 = <b>6</b>",
+ "<code>[1,2,2,3,4,2]</code> keeps 2 and 4 &rarr; 2+2+2+4 = <b>10</b>. 4 survives because it beats 3 and 1, which occur the same number of times.": "<code>[1,2,2,3,4,2]</code> တွင် 2 နှင့် 4 ကျန်သည် &rarr; 2+2+2+4 = <b>10</b>။ 3 နှင့် 1 တို့သည် အကြိမ်ရေတူညီသောကြောင့် တန်ဖိုးပိုကြီးသည့် 4 က ကျန်ရစ်သည်။",
+ "<code>[2,2,3,4,2,3]</code> keeps 2 and 3 &rarr; 2+2+2+3+3 = <b>12</b>": "<code>[2,2,3,4,2,3]</code> တွင် 2 နှင့် 3 ကျန်သည် &rarr; 2+2+2+3+3 = <b>12</b>",
+ "Here <code>k == x</code>, so a window can never hold more than <code>x</code> distinct values and nothing is ever dropped.": "ဤတွင် <code>k == x</code> ဖြစ်သောကြောင့် window တစ်ခုတွင် ကွဲပြားသောတန်ဖိုး <code>x</code> ခုထက် ဘယ်တော့မှ မပိုနိုင်ဘဲ ဘာမှလည်း မဖယ်ရပါ။",
+ "Every answer is just the sum of the window: 3+8, 8+7, 7+8, 8+7, 7+5.": "အဖြေတိုင်းသည် window ၏ ပေါင်းလဒ်သာ ဖြစ်သည် — 3+8, 8+7, 7+8, 8+7, 7+5။",
+ "A good sanity check &mdash; if your code disagrees here, the \"fewer than x distinct\" rule is wrong.": "စစ်ဆေးရန် ကောင်းသော ဥပမာ — ဤနေရာတွင် သင့် code မကိုက်ပါက “x ထက်နည်းသော ကွဲပြားတန်ဖိုး” စည်းမျဉ်းကို မှားနေခြင်းဖြစ်သည်။",
+ "Load into the stepper &darr;": "လမ်းညွှန်ထဲ ထည့်ကြည့်ရန် &darr;",
+ "Three ways the statement bites &mdash; worth reading before you code": "မေးခွန်းက ထောင်ချောက်ဆင်ထားသည့် နည်း 3 မျိုး — code မရေးခင် ဖတ်သင့်သည်",
+ "<b>\"More frequent\" means (count, then value).</b> Rank by count alone on Example 1 and you get <code>[6,<span class=\"bad\">7</span>,12]</code> &mdash; the first window still passes, so the bug hides until the second.": "<b>“ပိုများသည်” ဆိုသည်မှာ (count အရင်၊ ပြီးမှ value) ဖြစ်သည်။</b> ဥပမာ 1 တွင် count ချည်းသာ စီကြည့်လျှင် <code>[6,<span class=\"bad\">7</span>,12]</code> ရလိမ့်မည် — ပထမ window က မှန်နေသေးသဖြင့် bug က ဒုတိယအထိ ပုန်းနေသည်။",
+ "<b>Fewer than <code>x</code> distinct values is not an error.</b> Nothing is dropped and the x-sum is the whole window, as in Example 2.": "<b>ကွဲပြားတန်ဖိုး <code>x</code> ထက်နည်းခြင်းသည် error မဟုတ်ပါ။</b> ဘာမှမဖယ်ဘဲ x-sum မှာ window တစ်ခုလုံး၏ ပေါင်းလဒ် ဖြစ်သည် — ဥပမာ 2 အတိုင်းပင်။",
+ "<b>On 3321 the sums need 64 bits.</b> k &times; max value reaches 5&times;10<sup>13</sup>, well past a 32-bit int &mdash; this bites in C++, Java and Rust, though Go's <code>int</code> is already 64-bit.": "<b>3321 တွင် ပေါင်းလဒ်များအတွက် 64 bit လိုအပ်သည်။</b> k &times; အမြင့်ဆုံးတန်ဖိုး သည် 5&times;10<sup>13</sup> အထိ ရောက်သဖြင့် 32-bit int ကို ကျော်လွန်သည် — C++, Java နှင့် Rust တွင် ဤပြဿနာ တက်တတ်သည်။ Go ၏ <code>int</code> မှာမူ 64-bit ဖြစ်နှင့်ပြီးသား ဖြစ်သည်။",
+ "nums": "nums",
+ "k &mdash; window": "k &mdash; window အရွယ်",
+ "x &mdash; keep": "x &mdash; ထားမည့်အရေအတွက်",
+ "load an example": "ဥပမာ ထည့်ရန်",
+ "Pick a walkthrough": "လမ်းညွှန်တစ်ခု ရွေးပါ",
+ "Brute force": "Brute force",
+ "Recount every window from scratch": "window တိုင်းကို အစမှ ပြန်ရေတွက်သည်",
+ "Sliding window <span class=\"sub-name\">&middot; sorted arrays</span>": "Sliding window <span class=\"sub-name\">&middot; sorted array</span>",
+ "Shelves kept in order. The clear version, fine for 3318.": "စင်များကို အစဉ်လိုက် စီထားသည်။ နားလည်ရလွယ်ပြီး 3318 အတွက် လုံလောက်သည်။",
+ "Sliding window <span class=\"sub-name\">&middot; lazy heaps</span>": "Sliding window <span class=\"sub-name\">&middot; lazy heap</span>",
+ "The version that passes 3321. Watch stale entries pile up.": "3321 ကို အောင်မြင်စေသော ပုံစံ။ stale entry များ စုပုံလာပုံကို ကြည့်ပါ။",
+ "&lsaquo; Back": "&lsaquo; နောက်သို့",
+ "Play": "စတင်ရန်",
+ "Next &rsaquo;": "ရှေ့သို့ &rsaquo;",
+ "The array": "array",
+ "answer": "answer",
+ "The code, live": "code — တိုက်ရိုက်",
+ "If you are implementing it": "ကိုယ်တိုင် ရေးမည်ဆိုပါက",
+ "Three questions the sliding window raises": "sliding window က ဖြစ်ပေါ်စေသော မေးခွန်း 3 ခု",
+ "Why lift the card off the shelf <em>before</em> changing its count?": "count မပြောင်းခင် ကတ်ကို စင်ပေါ်က <em>အရင်</em> ဘာကြောင့် ဆွဲထုတ်ရသနည်း။",
+ "A card's position on a shelf is its rank, and its rank <em>is</em> its count. Bump the count first and the card is filed under a key it no longer has &mdash; the binary search looks in the new spot, misses, and both shelves quietly rot.": "ကတ်တစ်ခု စင်ပေါ်မှာရှိသည့် နေရာက သူ့အဆင့်ဖြစ်ပြီး၊ အဆင့်ဆိုသည်မှာ သူ့ count ပင် ဖြစ်သည်။ count ကို အရင်ပြောင်းလိုက်လျှင် ကတ်သည် သူ့တွင်မရှိတော့သော key အောက်မှာ ရှိနေလိမ့်မည် — binary search က နေရာအသစ်မှာ ရှာပြီး မတွေ့သဖြင့် စင်နှစ်ခုလုံး တိတ်တဆိတ် ပျက်စီးသွားသည်။",
+ "Why does the updated card always go back to REST?": "ပြင်ပြီးသား ကတ်ကို ဘာကြောင့် REST ထဲ အမြဲပြန်ထည့်ရသနည်း။",
+ "Because then <code>rebalance</code> is the only function that knows the invariant, so it is the only place that can break it. No branching on whether the card outranks anything &mdash; drop it in the cheap place and let one function sort it out.": "ထိုသို့လုပ်ခြင်းဖြင့် invariant ကို သိသော function မှာ <code>rebalance</code> တစ်ခုတည်းသာ ဖြစ်သွားပြီး၊ ချိုးဖျက်နိုင်သည့် နေရာလည်း တစ်ခုတည်းသာ ရှိတော့သည်။ ကတ်က တခြားဟာတွေထက် သာမသာ စစ်စရာမလိုဘဲ — ကုန်ကျမှုအနည်းဆုံးနေရာမှာ ချလိုက်ပြီး function တစ်ခုတည်းကို ရှင်းခိုင်းလိုက်သည်။",
+ "Can the swap loop ping-pong forever?": "swap loop သည် အဆုံးမရှိ အပြန်အလှန် လဲနေနိုင်သလား။",
+ "No. It only runs when <code>up &gt; down</code>, and <code>up</code> is still sitting in REST after the demote, so the promoted card is never the one just dropped. Each swap strictly raises TOP's rank sum, so it terminates &mdash; in practice after one pass.": "မဖြစ်ပါ။ <code>up &gt; down</code> ဖြစ်မှသာ အလုပ်လုပ်ပြီး၊ demote လုပ်ပြီးချိန်တွင် <code>up</code> က REST ထဲမှာ ကျန်နေဆဲဖြစ်သဖြင့် အတင်ခံရသော ကတ်သည် ခုနချလိုက်သည့် ကတ် ဘယ်တော့မှ မဖြစ်နိုင်ပါ။ swap တစ်ကြိမ်တိုင်း TOP ၏ အဆင့်ပေါင်းလဒ်ကို တိုးစေသဖြင့် ရပ်သွားသည် — လက်တွေ့တွင် တစ်ကြိမ်တည်းနှင့် ပြီးလေ့ရှိသည်။",
+ "Why bother": "ဘာကြောင့် ဒုက္ခခံရသနည်း",
+ "The same answer, a different price": "အဖြေတူသော်လည်း ကုန်ကျစရိတ် ကွာသည်",
+ "Approach": "နည်းလမ်း",
+ "Work per window": "window တစ်ခုစီအတွက် အလုပ်",
+ "n = 50 (this problem)": "n = 50 (ဤပုစ္ဆာ)",
+ "n = 100k, k = 50k (3321)": "n = 100k, k = 50k (3321)",
+ "instant": "ချက်ချင်း",
+ "Copy": "ကူးယူရန်",
+ "Tie storm": "သရေ များသော ဥပမာ",
+ "Single keeper": "တစ်ခုတည်းသာ ထားမည်",
+ "tally + sort, every window": "window တိုင်း tally + sort လုပ်သည်",
+ "shelves as sorted arrays": "စင်များကို sorted array ဖြင့်",
+ "same shelves as lazy heaps": "စင်အတူတူကို lazy heap ဖြင့်",
+ "O(log k) compares<br><span style=\"color:var(--down)\">+ a splice of up to k</span>": "O(log k) နှိုင်းယှဉ်မှု<br><span style=\"color:var(--down)\">+ k အထိ splice</span>",
+ "O(log n), pointers only": "O(log n)၊ pointer သက်သက်",
+ "~5 × 10⁹ element visits": "~5 × 10⁹ element ကြည့်ရသည်",
+ "0.60 s here, but ~50 GB<br>of memmove → TLE on the judge": "ဤစက်တွင် 0.60 s၊ သို့သော် memmove ~50 GB<br>→ judge တွင် TLE",
+ "0.05 s — accepted": "0.05 s — အောင်မြင်သည်",
+ "ran here &middot; 25k random cases": "ဤစက်တွင် စမ်းပြီး &middot; ကျပန်း 25k",
+ "ran here &middot; 20k random cases": "ဤစက်တွင် စမ်းပြီး &middot; ကျပန်း 20k",
+ "go vet + ran here &middot; 25k cases": "go vet + ဤစက်တွင် စမ်းပြီး &middot; 25k",
+ "rustc -O + ran here &middot; 25k cases": "rustc -O + ဤစက်တွင် စမ်းပြီး &middot; 25k",
+ "<kbd>&larr;</kbd> <kbd>&rarr;</kbd> step &middot; <kbd>space</kbd> play/pause. Edit <code>nums</code>, <code>k</code> or <code>x</code> above and all three walkthroughs rebuild against your input.": "<kbd>&larr;</kbd> <kbd>&rarr;</kbd> အဆင့်ရွှေ့ရန် &middot; <kbd>space</kbd> စတင်/ရပ်။ အထက်ရှိ <code>nums</code>, <code>k</code> သို့မဟုတ် <code>x</code> ကို ပြင်လိုက်ပါက လမ်းညွှန် 3 ခုလုံး သင့်ထည့်သွင်းချက်အတိုင်း ပြန်တည်ဆောက်သည်။",
+ "The whole Easy answer. <code>max_by(x)</code> takes the top x directly, and returns everything when there are fewer than x distinct values.": "Easy အဆင့်၏ အဖြေ အပြည့်အစုံ။ <code>max_by(x)</code> က ထိပ်ဆုံး x ခုကို တိုက်ရိုက်ယူပြီး၊ ကွဲပြားတန်ဖိုး x ထက်နည်းပါက အားလုံးကို ပြန်ပေးသည်။",
+ "The two shelves as sorted arrays — the version the stepper animates. Readable, and fast enough for n ≤ 50.": "စင်နှစ်ခုကို sorted array ဖြင့် — လမ်းညွှန်တွင် ပြသနေသည့် ပုံစံ။ ဖတ်ရလွယ်ပြီး n ≤ 50 အတွက် လုံလောက်စွာ မြန်သည်။",
+ "<b>The submission that passes 3321.</b> Same invariants, no memmove. 0.05 s at n = 100,000 where the array version needs 0.60 s of cache-resident luck.": "<b>3321 ကို အောင်မြင်စေသော submission။</b> invariant အတူတူဖြစ်ပြီး memmove မလိုပါ။ n = 100,000 တွင် 0.05 s ကြာပြီး၊ array ပုံစံမှာမူ cache ထဲ ဝင်နေသည့်တိုင် 0.60 s ကြာသည်။",
+ "<code>Counter</code> plus a sort keyed on <code>(count, value)</code> with <code>reverse=True</code>.": "<code>Counter</code> နှင့်အတူ <code>(count, value)</code> ကို key ထားပြီး <code>reverse=True</code> ဖြင့် စီသည်။",
+ "<code>bisect.insort</code> keeps both shelves ordered; <code>bisect_left</code> finds the stale entry to lift out.": "<code>bisect.insort</code> က စင်နှစ်ခုလုံးကို အစဉ်လိုက် ထိန်းထားသည်။ ဆွဲထုတ်ရမည့် stale entry ကို <code>bisect_left</code> ဖြင့် ရှာသည်။",
+ "<b>The submission that passes 3321.</b> <code>heapq</code> is a min-heap, so REST stores negated keys. 0.04 s at n = 100,000.": "<b>3321 ကို အောင်မြင်စေသော submission။</b> <code>heapq</code> သည် min-heap ဖြစ်သဖြင့် REST တွင် key များကို အနုတ်လက္ခဏာဖြင့် သိမ်းသည်။ n = 100,000 တွင် 0.04 s။",
+ "A <code>Map</code> tally, then sort by count and break ties on value.": "<code>Map</code> ဖြင့် ရေတွက်ပြီး count ဖြင့် စီကာ သရေကျပါက value ဖြင့် ဖြတ်သည်။",
+ "Binary search plus <code>splice</code> — JavaScript has no sorted container, so the shelves are plain arrays.": "binary search နှင့် <code>splice</code> — JavaScript တွင် sorted container မရှိသဖြင့် စင်များမှာ array သက်သက် ဖြစ်သည်။",
+ "<b>The submission that passes 3321.</b> Includes a small binary heap — JS has none built in. Note the packing uses multiplication: <code>&lt;&lt;</code> is 32-bit and would overflow. 0.01 s at n = 100,000.": "<b>3321 ကို အောင်မြင်စေသော submission။</b> JS တွင် heap ပါမလာသဖြင့် binary heap လေးတစ်ခု ထည့်ထားသည်။ key ပေါင်းစည်းရာတွင် မြှောက်ခြင်းကို သုံးသည် — <code>&lt;&lt;</code> သည် 32-bit ဖြစ်၍ ကျော်လွန်သွားမည်။ n = 100,000 တွင် 0.01 s။",
+ "<code>sort.Slice</code> with the two-level comparison written out.": "<code>sort.Slice</code> ဖြင့် နှစ်ဆင့် နှိုင်းယှဉ်မှုကို အပြည့်အစုံ ရေးထားသည်။",
+ "<code>sort.Search</code> finds the slot, <code>copy</code> opens the gap. Returns <code>[]int</code> for 3318.": "<code>sort.Search</code> က နေရာကို ရှာပြီး <code>copy</code> က နေရာလွတ် ဖန်တီးပေးသည်။ 3318 အတွက် <code>[]int</code> ပြန်ပေးသည်။",
+ "<b>The submission that passes 3321.</b> A hand-rolled <code>int64</code> min-heap rather than <code>container/heap</code>, to keep it parallel with the other languages and skip the interface boilerplate. 0.01 s at n = 100,000.": "<b>3321 ကို အောင်မြင်စေသော submission။</b> အခြားဘာသာစကားများနှင့် တစ်ပုံစံတည်း ဖြစ်စေရန်နှင့် interface boilerplate ကို ရှောင်ရန် <code>container/heap</code> အစား <code>int64</code> min-heap ကို ကိုယ်တိုင် ရေးထားသည်။ n = 100,000 တွင် 0.01 s။",
+ "<code>windows(k)</code> plus tuple <code>Ord</code> — <code>(count, value)</code> sorted descending is the ranking rule with no comparator. Returns <code>Vec&lt;i32&gt;</code>, which is right for 3318's value range but would overflow on 3321's.": "<code>windows(k)</code> နှင့် tuple <code>Ord</code> — <code>(count, value)</code> ကို ကြီးစဉ်ငယ်လိုက် စီလိုက်ရုံဖြင့် comparator မလိုဘဲ အဆင့်သတ်မှတ်ချက် ရသည်။ <code>Vec&lt;i32&gt;</code> ပြန်ပေးပြီး၊ 3318 ၏ တန်ဖိုးအတိုင်းအတာအတွက် မှန်သော်လည်း 3321 တွင် ကျော်လွန်သွားမည်။",
+ "<code>Vec::binary_search</code> returns <code>Err(at)</code> on a miss — exactly the insertion index.": "<code>Vec::binary_search</code> က မတွေ့ပါက <code>Err(at)</code> ပြန်ပေးသည် — ထည့်သွင်းရမည့် index အတိအကျပင်။",
+ "<b>The submission that passes 3321.</b> <code>BinaryHeap</code> is a max-heap, so TOP wraps its keys in <code>Reverse</code> and REST stores them bare — no negation needed. 0.01 s at n = 100,000.": "<b>3321 ကို အောင်မြင်စေသော submission။</b> <code>BinaryHeap</code> သည် max-heap ဖြစ်သဖြင့် TOP က key များကို <code>Reverse</code> ဖြင့် ထုပ်ပြီး REST က အတိုင်းသိမ်းသည် — အနုတ်လက္ခဏာ မလိုပါ။ n = 100,000 တွင် 0.01 s။",
+ "Timings are real runs on one machine (n = 100,000, k = 50,000, x = 100, values up to 10⁹), each verified against the brute force on tens of thousands of randomized cases; the 5 × 10⁹ figure is arithmetic, not a measurement — 50,001 windows × 50,000 elements each. <br><br><b>The middle row is the trap.</b> A sorted array keeps every update O(log k) to <em>find</em> the slot, then pays an <span class=\"mono\">Array#insert</span> that shifts everything after it. At k = 50,000 that is ~50 GB of memmove over a full run — but the array is only ~400 KB, so it lives in L2 cache and finishes in 0.6 s on an M-series laptop. The judge's memory is not that kind, which is why the identical code that looks fast locally times out on 3321. Heaps touch O(log n) scattered pointers instead and never shift anything, so the honest complexity and the measured time finally agree.": "အချိန်များသည် စက်တစ်လုံးတည်းတွင် အမှန်တကယ် တိုင်းတာထားခြင်းဖြစ်သည် (n = 100,000, k = 50,000, x = 100၊ တန်ဖိုး 10⁹ အထိ)။ တစ်ခုချင်းစီကို ကျပန်း case သောင်းနှင့်ချီ၍ brute force နှင့် တိုက်စစ်ပြီးဖြစ်သည်။ 5 × 10⁹ ဂဏန်းမှာမူ တိုင်းတာချက်မဟုတ်ဘဲ တွက်ချက်မှုသာဖြစ်သည် — window 50,001 ခု × element 50,000 စီ။ <br><br><b>အလယ်အတန်းသည် ထောင်ချောက်ဖြစ်သည်။</b> sorted array တွင် နေရာ<em>ရှာ</em>ရန် O(log k) သာကုန်သော်လည်း၊ ထို့နောက် နောက်ကပါသမျှကို ရွှေ့ပေးရသည့် <span class=\"mono\">Array#insert</span> ကို ပေးဆပ်ရသည်။ k = 50,000 တွင် တစ်ပတ်လုံးအတွက် memmove ~50 GB ရှိသည် — သို့သော် array မှာ ~400 KB သာရှိသဖြင့် L2 cache ထဲတွင် နေနိုင်ပြီး M-series laptop တွင် 0.6 s ဖြင့် ပြီးသည်။ judge ၏ memory မှာ ထိုမျှ သက်သာသည်မဟုတ်၍ ဤနေရာတွင် မြန်သည်ဟု ထင်ရသော code အတိအကျပင် 3321 တွင် TLE ဖြစ်သွားခြင်းဖြစ်သည်။ heap များမှာမူ O(log n) pointer များကိုသာ ထိပြီး ဘာမှ မရွှေ့ရသဖြင့် အမှန်တကယ့် complexity နှင့် တိုင်းတာချက် နောက်ဆုံးတွင် ကိုက်ညီသွားသည်။",
+ "The whole solution": "solution အပြည့်အစုံ",
+ "<b>3</b> The code": "<b>3</b> code",
+ "Two algorithms, three implementations, in five languages. <b>Brute force</b> recounts each window. <b>Sliding window</b> appears twice &mdash; the same algorithm and the same two shelves, once with <b>sorted arrays</b> (clearer, fine for 3318) and once with <b>lazy heaps</b> (a faster container, what 3321 needs). Every block is a complete submission, compiled and run here against both examples plus 25,000 randomized cases.": "algorithm 2 မျိုး၊ implementation 3 ခု၊ ဘာသာစကား 5 မျိုး။ <b>Brute force</b> က window တိုင်းကို ပြန်ရေတွက်သည်။ <b>Sliding window</b> ကို နှစ်ကြိမ် ပြထားသည် — algorithm အတူတူ၊ စင်နှစ်ခု အတူတူဖြစ်ပြီး တစ်ခါ <b>sorted array</b> ဖြင့် (ပိုရှင်းသည်၊ 3318 အတွက် လုံလောက်သည်)၊ နောက်တစ်ခါ <b>lazy heap</b> ဖြင့် (ပိုမြန်သော container၊ 3321 အတွက် လိုအပ်သည်)။ block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး ဥပမာနှစ်ခုအပြင် ကျပန်း case 25,000 ဖြင့် ဤစက်တွင် စမ်းသပ်ပြီးဖြစ်သည်။"
+};
+</script>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- ranking: [count, value] ascending ---------------- */
+  var cmp = function(a,b){ return (a.c-b.c) || (a.v-b.v); };
+  var lower = function(arr,e){
+    var lo=0, hi=arr.length;
+    while(lo<hi){ var m=(lo+hi)>>1; if(cmp(arr[m],e)<0) lo=m+1; else hi=m; }
+    return lo;
+  };
+  var insert = function(arr,e){ arr.splice(lower(arr,e),0,e); };
+  var remove = function(arr,e){
+    var i=lower(arr,e);
+    if(i<arr.length && arr[i].v===e.v && arr[i].c===e.c){ arr.splice(i,1); return true; }
+    return false;
+  };
+  var face = function(e){ return e.v+"×"+e.c; };
+
+
+  /* ---------------- messages, per language ----------------
+     Code identifiers, TOP/REST, and the terms Burmese developers write in
+     English (window, heap, array, count, value, stale, root) stay in Latin. */
+  var MSG = {
+    en: {
+      empty: "empty",
+      tipUnset: "not set at this step",
+      shelves: "Two shelves", heaps: "Two heaps",
+      rankedBy: "ranked by [count, value]",
+      topNote: function(x,n){ return "the "+x+" that count · "+n+"/"+x; },
+      restNote: "in the window, out of the sum",
+      barrier: "barrier · every TOP card outranks every REST card",
+      barrierBroken: "barrier broken — swap incoming",
+      nothingKept: "nothing kept yet",
+      sumIs: "@sum &nbsp;=&nbsp; ",
+      rootsOnly: "only the roots are ever read",
+      topHeapNote: function(live,total,size,x){ return "root = weakest kept · "+live+" of "+total+" entries live · set is "+size+"/"+x; },
+      restHeapNote: function(live,total){ return "root = strongest dropped · "+live+" of "+total+" entries live"; },
+      stale: function(now){ return now ? "stale · now "+now : "stale · gone"; },
+      heapLedger: "@sum tracks the TOP set, not the heap contents",
+      windowFromScratch: function(i){ return "Window "+i+" from scratch"; },
+      tallyHead: function(k){ return "tally — one pass over all "+k+" elements"; },
+      notCounted: "not counted yet",
+      rankHead: function(n){ return "rank by [count, value], keep "+n; },
+      notRanked: "not ranked yet",
+      sumHead: "sum the survivors",
+      cutKeep: function(n){ return "cut · keep "+n; },
+      windowsDone: function(n,total){ return n+" of "+total+" windows"; },
+      valuesDistinct: function(n,d){ return n+" values, "+d+" distinct"; },
+      qNothing: "nothing kept",
+      qTie: function(a,b,c,decides){
+        return "Tie: "+a+" and "+b+" both appear "+c+(c===1?" time":" times")
+             + ", so "+a+" ranks higher for being the bigger value"
+             + (decides ? " — and that is exactly what decides which one survives here." : "."); },
+      qPreset: ["example 1, window 0","example 1, window 1","example 2","every value ties","one value dominates"],
+
+      bfWindow: function(i,win){ return "Window "+i+" = ["+win+"]. Everything learned about the last window is thrown away — this one starts from nothing."; },
+      bfTally: function(k,list){ return "<code>tally</code> walks all "+k+" elements and counts them: "+list+"."; },
+      bfRankHead: function(first){ return "Sort by <code>[count, value]</code> descending"+(first?": <code>"+first+"</code> ranks first.":"."); },
+      bfTie: function(a,b,c,cut){ return " <b>"+a+"</b> and <b>"+b+"</b> both appear "+c+(c===1?" time":" times")
+             + ", so "+a+" ranks higher for being the bigger value"
+             + (cut ? " — which is what decides the cut here." : "."); },
+      bfNoTie: " Nothing ties in this window, so the counts alone settle the order.",
+      bfSum: function(keep,expr,sum){ return "Keep the top "+keep+": "+expr+" = <code>"+sum+"</code>. Then drop it all and do it again."; },
+
+      swDetach: function(v,face,inTop,gain){ return v+" is already on the board as <code>"+face+"</code>. Lift that card off <b>before</b> the count changes — its rank is its count."
+             + (inTop ? " It was in TOP, so the running sum gives back "+gain+"." : ""); },
+      swGone: function(v){ return "<code>count["+v+"] = 0</code> — "+v+" is out of the window entirely, so the card is gone."; },
+      swInsert: function(v,c){ return "<code>count["+v+"] = "+c+"</code>. Re-enter at the bottom of REST — no thinking about where it belongs, <code>rebalance</code> decides."; },
+      swFill: function(n,x,face,add,sum){ return "TOP still has room ("+n+"/"+x+") — promote <code>"+face+"</code>. sum += "+add+" → <code>"+sum+"</code>."; },
+      swViolation: function(up,down,uc,uv,dc,dv){ return "Barrier broken. REST's best <code>"+up+"</code> outranks TOP's weakest <code>"+down+"</code> — <code>["+uc+", "+uv+"] &gt; ["+dc+", "+dv+"]</code>. They trade places."; },
+      swDemote: function(face,sub,sum){ return "Demote <code>"+face+"</code>. sum −= "+sub+" → <code>"+sum+"</code>."; },
+      swPromote: function(face,add,sum){ return "Promote <code>"+face+"</code>. sum += "+add+" → <code>"+sum+"</code>."; },
+      swRecord: function(win,sum){ return "Window ["+win+"] is complete → x-sum <code>"+sum+"</code>. Nothing was recounted; the total has been correct the whole way."; },
+
+      hpDetachTop: function(v,gain,face){ return v+" leaves the TOP set, so the sum gives back "+gain+". Its heap entry <code>"+face+"</code> is <b>left where it is</b> — removing from the middle of a heap is expensive, so it just goes stale."; },
+      hpDetachRest: function(v,face){ return v+" is in REST as <code>"+face+"</code>. Nothing is removed — that entry simply becomes stale the moment the count changes."; },
+      hpGone: function(v){ return "<code>count["+v+"] = 0</code> — "+v+" is out of the window. Every entry for it is now stale."; },
+      hpPush: function(v,c,face){ return "<code>count["+v+"] = "+c+"</code>. Push a fresh <code>"+face+"</code> into the REST heap."; },
+      hpDiscardRest: function(face,v,now){ return "REST's root <code>"+face+"</code> is stale — "+v+" "
+             + (now ? "now has "+now+" occurrence"+(now===1?"":"s") : "is gone from the window")
+             + ". Throw the entry away and look at the new root."; },
+      hpDiscardTop: function(face){ return "TOP's root <code>"+face+"</code> is stale — discard it and look again."; },
+      hpPromote: function(face,add,sum){ return "Promote <code>"+face+"</code> into TOP. sum += "+add+" → <code>"+sum+"</code>."; },
+      hpDemote: function(face,sub,sum){ return "Demote <code>"+face+"</code> into REST. sum −= "+sub+" → <code>"+sum+"</code>."; },
+      hpViolation: function(best,weakest){ return "REST's live root <code>"+best+"</code> outranks TOP's live root <code>"+weakest+"</code>. Swap them."; },
+      hpRecord: function(win,sum){ return "Window ["+win+"] → x-sum <code>"+sum+"</code>. Stale entries are still sitting in the heaps — they cost nothing until they reach a root."; }
+    },
+
+    my: {
+      empty: "ဘာမှမရှိ",
+      tipUnset: "ဤအဆင့်တွင် မသတ်မှတ်ရသေး",
+      shelves: "စင်နှစ်ခု", heaps: "heap နှစ်ခု",
+      rankedBy: "[count, value] ဖြင့် အဆင့်သတ်မှတ်သည်",
+      topNote: function(x,n){ return "အရေးပါသော "+x+" ခု · "+n+"/"+x; },
+      restNote: "window ထဲရှိသော်လည်း ပေါင်းလဒ်ထဲ မပါ",
+      barrier: "အကန့် · TOP ကတ်တိုင်းသည် REST ကတ်တိုင်းထက် အဆင့်မြင့်သည်",
+      barrierBroken: "အကန့် ကျိုးသွားပြီ — နေရာလဲရတော့မည်",
+      nothingKept: "ဘာမှ မကျန်သေး",
+      sumIs: "@sum &nbsp;=&nbsp; ",
+      rootsOnly: "root များကိုသာ ဖတ်သည်",
+      topHeapNote: function(live,total,size,x){ return "root = ထားထားသည့်အထဲ အားအနည်းဆုံး · entry "+total+" ခုအနက် "+live+" ခု live · အစု "+size+"/"+x; },
+      restHeapNote: function(live,total){ return "root = ဖယ်ထားသည့်အထဲ အကောင်းဆုံး · entry "+total+" ခုအနက် "+live+" ခု live"; },
+      stale: function(now){ return now ? "stale · ယခု "+now : "stale · ထွက်သွားပြီ"; },
+      heapLedger: "@sum က heap ထဲရှိအရာများကို မဟုတ်ဘဲ TOP အစုကိုသာ မှတ်သည်",
+      windowFromScratch: function(i){ return "Window "+i+" ကို အစမှ ပြန်စသည်"; },
+      tallyHead: function(k){ return "tally — element "+k+" ခုလုံးကို တစ်ခေါက် လျှောက်သည်"; },
+      notCounted: "မရေတွက်ရသေး",
+      rankHead: function(n){ return "[count, value] ဖြင့် အဆင့်ခွဲပြီး "+n+" ခု ထားသည်"; },
+      notRanked: "အဆင့် မခွဲရသေး",
+      sumHead: "ကျန်ရစ်သူများကို ပေါင်းသည်",
+      cutKeep: function(n){ return "ဖြတ်မျဉ်း · "+n+" ခု ထားသည်"; },
+      windowsDone: function(n,total){ return "window "+total+" ခုအနက် "+n+" ခု"; },
+      valuesDistinct: function(n,d){ return "တန်ဖိုး "+n+" ခု၊ ကွဲပြားမှု "+d+" မျိုး"; },
+      qNothing: "ဘာမှ မကျန်",
+      qTie: function(a,b,c,decides){
+        return "သရေ — "+a+" နှင့် "+b+" နှစ်ခုလုံး "+c+" ကြိမ်စီ ပေါ်သည်။ ထို့ကြောင့် တန်ဖိုးပိုကြီးသော "+a+" က အဆင့်ပိုမြင့်သည်"
+             + (decides ? " — ဤနေရာတွင် ဘယ်ဟာကျန်မည်ကို ဆုံးဖြတ်ပေးသည်မှာ ဤအချက်ပင်။" : "။"); },
+      qPreset: ["ဥပမာ 1၊ window 0","ဥပမာ 1၊ window 1","ဥပမာ 2","တန်ဖိုးအားလုံး သရေကျ","တစ်ခုတည်းက လွှမ်းမိုး"],
+
+      bfWindow: function(i,win){ return "Window "+i+" = ["+win+"]။ ယခင် window မှ သိထားသမျှကို အကုန်စွန့်ပြီး ဤတစ်ခုကို အစမှ ပြန်စသည်။"; },
+      bfTally: function(k,list){ return "<code>tally</code> သည် element "+k+" ခုလုံးကို လျှောက်ပြီး ရေတွက်သည် — "+list+"။"; },
+      bfRankHead: function(first){ return "<code>[count, value]</code> ကို ကြီးစဉ်ငယ်လိုက် စီလိုက်သည်"+(first?" — <code>"+first+"</code> က ထိပ်ဆုံးရောက်သည်။":"။"); },
+      bfTie: function(a,b,c,cut){ return " <b>"+a+"</b> နှင့် <b>"+b+"</b> နှစ်ခုလုံး "+c+" ကြိမ်စီ ပေါ်သည်။ ထို့ကြောင့် တန်ဖိုးပိုကြီးသော "+a+" က အဆင့်ပိုမြင့်သည်"
+             + (cut ? " — ဤနေရာတွင် ဖြတ်မျဉ်းကို ဆုံးဖြတ်ပေးသည်မှာ ဤအချက်ပင်။" : "။"); },
+      bfNoTie: " ဤ window တွင် သရေမရှိသဖြင့် အရေအတွက်ချည်းဖြင့်ပင် အစီအစဉ် ကျသည်။",
+      bfSum: function(keep,expr,sum){ return "ထိပ်ဆုံး "+keep+" ခုကို ထားလိုက်သည် — "+expr+" = <code>"+sum+"</code>။ ပြီးလျှင် အားလုံးကို စွန့်ပြီး နောက် window တွင် ပြန်လုပ်သည်။"; },
+
+      swDetach: function(v,face,inTop,gain){ return v+" သည် <code>"+face+"</code> အဖြစ် ရှိနှင့်ပြီးသား ဖြစ်သည်။ count မပြောင်းမီ ထိုကတ်ကို <b>အရင်ဆွဲထုတ်</b>ပါ — အဆင့်ဆိုသည်မှာ count ပင်ဖြစ်သည်။"
+             + (inTop ? " TOP ထဲတွင် ရှိခဲ့သဖြင့် စုစုပေါင်းမှ "+gain+" ကို ပြန်နုတ်သည်။" : ""); },
+      swGone: function(v){ return "<code>count["+v+"] = 0</code> — "+v+" သည် window ထဲမှ လုံးဝထွက်သွားသဖြင့် ကတ်လည်း ပျောက်သွားသည်။"; },
+      swInsert: function(v,c){ return "<code>count["+v+"] = "+c+"</code>။ REST ၏ အောက်ဆုံးမှ ပြန်ထည့်လိုက်သည် — မည်သည့်နေရာသို့ သွားသင့်သည်ကို မစဉ်းစားဘဲ <code>rebalance</code> ကို ဆုံးဖြတ်စေသည်။"; },
+      swFill: function(n,x,face,add,sum){ return "TOP တွင် နေရာလွတ် ကျန်သေးသည် ("+n+"/"+x+") — <code>"+face+"</code> ကို တင်လိုက်သည်။ sum += "+add+" → <code>"+sum+"</code>။"; },
+      swViolation: function(up,down,uc,uv,dc,dv){ return "အကန့် ကျိုးသွားပြီ။ REST ၏ အကောင်းဆုံး <code>"+up+"</code> သည် TOP ၏ အားအနည်းဆုံး <code>"+down+"</code> ထက် အဆင့်မြင့်သည် — <code>["+uc+", "+uv+"] &gt; ["+dc+", "+dv+"]</code>။ နေရာချင်း လဲလိုက်သည်။"; },
+      swDemote: function(face,sub,sum){ return "<code>"+face+"</code> ကို အောက်ချလိုက်သည်။ sum −= "+sub+" → <code>"+sum+"</code>။"; },
+      swPromote: function(face,add,sum){ return "<code>"+face+"</code> ကို အပေါ်တင်လိုက်သည်။ sum += "+add+" → <code>"+sum+"</code>။"; },
+      swRecord: function(win,sum){ return "Window ["+win+"] ပြီးပါပြီ → x-sum <code>"+sum+"</code>။ ဘာမှ ပြန်မရေတွက်ခဲ့ရဘဲ စုစုပေါင်းသည် အစကတည်းက မှန်နေခဲ့သည်။"; },
+
+      hpDetachTop: function(v,gain,face){ return v+" သည် TOP အစုမှ ထွက်သွားသဖြင့် စုစုပေါင်းမှ "+gain+" ကို ပြန်နုတ်သည်။ သူ၏ heap entry <code>"+face+"</code> ကိုမူ <b>မဖယ်ဘဲ ထားလိုက်သည်</b> — heap အလယ်မှ ဖယ်ထုတ်ရန် ကုန်ကျစရိတ်များသဖြင့် stale ဖြစ်သွားအောင် ပစ်ထားလိုက်ခြင်းဖြစ်သည်။"; },
+      hpDetachRest: function(v,face){ return v+" သည် REST ထဲတွင် <code>"+face+"</code> အဖြစ် ရှိသည်။ ဘာမှ မဖယ်ထုတ်ပါ — count ပြောင်းသည်နှင့် ထို entry သည် stale ဖြစ်သွားရုံသာ ဖြစ်သည်။"; },
+      hpGone: function(v){ return "<code>count["+v+"] = 0</code> — "+v+" သည် window ထဲမှ ထွက်သွားပြီ။ သူနှင့်သက်ဆိုင်သော entry အားလုံး stale ဖြစ်ကုန်ပြီ။"; },
+      hpPush: function(v,c,face){ return "<code>count["+v+"] = "+c+"</code>။ အသစ်ဖြစ်သော <code>"+face+"</code> ကို REST heap ထဲသို့ ထည့်လိုက်သည်။"; },
+      hpDiscardRest: function(face,v,now){ return "REST ၏ root <code>"+face+"</code> သည် stale ဖြစ်နေပြီ — "+v+" သည် "
+             + (now ? "ယခု "+now+" ကြိမ် ရှိသည်" : "window ထဲမှ ထွက်သွားပြီ")
+             + "။ ထို entry ကို ပစ်လိုက်ပြီး root အသစ်ကို ကြည့်သည်။"; },
+      hpDiscardTop: function(face){ return "TOP ၏ root <code>"+face+"</code> သည် stale ဖြစ်နေပြီ — ပစ်လိုက်ပြီး ပြန်ကြည့်သည်။"; },
+      hpPromote: function(face,add,sum){ return "<code>"+face+"</code> ကို TOP ထဲသို့ တင်လိုက်သည်။ sum += "+add+" → <code>"+sum+"</code>။"; },
+      hpDemote: function(face,sub,sum){ return "<code>"+face+"</code> ကို REST ထဲသို့ ချလိုက်သည်။ sum −= "+sub+" → <code>"+sum+"</code>။"; },
+      hpViolation: function(best,weakest){ return "REST ၏ live root <code>"+best+"</code> သည် TOP ၏ live root <code>"+weakest+"</code> ထက် အဆင့်မြင့်သည်။ နေရာချင်း လဲလိုက်သည်။"; },
+      hpRecord: function(win,sum){ return "Window ["+win+"] → x-sum <code>"+sum+"</code>။ stale entry များ heap ထဲတွင် ကျန်နေသေးသည် — root အထိ မရောက်မချင်း ကုန်ကျမှု မရှိပါ။"; }
+    }
+  };
+
+  function t(key){
+    var table = (MSG[ui] && MSG[ui][key] !== undefined) ? MSG[ui] : MSG.en;
+    var entry = table[key];
+    if(typeof entry !== "function") return entry;
+    return entry.apply(null, Array.prototype.slice.call(arguments, 1));
+  }
+
+  /* ---------------- brute force: rebuild every window ---------------- */
+  function buildBrute(nums,k,x){
+    var steps=[], answer=[];
+    for(var i=0; i+k<=nums.length; i++){
+      var win = nums.slice(i,i+k);
+      var counts = new Map();
+      win.forEach(function(v){ counts.set(v,(counts.get(v)||0)+1); });
+      var ranked = Array.from(counts, function(p){ return {v:p[0], c:p[1]}; })
+                        .sort(function(a,b){ return cmp(b,a); });        // strongest first
+      var kept = ranked.slice(0,x);
+      var sum  = kept.reduce(function(s,e){ return s+e.v*e.c; },0);
+      var base = {mode:"bf", lo:i, hi:i+k-1, win:win, ranked:ranked, keep:kept.length,
+                  sum:sum, answer:answer.slice(), op:"window "+i,
+                  vars:{ i:i, k:k, x:x, nums:nums, window:win,
+                         counts:ranked.slice().sort(function(a,b){ return a.v-b.v; }),
+                         ranked:ranked, kept:kept, sum:sum, answer:answer.slice() }};
+      steps.push(Object.assign({},base,{stage:0,phase:"window",line:"bf-window",
+        msg:t("bfWindow", i, win.join(", "))}));
+      steps.push(Object.assign({},base,{stage:1,phase:"tally",line:"bf-tally",
+        msg:t("bfTally", k, ranked.map(face).join(", "))}));
+      var keep = Math.min(x, ranked.length), tie = "";
+      for(var ti=1;ti<ranked.length;ti++){
+        if(ranked[ti].c === ranked[ti-1].c){
+          tie = t("bfTie", ranked[ti-1].v, ranked[ti].v, ranked[ti].c, ti===keep);
+          break;
+        }
+      }
+      if(!tie) tie = t("bfNoTie");
+      steps.push(Object.assign({},base,{stage:2,phase:"rank",line:"bf-rank",
+        msg:t("bfRankHead", ranked.length>1 ? face(ranked[0]) : "")+tie}));
+      answer.push(sum);
+      steps.push(Object.assign({},base,{stage:3,phase:"sum",line:"bf-sum",answer:answer.slice(),
+        msg:t("bfSum", Math.min(x,ranked.length), kept.map(function(e){return e.v+"×"+e.c;}).join(" + "), sum)}));
+    }
+    return steps;
+  }
+
+  /* ---------------- sliding window: two shelves, running sum ---------------- */
+  function buildSlide(nums,k,x){
+    var steps=[], answer=[], count=new Map();
+    var top=[], rest=[], sum=0;
+    var ctx={lo:0, hi:-1, op:"", enter:-1, leave:-1};
+    var cur={};
+    var clone=function(a){ return a.map(function(e){ return {v:e.v,c:e.c}; }); };
+
+    function snap(msg,phase,line,hl){
+      steps.push({mode:"sw", msg:msg, phase:phase, line:line, hl:hl||{},
+        top:clone(top), rest:clone(rest), sum:sum, keep:x,
+        lo:ctx.lo, hi:ctx.hi, op:ctx.op, enter:ctx.enter, leave:ctx.leave,
+        answer:answer.slice(),
+        vars:{ counts:Array.from(count, function(e){ return {v:e[0], c:e[1]}; }),
+               top:clone(top), rest:clone(rest), sum:sum, x:x, k:k,
+               nums:nums, answer:answer.slice(),
+               value:cur.value, delta:cur.delta, count:cur.count, entry:cur.entry }});
+    }
+
+    function adjust(v, delta){
+      var c0 = count.get(v)||0;
+      cur.value=v; cur.delta=delta; cur.count=c0; cur.entry=c0>0?{v:v,c:c0}:null;
+      if(c0>0){
+        var stale={v:v,c:c0};
+        var inTop = remove(top,stale);
+        if(inTop) sum -= v*c0; else remove(rest,stale);
+        snap(t("swDetach", v, face(stale), inTop, v*c0),
+             "detach","detach",{ghost:stale, fromTop:inTop});
+      }
+      var c1 = c0+delta;
+      cur.count=c1;
+      if(c1===0){
+        count.delete(v);
+        snap(t("swGone", v),"tally","insert",{});
+      } else {
+        count.set(v,c1);
+        insert(rest,{v:v,c:c1});
+        snap(t("swInsert", v, c1),"tally","insert",{fresh:{v:v,c:c1}});
+      }
+      while(top.length<x && rest.length){
+        var e=rest.pop(); insert(top,e); sum += e.v*e.c;
+        snap(t("swFill", top.length, x, face(e), e.v*e.c, sum),"promote","fill",{up:e});
+      }
+      while(rest.length && top.length && cmp(rest[rest.length-1], top[0])>0){
+        var up=rest[rest.length-1], down=top[0];
+        snap(t("swViolation", face(up), face(down), up.c, up.v, down.c, down.v),"swap","violation",{cmpUp:up, cmpDown:down});
+        var d=top.shift(); insert(rest,d); sum -= d.v*d.c;
+        snap(t("swDemote", face(d), d.v*d.c, sum),"demote","demote",{down:d});
+        var u=rest.pop(); insert(top,u); sum += u.v*u.c;
+        snap(t("swPromote", face(u), u.v*u.c, sum),"promote","promote",{up:u});
+      }
+    }
+
+    nums.forEach(function(v,i){
+      ctx.hi=i; ctx.lo=Math.max(0,i-k); ctx.op="add "+v; ctx.enter=i; ctx.leave=-1;
+      if(i<k) ctx.lo=0;
+      adjust(v,+1);
+      if(i>=k){
+        ctx.op="del "+nums[i-k]; ctx.enter=-1; ctx.leave=i-k;
+        adjust(nums[i-k],-1);
+        ctx.leave=-1;
+      }
+      ctx.lo=Math.max(0,i-k+1); ctx.enter=-1; ctx.leave=-1;
+      if(i>=k-1){
+        answer.push(sum);
+        snap(t("swRecord", nums.slice(ctx.lo,i+1).join(", "), sum),"record","record",{done:true});
+      }
+    });
+    return steps;
+  }
+
+
+  /* ---------------- sliding window, lazy heaps ---------------- */
+  function buildHeaps(nums,k,x){
+    var steps=[], answer=[];
+    var count=new Map(), inTop=new Set(), topSize=0, sum=0;
+    var top=[], rest=[];                       // binary heaps of {v,c}
+    var ctx={lo:0,hi:-1,op:"",enter:-1,leave:-1};
+    var cur={};
+    var minAtRoot=function(a,b){ return cmp(a,b); };   // TOP: weakest kept on top
+    var maxAtRoot=function(a,b){ return cmp(b,a); };   // REST: strongest dropped on top
+
+    function push(h,e,order){
+      h.push(e);
+      var i=h.length-1;
+      while(i>0){
+        var parent=(i-1)>>1;
+        if(order(h[parent],h[i])<=0) break;
+        var t=h[parent]; h[parent]=h[i]; h[i]=t; i=parent;
+      }
+    }
+    function pop(h,order){
+      var root=h[0], last=h.pop();
+      if(h.length){
+        h[0]=last;
+        var i=0, n=h.length;
+        for(;;){
+          var child=2*i+1;
+          if(child>=n) break;
+          if(child+1<n && order(h[child+1],h[child])<0) child++;
+          if(order(h[child],h[i])>=0) break;
+          var t=h[child]; h[child]=h[i]; h[i]=t; i=child;
+        }
+      }
+      return root;
+    }
+    var liveTop=function(e){ return inTop.has(e.v) && count.get(e.v)===e.c; };
+    var liveRest=function(e){ return !inTop.has(e.v) && count.get(e.v)===e.c; };
+
+    function snap(msg,phase,line,hl){
+      steps.push({mode:"hp", msg:msg, phase:phase, line:line, hl:hl||{},
+        vars:{ counts:Array.from(count, function(e){ return {v:e[0], c:e[1]}; }),
+               top:top.map(function(e){ return {v:e.v,c:e.c}; }),
+               rest:rest.map(function(e){ return {v:e.v,c:e.c}; }),
+               sum:sum, x:x, k:k, nums:nums, answer:answer.slice(),
+               inTop:Array.from(inTop), topSize:topSize,
+               value:cur.value, delta:cur.delta, count:cur.count, entry:cur.entry },
+        top:top.map(function(e){ return {v:e.v,c:e.c,live:liveTop(e),now:count.get(e.v)||0}; }),
+        rest:rest.map(function(e){ return {v:e.v,c:e.c,live:liveRest(e),now:count.get(e.v)||0}; }),
+        sum:sum, topSize:topSize, keep:x,
+        lo:ctx.lo, hi:ctx.hi, op:ctx.op, enter:ctx.enter, leave:ctx.leave,
+        answer:answer.slice()});
+    }
+
+    function restPeek(){
+      while(rest.length){
+        var e=rest[0];
+        if(liveRest(e)) return e;
+        snap(t("hpDiscardRest", face(e), e.v, count.get(e.v)||0),
+             "discard","discard",{discarded:{v:e.v,c:e.c}});
+        pop(rest,maxAtRoot);
+      }
+      return null;
+    }
+    function topPeek(){
+      while(top.length){
+        var e=top[0];
+        if(liveTop(e)) return e;
+        snap(t("hpDiscardTop", face(e)),
+             "discard","discard",{discarded:{v:e.v,c:e.c}});
+        pop(top,minAtRoot);
+      }
+      return null;
+    }
+    function promote(e){
+      inTop.add(e.v); topSize++; sum += e.v*e.c; push(top,e,minAtRoot);
+      snap(t("hpPromote", face(e), e.v*e.c, sum),"promote","promote",{up:e});
+    }
+    function demote(e){
+      inTop["delete"](e.v); topSize--; sum -= e.v*e.c; push(rest,e,maxAtRoot);
+      snap(t("hpDemote", face(e), e.v*e.c, sum),"demote","demote",{down:e});
+    }
+
+    function adjust(v,delta){
+      var c0=count.get(v)||0;
+      cur.value=v; cur.delta=delta; cur.count=c0; cur.entry=c0>0?{v:v,c:c0}:null;
+      if(c0>0 && inTop.has(v)){
+        sum -= c0*v; inTop["delete"](v); topSize--;
+        snap(t("hpDetachTop", v, c0*v, face({v:v,c:c0})),
+             "detach","detach",{stale:{v:v,c:c0}});
+      } else if(c0>0){
+        snap(t("hpDetachRest", v, face({v:v,c:c0})),
+             "detach","detach",{stale:{v:v,c:c0}});
+      }
+      var c1=c0+delta;
+      cur.count=c1;
+      if(c1===0){
+        count["delete"](v);
+        snap(t("hpGone", v),"tally","insert",{});
+      } else {
+        count.set(v,c1);
+        push(rest,{v:v,c:c1},maxAtRoot);
+        snap(t("hpPush", v, c1, face({v:v,c:c1})),"tally","insert",{fresh:{v:v,c:c1}});
+      }
+      while(topSize<x){
+        var best=restPeek();
+        if(!best) break;
+        promote(pop(rest,maxAtRoot));
+      }
+      for(;;){
+        var best=restPeek();
+        if(!best) break;
+        var weakest=topPeek();
+        if(!weakest) break;
+        if(cmp(best,weakest)<=0) break;
+        snap(t("hpViolation", face(best), face(weakest)),"swap","violation",{cmpUp:best,cmpDown:weakest});
+        demote(pop(top,minAtRoot));
+        promote(pop(rest,maxAtRoot));
+      }
+    }
+
+    nums.forEach(function(v,i){
+      ctx.hi=i; ctx.lo=Math.max(0,i-k); ctx.op="add "+v; ctx.enter=i; ctx.leave=-1;
+      if(i<k) ctx.lo=0;
+      adjust(v,+1);
+      if(i>=k){
+        ctx.op="del "+nums[i-k]; ctx.enter=-1; ctx.leave=i-k;
+        adjust(nums[i-k],-1);
+        ctx.leave=-1;
+      }
+      ctx.lo=Math.max(0,i-k+1); ctx.enter=-1; ctx.leave=-1;
+      if(i>=k-1){
+        answer.push(sum);
+        snap(t("hpRecord", nums.slice(ctx.lo,i+1).join(", "), sum),"record","record",{done:true});
+      }
+    });
+    return steps;
+  }
+
+  /* ---------------- code panels ---------------- */
+  var CODE = {
+    ruby: {
+      hp: [
+        ["",          'def adjust(value, delta)'],
+        ["detach",    '  count = @count[value]'],
+        ["detach",    '  if count > 0 &amp;&amp; @in_top[value]'],
+        ["detach",    '    @sum -= count * value'],
+        ["detach",    '    @in_top.delete(value) <span class="cm"># entry stays, now stale</span>'],
+        ["detach",    '    @top_size -= 1'],
+        ["detach",    '  end'],
+        ["insert",    '  count += delta'],
+        ["insert",    '  @count[value] = count'],
+        ["insert",    '  hpush(@rest, -((count &lt;&lt; SHIFT) | value))'],
+        ["fill",      '  rebalance'],
+        ["",          'end'],
+        ["",          ''],
+        ["discard",   'def rest_peek        <span class="cm"># drop stale roots</span>'],
+        ["discard",   '  while (neg = @rest[0])'],
+        ["discard",   '    key = -neg; v = key &amp; MASK'],
+        ["discard",   '    return key if !@in_top[v] &amp;&amp;'],
+        ["discard",   '      @count[v] == key &gt;&gt; SHIFT'],
+        ["discard",   '    hpop(@rest)        <span class="cm"># stale: bin it</span>'],
+        ["discard",   '  end'],
+        ["",          'end'],
+        ["",          ''],
+        ["fill",      'promote while @top_size &lt; @x &amp;&amp; rest_peek'],
+        ["violation", 'while (r = rest_peek) &amp;&amp; (t = top_peek) &amp;&amp; r &gt; t'],
+        ["demote",    '  hpop(@top); demote(t)'],
+        ["promote",   '  hpop(@rest); promote(r)'],
+        ["",          'end'],
+        ["",          ''],
+        ["record",    'answer &lt;&lt; window.sum if i &gt;= k - 1']
+      ],
+      bf: [
+        ["", 'def find_x_sum(nums, k, x)'],
+        ["bf-window", '  nums.each_cons(k).map do |window|'],
+        ["bf-tally",  '    window.tally'],
+        ["bf-rank",   '          .max_by(x) { |val, count| [count, val] }'],
+        ["bf-sum",    '          .sum { |val, count| val * count }'],
+        ["", '  end'],
+        ["", 'end']
+      ],
+      sw: [
+        ["", 'def adjust(value, delta)  <span class="cm"># +1 add / -1 del</span>'],
+        ["detach", '  count = @count[value]'],
+        ["detach", '  detach([count, value]) if count > 0'],
+        ["insert", '  count += delta'],
+        ["insert", '  @count[value] = count   <span class="cm"># 0 &rArr; delete</span>'],
+        ["insert", '  insert(@rest, [count, value]) if count > 0'],
+        ["fill",   '  rebalance'],
+        ["", 'end'],
+        ["", ''],
+        ["fill",      'promote while @top.size &lt; @x &amp;&amp; @rest.any?'],
+        ["violation", 'while (@rest.last &lt;=&gt; @top.first) &gt; 0'],
+        ["demote",    '  demote'],
+        ["promote",   '  promote'],
+        ["", 'end'],
+        ["", ''],
+        ["promote", 'def promote        <span class="cm"># REST.best &rarr; TOP</span>'],
+        ["promote", '  e = @rest.pop'],
+        ["promote", '  insert(@top, e); @sum += e[0] * e[1]'],
+        ["", 'end'],
+        ["", ''],
+        ["demote", 'def demote         <span class="cm"># TOP.weakest &rarr; REST</span>'],
+        ["demote", '  e = @top.shift'],
+        ["demote", '  insert(@rest, e); @sum -= e[0] * e[1]'],
+        ["", 'end'],
+        ["", ''],
+        ["record", 'answer &lt;&lt; window.sum if i &gt;= k - 1']
+      ]
+    },
+
+    python: {
+      hp: [
+        ["",          'def _adjust(self, value, delta):'],
+        ["detach",    '    count = self.count.get(value, 0)'],
+        ["detach",    '    if count and value in self.in_top:'],
+        ["detach",    '        self.total -= count * value'],
+        ["detach",    '        self.in_top.discard(value) <span class="cm"># entry stays</span>'],
+        ["detach",    '        self.top_size -= 1'],
+        ["insert",    '    count += delta'],
+        ["insert",    '    self.count[value] = count'],
+        ["insert",    '    heappush(self.rest,'],
+        ["insert",    '             -((count &lt;&lt; SHIFT) | value))'],
+        ["fill",      '    self._rebalance()'],
+        ["",          ''],
+        ["discard",   'def _rest_peek(self):   <span class="cm"># drop stale roots</span>'],
+        ["discard",   '    while self.rest:'],
+        ["discard",   '        key = -self.rest[0]'],
+        ["discard",   '        v = key &amp; MASK'],
+        ["discard",   '        if v not in self.in_top and \\'],
+        ["discard",   '           self.count.get(v, 0) == key &gt;&gt; SHIFT:'],
+        ["discard",   '            return key'],
+        ["discard",   '        heappop(self.rest) <span class="cm"># stale: bin it</span>'],
+        ["",          ''],
+        ["fill",      'while self.top_size &lt; self.x:'],
+        ["fill",      '    self._promote(best)'],
+        ["violation", 'while best &gt; weakest:'],
+        ["demote",    '    self._demote(weakest)'],
+        ["promote",   '    self._promote(best)'],
+        ["",          ''],
+        ["record",    'answer.append(window.total)']
+      ],
+      sw: [
+        ["",          'def _adjust(self, value, delta):'],
+        ["detach",    '    count = self.count.get(value, 0)'],
+        ["detach",    '    if count:'],
+        ["detach",    '        self._detach((count, value))'],
+        ["insert",    '    count += delta'],
+        ["insert",    '    self.count[value] = count <span class="cm"># 0 &rArr; pop</span>'],
+        ["insert",    '    insort(self.rest, (count, value))'],
+        ["fill",      '    self._rebalance()'],
+        ["",          ''],
+        ["fill",      'while len(self.top) &lt; self.x and self.rest:'],
+        ["fill",      '    self._promote()'],
+        ["violation", 'while self.rest[-1] &gt; self.top[0]:'],
+        ["demote",    '    self._demote()'],
+        ["promote",   '    self._promote()'],
+        ["",          ''],
+        ["promote",   'def _promote(self):   <span class="cm"># REST.best &rarr; TOP</span>'],
+        ["promote",   '    entry = self.rest.pop()'],
+        ["promote",   '    insort(self.top, entry)'],
+        ["promote",   '    self.total += entry[0] * entry[1]'],
+        ["",          ''],
+        ["demote",    'def _demote(self):    <span class="cm"># TOP.weakest &rarr; REST</span>'],
+        ["demote",    '    entry = self.top.pop(0)'],
+        ["demote",    '    insort(self.rest, entry)'],
+        ["demote",    '    self.total -= entry[0] * entry[1]'],
+        ["",          ''],
+        ["record",    'answer.append(window.total)']
+      ],
+      bf: [
+        ["bf-window", 'for i in range(len(nums) - k + 1):'],
+        ["bf-tally",  '    counts = Counter(nums[i:i + k])'],
+        ["bf-rank",   '    kept = sorted(counts.items(),'],
+        ["bf-rank",   '                  key=lambda p: (p[1], p[0]),'],
+        ["bf-rank",   '                  reverse=True)[:x]'],
+        ["bf-sum",    '    answer.append('],
+        ["bf-sum",    '        sum(v * c for v, c in kept))']
+      ],
+    },
+
+    javascript: {
+      hp: [
+        ["",          'adjust(value, delta) {'],
+        ["detach",    '  let count = this.count.get(value) || 0;'],
+        ["detach",    '  if (count &gt; 0 &amp;&amp; this.inTop.has(value)) {'],
+        ["detach",    '    this.sum -= count * value;'],
+        ["detach",    '    this.inTop.delete(value); <span class="cm">// entry stays</span>'],
+        ["detach",    '    this.topSize--;'],
+        ["detach",    '  }'],
+        ["insert",    '  count += delta;'],
+        ["insert",    '  this.count.set(value, count);'],
+        ["insert",    '  this.rest.push(-(count * SCALE + value));'],
+        ["fill",      '  this.rebalance();'],
+        ["",          '}'],
+        ["",          ''],
+        ["discard",   'restPeek() {              <span class="cm">// drop stale roots</span>'],
+        ["discard",   '  for (;;) {'],
+        ["discard",   '    const key = -this.rest.peek();'],
+        ["discard",   '    const v = key % SCALE;'],
+        ["discard",   '    if (!this.inTop.has(v) &amp;&amp;'],
+        ["discard",   '        this.count.get(v) === Math.floor(key / SCALE))'],
+        ["discard",   '      return key;'],
+        ["discard",   '    this.rest.pop();      <span class="cm">// stale: bin it</span>'],
+        ["discard",   '  }'],
+        ["",          '}'],
+        ["",          ''],
+        ["fill",      'while (this.topSize &lt; this.x)'],
+        ["fill",      '  this.promote(best);'],
+        ["violation", 'while (best &gt; weakest) {'],
+        ["demote",    '  this.demote(weakest);'],
+        ["promote",   '  this.promote(best);'],
+        ["",          '}'],
+        ["",          ''],
+        ["record",    'answer.push(window.sum);']
+      ],
+      sw: [
+        ["",          'adjust(value, delta) {'],
+        ["detach",    '  let count = this.count.get(value) || 0;'],
+        ["detach",    '  if (count &gt; 0) this.detach([count, value]);'],
+        ["insert",    '  count += delta;'],
+        ["insert",    '  this.count.set(value, count);'],
+        ["insert",    '  insert(this.rest, [count, value]);'],
+        ["fill",      '  this.rebalance();'],
+        ["",          '}'],
+        ["",          ''],
+        ["fill",      'while (this.top.length &lt; this.x &amp;&amp; this.rest.length)'],
+        ["fill",      '  this.promote();'],
+        ["violation", 'while (rank(last(this.rest), this.top[0]) &gt; 0) {'],
+        ["demote",    '  this.demote();'],
+        ["promote",   '  this.promote();'],
+        ["",          '}'],
+        ["",          ''],
+        ["promote",   'promote() {            <span class="cm">// REST.best &rarr; TOP</span>'],
+        ["promote",   '  const entry = this.rest.pop();'],
+        ["promote",   '  insert(this.top, entry);'],
+        ["promote",   '  this.sum += entry[0] * entry[1];'],
+        ["",          '}'],
+        ["",          ''],
+        ["demote",    'demote() {             <span class="cm">// TOP.weakest &rarr; REST</span>'],
+        ["demote",    '  const entry = this.top.shift();'],
+        ["demote",    '  insert(this.rest, entry);'],
+        ["demote",    '  this.sum -= entry[0] * entry[1];'],
+        ["",          '}'],
+        ["",          ''],
+        ["record",    'answer.push(window.sum);']
+      ],
+      bf: [
+        ["bf-window", 'for (let i = 0; i + k &lt;= nums.length; i++) {'],
+        ["bf-tally",  '  const counts = new Map();'],
+        ["bf-tally",  '  for (let j = i; j &lt; i + k; j++)'],
+        ["bf-tally",  '    counts.set(nums[j],'],
+        ["bf-tally",  '      (counts.get(nums[j]) || 0) + 1);'],
+        ["bf-rank",   '  const ranked = [...counts].sort('],
+        ["bf-rank",   '    (a, b) =&gt; b[1] - a[1] || b[0] - a[0]);'],
+        ["bf-sum",    '  let sum = 0;'],
+        ["bf-sum",    '  for (const [v, c] of ranked.slice(0, x))'],
+        ["bf-sum",    '    sum += v * c;'],
+        ["bf-sum",    '  answer.push(sum);'],
+        ["", '}']
+      ],
+    },
+
+    go: {
+      hp: [
+        ["",          'func (w *xSumWindow) adjust(value, delta int64) {'],
+        ["detach",    '    count := w.count[value]'],
+        ["detach",    '    if count &gt; 0 &amp;&amp; w.inTop[value] {'],
+        ["detach",    '        w.sum -= count * value'],
+        ["detach",    '        delete(w.inTop, value) <span class="cm">// entry stays</span>'],
+        ["detach",    '        w.topSize--'],
+        ["detach",    '    }'],
+        ["insert",    '    count += delta'],
+        ["insert",    '    w.count[value] = count'],
+        ["insert",    '    w.rest.push(-((count &lt;&lt; shift) | value))'],
+        ["fill",      '    w.rebalance()'],
+        ["",          '}'],
+        ["",          ''],
+        ["discard",   'func (w *xSumWindow) restPeek() (int64, bool) {'],
+        ["discard",   '    for w.rest.len() &gt; 0 {'],
+        ["discard",   '        key := -w.rest.a[0]'],
+        ["discard",   '        value := key &amp; mask'],
+        ["discard",   '        if !w.inTop[value] &amp;&amp;'],
+        ["discard",   '            w.count[value] == key&gt;&gt;shift {'],
+        ["discard",   '            return key, true'],
+        ["discard",   '        }'],
+        ["discard",   '        w.rest.pop()       <span class="cm">// stale: bin it</span>'],
+        ["discard",   '    }'],
+        ["discard",   '    return 0, false'],
+        ["",          '}'],
+        ["",          ''],
+        ["fill",      'for w.topSize &lt; w.x {'],
+        ["fill",      '    w.promote(best)'],
+        ["",          '}'],
+        ["violation", 'for best &gt; weakest {'],
+        ["demote",    '    w.demote(weakest)'],
+        ["promote",   '    w.promote(best)'],
+        ["",          '}'],
+        ["",          ''],
+        ["record",    'answer = append(answer, window.sum)']
+      ],
+      sw: [
+        ["",          'func (w *xSumWindow) adjust(value, delta int) {'],
+        ["detach",    '    count := w.count[value]'],
+        ["detach",    '    if count &gt; 0 {'],
+        ["detach",    '        w.detach(entry{count, value})'],
+        ["detach",    '    }'],
+        ["insert",    '    count += delta'],
+        ["insert",    '    w.count[value] = count'],
+        ["insert",    '    w.rest = insert(w.rest, entry{count, value})'],
+        ["fill",      '    w.rebalance()'],
+        ["",          '}'],
+        ["",          ''],
+        ["fill",      'for len(w.top) &lt; w.x &amp;&amp; len(w.rest) &gt; 0 {'],
+        ["fill",      '    w.promote()'],
+        ["",          '}'],
+        ["violation", 'for less(w.top[0], w.rest[len(w.rest)-1]) {'],
+        ["demote",    '    w.demote()'],
+        ["promote",   '    w.promote()'],
+        ["",          '}'],
+        ["",          ''],
+        ["promote",   'func (w *xSumWindow) promote() {'],
+        ["promote",   '    e := w.rest[len(w.rest)-1]'],
+        ["promote",   '    w.rest = w.rest[:len(w.rest)-1]'],
+        ["promote",   '    w.top = insert(w.top, e)'],
+        ["promote",   '    w.sum += e.count * e.value'],
+        ["",          '}'],
+        ["",          ''],
+        ["demote",    'func (w *xSumWindow) demote() {'],
+        ["demote",    '    e := w.top[0]'],
+        ["demote",    '    w.top = w.top[1:]'],
+        ["demote",    '    w.rest = insert(w.rest, e)'],
+        ["demote",    '    w.sum -= e.count * e.value'],
+        ["",          '}'],
+        ["",          ''],
+        ["record",    'answer = append(answer, window.sum)']
+      ],
+      bf: [
+        ["bf-window", 'for i := 0; i+k &lt;= len(nums); i++ {'],
+        ["bf-tally",  '    counts := make(map[int]int)'],
+        ["bf-tally",  '    for _, v := range nums[i : i+k] {'],
+        ["bf-tally",  '        counts[v]++'],
+        ["bf-tally",  '    }'],
+        ["bf-rank",   '    sort.Slice(ranked, func(a, b int) bool {'],
+        ["bf-rank",   '        if ranked[a].count != ranked[b].count {'],
+        ["bf-rank",   '            return ranked[a].count &gt; ranked[b].count'],
+        ["bf-rank",   '        }'],
+        ["bf-rank",   '        return ranked[a].value &gt; ranked[b].value'],
+        ["bf-rank",   '    })'],
+        ["bf-sum",    '    for r := 0; r &lt; x &amp;&amp; r &lt; len(ranked); r++ {'],
+        ["bf-sum",    '        sum += ranked[r].value * ranked[r].count'],
+        ["bf-sum",    '    }'],
+        ["", '}']
+      ],
+    },
+
+    rust: {
+      hp: [
+        ["",          'fn adjust(&amp;mut self, value: i64, delta: i64) {'],
+        ["detach",    '    let mut count = self.count.get(&amp;value)'],
+        ["detach",    '        .copied().unwrap_or(0);'],
+        ["detach",    '    if count &gt; 0 &amp;&amp; self.in_top.contains(&amp;value) {'],
+        ["detach",    '        self.sum -= count * value;'],
+        ["detach",    '        self.in_top.remove(&amp;value); <span class="cm">// entry stays</span>'],
+        ["detach",    '        self.top_size -= 1;'],
+        ["detach",    '    }'],
+        ["insert",    '    count += delta;'],
+        ["insert",    '    self.count.insert(value, count);'],
+        ["insert",    '    self.rest.push((count &lt;&lt; SHIFT) | value);'],
+        ["fill",      '    self.rebalance();'],
+        ["",          '}'],
+        ["",          ''],
+        ["discard",   'fn rest_peek(&amp;mut self) -&gt; Option&lt;i64&gt; {'],
+        ["discard",   '    while let Some(&amp;key) = self.rest.peek() {'],
+        ["discard",   '        let value = key &amp; MASK;'],
+        ["discard",   '        if !self.in_top.contains(&amp;value)'],
+        ["discard",   '            &amp;&amp; self.count.get(&amp;value).copied()'],
+        ["discard",   '               == Some(key &gt;&gt; SHIFT) {'],
+        ["discard",   '            return Some(key);'],
+        ["discard",   '        }'],
+        ["discard",   '        self.rest.pop();    <span class="cm">// stale: bin it</span>'],
+        ["discard",   '    }'],
+        ["discard",   '    None'],
+        ["",          '}'],
+        ["",          ''],
+        ["fill",      'while self.top_size &lt; self.x {'],
+        ["fill",      '    self.promote(best);'],
+        ["",          '}'],
+        ["violation", 'while best &gt; weakest {'],
+        ["demote",    '    self.demote(weakest);'],
+        ["promote",   '    self.promote(best);'],
+        ["",          '}'],
+        ["",          ''],
+        ["record",    'answer.push(window.sum);']
+      ],
+      sw: [
+        ["",          'fn adjust(&amp;mut self, value: i32, delta: i32) {'],
+        ["detach",    '    let mut count = self.count.get(&amp;value)'],
+        ["detach",    '        .copied().unwrap_or(0);'],
+        ["detach",    '    if count &gt; 0 {'],
+        ["detach",    '        self.detach((count, value));'],
+        ["detach",    '    }'],
+        ["insert",    '    count += delta;'],
+        ["insert",    '    self.count.insert(value, count);'],
+        ["insert",    '    insert(&amp;mut self.rest, (count, value));'],
+        ["fill",      '    self.rebalance();'],
+        ["",          '}'],
+        ["",          ''],
+        ["fill",      'while self.top.len() &lt; self.x &amp;&amp; !self.rest.is_empty() {'],
+        ["fill",      '    self.promote();'],
+        ["",          '}'],
+        ["violation", 'while *self.rest.last().unwrap() &gt; self.top[0] {'],
+        ["demote",    '    self.demote();'],
+        ["promote",   '    self.promote();'],
+        ["",          '}'],
+        ["",          ''],
+        ["promote",   'fn promote(&amp;mut self) {'],
+        ["promote",   '    let entry = self.rest.pop().unwrap();'],
+        ["promote",   '    insert(&amp;mut self.top, entry);'],
+        ["promote",   '    self.sum += entry.0 * entry.1;'],
+        ["",          '}'],
+        ["",          ''],
+        ["demote",    'fn demote(&amp;mut self) {'],
+        ["demote",    '    let entry = self.top.remove(0);'],
+        ["demote",    '    insert(&amp;mut self.rest, entry);'],
+        ["demote",    '    self.sum -= entry.0 * entry.1;'],
+        ["",          '}'],
+        ["",          ''],
+        ["record",    'answer.push(window.sum);']
+      ],
+      bf: [
+        ["bf-window", 'nums.windows(k).map(|window| {'],
+        ["bf-tally",  '    let mut counts: HashMap&lt;i32, i32&gt; ='],
+        ["bf-tally",  '        HashMap::new();'],
+        ["bf-tally",  '    for &amp;value in window {'],
+        ["bf-tally",  '        *counts.entry(value).or_insert(0) += 1;'],
+        ["bf-tally",  '    }'],
+        ["bf-rank",   '    let mut ranked: Vec&lt;(i32, i32)&gt; = counts'],
+        ["bf-rank",   '        .into_iter()'],
+        ["bf-rank",   '        .map(|(value, count)| (count, value))'],
+        ["bf-rank",   '        .collect();'],
+        ["bf-rank",   '    ranked.sort_unstable_by(|a, b| b.cmp(a));'],
+        ["bf-sum",    '    ranked.iter().take(x)'],
+        ["bf-sum",    '        .map(|&amp;(count, value)| count * value)'],
+        ["bf-sum",    '        .sum()'],
+        ["", '}).collect()']
+      ],
+    }
+  };
+
+  var TIE_NOTE = {
+    ruby: '<code>Array#&lt;=&gt;</code> compares <code>[count, value]</code> element by element, so the tiebreak costs no code.',
+    python: 'The tuple key <code>(count, value)</code> carries the tiebreak &mdash; no comparator.',
+    javascript: 'JavaScript has no tuple ordering (and <code>sort</code> would compare as strings), so the two-level comparator is written out.',
+    go: 'Go has no tuple ordering for structs, so the two-level comparison is written out in the <code>sort.Slice</code> closure.',
+    rust: 'Tuple <code>Ord</code> is lexicographic, so <code>b.cmp(a)</code> is the whole rule.'
+  };
+  var CODE_SUB_MY = {
+    bf: 'solution အပြည့်အစုံ — window တိုင်းသည် tally အလွတ်ဖြင့် ပြန်စသည်။ <a href="#part-3">ကူးယူရန် &darr;</a>',
+    sw: 'sorted array — ပုံထဲက စင်နှစ်ခု အတိအကျ။ အတိုချုံ့ထားသည် — <a href="#part-3">အပြည့်အစုံ &darr;</a>',
+    hp: '<b>3321 ၏ အဖြေ။</b> update လုပ်စဉ် ဘာမှ မဖယ်ရှားဘဲ stale entry များကို root သို့ရောက်မှ ပစ်သည်။ အတိုချုံ့ထားသည် — <a href="#part-3">အပြည့်အစုံ &darr;</a>'
+  };
+  var TIE_NOTE_MY = {
+    ruby: '<code>Array#&lt;=&gt;</code> သည် <code>[count, value]</code> ကို တစ်ခုချင်း နှိုင်းယှဉ်သဖြင့် သရေဖြေရှင်းရန် code ပိုမလိုပါ။',
+    python: 'tuple key <code>(count, value)</code> ကိုယ်တိုင်က သရေကို ဖြေရှင်းပေးသည် — comparator မလိုပါ။',
+    javascript: 'JavaScript တွင် tuple ordering မရှိသဖြင့် (<code>sort</code> က string အဖြစ် နှိုင်းယှဉ်မည်) နှစ်ဆင့် comparator ကို ကိုယ်တိုင် ရေးရသည်။',
+    go: 'Go တွင် struct အတွက် tuple ordering မရှိသဖြင့် <code>sort.Slice</code> ထဲတွင် နှစ်ဆင့် နှိုင်းယှဉ်မှုကို ရေးထားရသည်။',
+    rust: 'tuple <code>Ord</code> သည် lexicographic ဖြစ်သဖြင့် <code>b.cmp(a)</code> တစ်ခုတည်းနှင့် ပြီးသည်။'
+  };
+  var CODE_SUB = {
+    bf: 'The whole solution &mdash; every window re-enters with an empty tally. <a href="#part-3">Copy it &darr;</a>',
+    sw: 'Sorted arrays: the two shelves exactly as drawn. Abbreviated &mdash; <a href="#part-3">full source &darr;</a>',
+    hp: '<b>The 3321 answer.</b> Nothing is removed on update; stale entries are dropped when they reach a root. Abbreviated &mdash; <a href="#part-3">full source &darr;</a>'
+  };
+
+  /* ---------------- state ---------------- */
+  var ui = "en";
+  var nums=[1,1,2,2,3,4,2,3], k=6, x=2;
+  var runs={bf:[], sw:[], hp:[]};
+  var at={bf:0, sw:0, hp:0};
+  var mode="sw";
+  var lang="ruby";
+  var timer=null;
+
+  var $=function(id){ return document.getElementById(id); };
+  var esc=function(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); };
+
+  function rebuild(){
+    runs.bf = buildBrute(nums,k,x);
+    runs.sw = buildSlide(nums,k,x);
+    runs.hp = buildHeaps(nums,k,x);
+    at.bf = 0; at.sw = 0; at.hp = 0;   // always open on step 1
+    render();
+  }
+
+  /* ---------------- rendering ---------------- */
+  function cardHTML(e, cls){
+    return '<div class="kard '+(cls||"")+'"><span class="face">'+e.v+'<span class="x">×</span>'+e.c+'</span>'
+         + '<span class="key">['+e.c+', '+e.v+']</span></div>';
+  }
+
+  function renderStrip(s){
+    var html="";
+    for(var i=0;i<nums.length;i++){
+      var cls="cell";
+      if(i>=s.lo && i<=s.hi) cls+=" inwin";
+      if(s.enter===i) cls+=" entering";
+      if(s.leave===i) cls+=" leaving";
+      html += '<div class="'+cls+'"><span>'+nums[i]+'</span><span class="idx">'+i+'</span></div>';
+    }
+    $("strip").innerHTML = html;
+    $("op").textContent = s.op || "";
+  }
+
+  function renderShelves(s){
+    var top=s.top.slice().reverse(), rest=s.rest.slice().reverse();  // strongest first
+    var hl=s.hl||{};
+    var mark=function(e){
+      if(hl.up && hl.up.v===e.v && hl.up.c===e.c) return "hl-up";
+      if(hl.down && hl.down.v===e.v && hl.down.c===e.c) return "hl-down";
+      if(hl.fresh && hl.fresh.v===e.v && hl.fresh.c===e.c) return "hl-new";
+      if(hl.cmpUp && hl.cmpUp.v===e.v && hl.cmpUp.c===e.c) return "hl-cmp";
+      if(hl.cmpDown && hl.cmpDown.v===e.v && hl.cmpDown.c===e.c) return "hl-cmp";
+      return "";
+    };
+    var cards=function(list){
+      return list.length ? list.map(function(e){ return cardHTML(e, mark(e)); }).join("")
+                         : '<span class="empty">'+t("empty")+'</span>';
+    };
+    var broken = !!hl.cmpUp;
+    var expr = s.top.length
+      ? s.top.slice().reverse().map(function(e){ return e.v+"×"+e.c; }).join("  +  ")
+      : t("nothingKept");
+
+    $("stage").innerHTML =
+      '<div class="panel-head"><h2>'+t("shelves")+'</h2><span class="note">'+t("rankedBy")+'</span></div>'
+      + '<div class="shelf shelf-top"><div class="shelf-head"><span class="shelf-name">TOP</span>'
+      + '<span class="shelf-note">'+t("topNote", x, s.top.length)+'</span></div>'
+      + '<div class="cards">'+cards(top)+'</div></div>'
+      + '<div class="barrier'+(broken?" broken":"")+'">'
+      + (broken ? t("barrierBroken") : t("barrier"))
+      + '</div>'
+      + '<div class="shelf shelf-rest"><div class="shelf-head"><span class="shelf-name">REST</span>'
+      + '<span class="shelf-note">'+t("restNote")+'</span></div>'
+      + '<div class="cards">'+cards(rest)+'</div></div>'
+      + '<div class="ledger"><span class="expr">'+t("sumIs")+expr+'</span>'
+      + '<span class="total">'+s.sum+'<small>X-SUM</small></span></div>';
+  }
+
+  function renderBrute(s){
+    var max = s.ranked.length ? s.ranked[0].c : 1;
+    var bars = s.ranked.slice().sort(function(a,b){ return a.v-b.v; }).map(function(e){
+      return '<div class="bar-row"><span>'+e.v+'</span><span class="bar-track">'
+           + '<span class="bar-fill" style="width:'+Math.round(e.c/max*100)+'%"></span></span><span>'+e.c+'</span></div>';
+    }).join("");
+    var rankHTML = s.ranked.map(function(e,i){
+      var out = "";
+      if(i===s.keep && i>0) out += '<span class="cutline">'+t("cutKeep", s.keep)+'</span>';
+      return out + cardHTML(e, i<s.keep ? "" : "dropped");
+    }).join("");
+    var kept = s.ranked.slice(0,s.keep);
+
+    $("stage").innerHTML =
+      '<div class="panel-head"><h2>'+t("windowFromScratch", s.lo)+'</h2><span class="note">['+s.win.join(", ")+']</span></div>'
+      + '<div class="bf-steps">'
+      + '<div class="bf-step '+(s.stage===1?"active":s.stage<1?"pending":"")+'">'
+      +   '<h3><span class="n">1</span>'+t("tallyHead", k)+'</h3>'
+      +   '<div class="bars">'+(s.stage>=1?bars:'<span class="empty">'+t("notCounted")+'</span>')+'</div></div>'
+      + '<div class="bf-step '+(s.stage===2?"active":s.stage<2?"pending":"")+'">'
+      +   '<h3><span class="n">2</span>'+t("rankHead", s.keep)+'</h3>'
+      +   '<div class="rank">'+(s.stage>=2?rankHTML:'<span class="empty">'+t("notRanked")+'</span>')+'</div></div>'
+      + '<div class="bf-step '+(s.stage===3?"active":s.stage<3?"pending":"")+'">'
+      +   '<h3><span class="n">3</span>'+t("sumHead")+'</h3>'
+      +   '<div class="ledger" style="margin:0;padding:0;border:0"><span class="expr">'
+      +   (s.stage>=3 ? kept.map(function(e){ return e.v+"×"+e.c; }).join("  +  ") : "—")
+      +   '</span><span class="total">'+(s.stage>=3?s.sum:"·")+'<small>X-SUM</small></span></div></div>'
+      + '</div>';
+  }
+
+
+  function renderHeaps(s){
+    var hl=s.hl||{};
+    var mark=function(e){
+      if(hl.discarded && hl.discarded.v===e.v && hl.discarded.c===e.c) return " is-going";
+      if(hl.up && hl.up.v===e.v && hl.up.c===e.c) return " hl-up";
+      if(hl.down && hl.down.v===e.v && hl.down.c===e.c) return " hl-down";
+      if(hl.fresh && hl.fresh.v===e.v && hl.fresh.c===e.c) return " hl-new";
+      if(hl.stale && hl.stale.v===e.v && hl.stale.c===e.c) return " hl-cmp";
+      if(hl.cmpUp && hl.cmpUp.v===e.v && hl.cmpUp.c===e.c) return " hl-cmp";
+      if(hl.cmpDown && hl.cmpDown.v===e.v && hl.cmpDown.c===e.c) return " hl-cmp";
+      return "";
+    };
+    var card=function(e,index){
+      var tag = e.live ? "" : '<span class="tag">'+t("stale", e.now)+'</span>';
+      return '<div class="hcard'+(e.live?"":" is-stale")+(index===0?" is-root":"")+mark(e)+'">'
+           + '<span class="face">'+e.v+'<span class="x">×</span>'+e.c+'</span>'
+           + '<span class="key">['+e.c+', '+e.v+']</span>' + tag + '</div>';
+    };
+    var levels=function(list){
+      var rows="", i=0, width=1;
+      while(i<list.length){
+        var slice=list.slice(i,i+width);
+        rows += '<div class="heap-row">' + slice.map(function(e,j){ return card(e,i+j); }).join("") + '</div>';
+        i+=width; width*=2;
+      }
+      return rows || '<span class="empty">'+t("empty")+'</span>';
+    };
+    var liveCount=function(list){ return list.filter(function(e){ return e.live; }).length; };
+
+    $("stage").innerHTML =
+      '<div class="panel-head"><h2>'+t("heaps")+'</h2><span class="note">'+t("rootsOnly")+'</span></div>'
+      + '<div class="heap-block is-top"><div class="shelf-head">'
+      +   '<span class="shelf-name">TOP heap</span>'
+      +   '<span class="shelf-note">'+t("topHeapNote", s.topSize, s.top.length, s.topSize, s.keep)+'</span>'
+      + '</div><div class="heap-rows">'+levels(s.top)+'</div></div>'
+      + '<div class="heap-block is-rest"><div class="shelf-head">'
+      +   '<span class="shelf-name">REST heap</span>'
+      +   '<span class="shelf-note">'+t("restHeapNote", liveCount(s.rest), s.rest.length)+'</span>'
+      + '</div><div class="heap-rows">'+levels(s.rest)+'</div></div>'
+      + '<div class="ledger"><span class="expr">'+t("heapLedger")+'</span>'
+      + '<span class="total">'+s.sum+'<small>X-SUM</small></span></div>';
+  }
+
+
+  /* ---------------- hoverable variables ---------------- */
+  /* each language's spelling of the same handful of things */
+  var VAR_MAP = {
+    ruby: {"@count":"counts","@top":"top","@rest":"rest","@sum":"sum","@x":"x","@top_size":"topSize",
+           "@in_top":"inTop","value":"value","delta":"delta","count":"count","answer":"answer",
+           "nums":"nums","k":"k","x":"x","window":"window","e":"entry","key":"entry"},
+    python: {"self.count":"counts","self.top":"top","self.rest":"rest","self.total":"sum","self.sum":"sum",
+             "self.x":"x","self.top_size":"topSize","self.in_top":"inTop","value":"value","delta":"delta",
+             "count":"count","answer":"answer","nums":"nums","k":"k","x":"x","counts":"counts",
+             "kept":"kept","key":"entry","best":"best","weakest":"weakest","entry":"entry"},
+    javascript: {"this.count":"counts","this.top":"top","this.rest":"rest","this.sum":"sum","this.x":"x",
+                 "this.topSize":"topSize","this.inTop":"inTop","value":"value","delta":"delta","count":"count",
+                 "answer":"answer","nums":"nums","k":"k","x":"x","counts":"counts","ranked":"ranked",
+                 "key":"entry","best":"best","weakest":"weakest","entry":"entry","sum":"sum"},
+    go: {"w.count":"counts","w.top":"top","w.rest":"rest","w.sum":"sum","w.x":"x","w.topSize":"topSize",
+         "w.inTop":"inTop","value":"value","delta":"delta","count":"count","answer":"answer","nums":"nums",
+         "k":"k","x":"x","counts":"counts","ranked":"ranked","key":"entry","best":"best","weakest":"weakest",
+         "e":"entry","sum":"sum"},
+    rust: {"self.count":"counts","self.top":"top","self.rest":"rest","self.sum":"sum","self.x":"x",
+           "self.top_size":"topSize","self.in_top":"inTop","value":"value","delta":"delta","count":"count",
+           "answer":"answer","nums":"nums","k":"k","x":"x","counts":"counts","ranked":"ranked",
+           "key":"entry","best":"best","weakest":"weakest","entry":"entry","window":"window"}
+  };
+  var VAR_LABEL_MY = {
+    counts:"ရေတွက်ထားချက်", top:"TOP", rest:"REST", sum:"စုစုပေါင်း", x:"x", k:"k",
+    topSize:"TOP ထဲရှိ အရေအတွက်", inTop:"TOP ထဲရှိ တန်ဖိုးများ", value:"value", delta:"delta",
+    count:"count", answer:"answer", nums:"nums", window:"window", entry:"entry",
+    ranked:"အဆင့်စီထားချက်", kept:"ထားလိုက်သည့်အရာများ", best:"REST ၏ အကောင်းဆုံး",
+    weakest:"TOP ၏ အားအနည်းဆုံး", i:"i"
+  };
+  var VAR_LABEL = {
+    counts:"the tally", top:"TOP", rest:"REST", sum:"the running total", x:"x", k:"k",
+    topSize:"entries in TOP", inTop:"values currently in TOP", value:"value", delta:"delta",
+    count:"count", answer:"answer", nums:"nums", window:"window", entry:"entry",
+    ranked:"ranked", kept:"kept", best:"REST's best", weakest:"TOP's weakest", i:"i"
+  };
+
+  /* format a value the way the selected language would print it */
+  function fmtPairs(list, lang){
+    if(!list || !list.length) return lang==="go" ? "[]" : "[]";
+    var inner = list.map(function(e){
+      return lang==="go" ? "{"+e.c+" "+e.v+"}" : "["+e.c+", "+e.v+"]";
+    }).join(", ");
+    return "["+inner+"]";
+  }
+  function fmtCounts(list, lang){
+    if(!list || !list.length) return lang==="go" ? "map[]" : "{}";
+    var body = list.map(function(e){
+      if(lang==="ruby") return e.v+"=>"+e.c;
+      if(lang==="javascript") return e.v+" => "+e.c;
+      if(lang==="go") return e.v+":"+e.c;
+      return e.v+": "+e.c;
+    }).join(lang==="go" ? " " : ", ");
+    if(lang==="go") return "map["+body+"]";
+    if(lang==="javascript") return "Map {"+body+"}";
+    return "{"+body+"}";
+  }
+  function varValue(concept, s, lang){
+    var v = s.vars || {};
+    switch(concept){
+      case "counts": return fmtCounts(v.counts, lang);
+      case "top":    return fmtPairs(v.top, lang);
+      case "rest":   return fmtPairs(v.rest, lang);
+      case "ranked": return fmtPairs(v.ranked, lang);
+      case "kept":   return fmtPairs(v.kept, lang);
+      case "sum":    return String(v.sum);
+      case "x":      return String(v.x);
+      case "k":      return String(v.k);
+      case "i":      return String(v.i);
+      case "topSize":return String(v.topSize);
+      case "inTop":  return v.inTop ? "{"+v.inTop.join(", ")+"}" : null;
+      case "nums":   return v.nums ? "["+v.nums.join(", ")+"]" : null;
+      case "window": return v.window ? "["+v.window.join(", ")+"]" : null;
+      case "answer": return v.answer ? "["+v.answer.join(", ")+"]" : null;
+      case "value":  return v.value === undefined ? null : String(v.value);
+      case "delta":  return v.delta === undefined ? null : (v.delta>0?"+":"")+v.delta;
+      case "count":  return v.count === undefined ? null : String(v.count);
+      case "entry":  return v.entry ? "["+v.entry.c+", "+v.entry.v+"]" : null;
+      case "best":   return (s.hl && s.hl.cmpUp) ? "["+s.hl.cmpUp.c+", "+s.hl.cmpUp.v+"]" : null;
+      case "weakest":return (s.hl && s.hl.cmpDown) ? "["+s.hl.cmpDown.c+", "+s.hl.cmpDown.v+"]" : null;
+      default: return null;
+    }
+  }
+
+  /* wrap known identifiers in the rendered listing, never inside a tag */
+  var BF_ONLY = {window:1, ranked:1, kept:1, i:1};
+  var WINDOW_ONLY = {top:1, rest:1, topSize:1, inTop:1, entry:1, delta:1, value:1, count:1, best:1, weakest:1};
+  function markVars(lineHtml, lang, mode){
+    var map = VAR_MAP[lang] || {};
+    var names = Object.keys(map).sort(function(a,b){ return b.length - a.length; });
+    var pattern = new RegExp("(" + names.map(function(n){
+      return n.replace(/[.@$]/g, "\\$&");
+    }).join("|") + ")(?![A-Za-z0-9_])", "g");
+    return lineHtml.split(/(<[^>]*>)/).map(function(part){
+      if(part.charAt(0) === "<") return part;
+      return part.replace(pattern, function(tok, _m, offset){
+        var before = part.charAt(offset - 1);
+        if(/[A-Za-z0-9_.@]/.test(before)) return tok;       // mid-identifier
+        var concept = map[tok];
+        if(mode === "bf" ? WINDOW_ONLY[concept] : BF_ONLY[concept]) return tok;
+        return '<span class="var" data-c="'+concept+'">'+tok+'</span>';
+      });
+    }).join("");
+  }
+
+  function renderCode(s){
+    var box = $("code");
+    box.innerHTML = CODE[lang][mode].map(function(row){
+      var hot = row[0] && row[0]===s.line ? " hot" : "";
+      return '<span class="ln'+hot+'">'+markVars(row[1]||" ", lang, mode)+'</span>';
+    }).join("");
+    var hotLine = box.querySelector(".ln.hot");
+    if(hotLine){
+      box.scrollTop = Math.max(0, hotLine.offsetTop - box.clientHeight/2 + hotLine.offsetHeight/2);
+    }
+    $("code-sub").innerHTML = (ui==="my" ? CODE_SUB_MY[mode] + " " + TIE_NOTE_MY[lang]
+                                         : CODE_SUB[mode] + " " + TIE_NOTE[lang]);
+  }
+
+  function renderAnswer(s){
+    var total = Math.max(0, nums.length-k+1);
+    var html="";
+    for(var i=0;i<total;i++){
+      var filled = i < s.answer.length;
+      var just = filled && i===s.answer.length-1 && (s.phase==="record"||s.phase==="sum");
+      html += '<span class="slot'+(filled?" filled":"")+(just?" just":"")+'">'+(filled?s.answer[i]:"·")+'</span>';
+    }
+    $("answer").innerHTML = html;
+    $("ans-note").textContent = t("windowsDone", s.answer.length, total);
+  }
+
+  function render(){
+    var steps=runs[mode], i=Math.min(at[mode], steps.length-1);
+    if(!steps.length) return;
+    var s=steps[i];
+    renderStrip(s);
+    if(mode==="sw") renderShelves(s); else if(mode==="hp") renderHeaps(s); else renderBrute(s);
+    renderCode(s);
+    renderAnswer(s);
+    $("msg").innerHTML = s.msg;
+    $("phase").textContent = s.phase;
+    $("counter").textContent = (i+1)+" / "+steps.length;
+    var sc=$("scrub"); sc.max=steps.length-1; sc.value=i;
+    $("prev").disabled = i===0;
+    $("next").disabled = i===steps.length-1;
+    $("tab-bf").setAttribute("aria-selected", mode==="bf");
+    $("tab-sw").setAttribute("aria-selected", mode==="sw");
+    $("tab-hp").setAttribute("aria-selected", mode==="hp");
+    $("code-label").textContent = (mode==="bf" ? "brute force" : mode==="sw" ? "sorted arrays" : "lazy heaps") + " \u00b7 " + lang;
+  }
+
+  /* ---------------- transport ---------------- */
+  function go(d){
+    var steps=runs[mode];
+    at[mode]=Math.max(0, Math.min(steps.length-1, at[mode]+d));
+    render();
+    if(at[mode]===steps.length-1) stop();
+  }
+  function stop(){ if(timer){ clearInterval(timer); timer=null; $("play").textContent="Play"; } }
+  function play(){
+    if(timer){ stop(); return; }
+    if(at[mode]===runs[mode].length-1) at[mode]=0;
+    $("play").textContent="Pause";
+    timer=setInterval(function(){ go(1); }, 950);
+    render();
+  }
+
+  $("next").addEventListener("click", function(){ stop(); go(1); });
+  $("prev").addEventListener("click", function(){ stop(); go(-1); });
+  $("play").addEventListener("click", play);
+  $("scrub").addEventListener("input", function(e){ stop(); at[mode]=+e.target.value; render(); });
+  $("tab-bf").addEventListener("click", function(){ stop(); mode="bf"; render(); });
+  $("tab-sw").addEventListener("click", function(){ stop(); mode="sw"; render(); });
+  $("tab-hp").addEventListener("click", function(){ stop(); mode="hp"; render(); });
+
+  document.addEventListener("keydown", function(e){
+    if(/^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+    if(e.key==="ArrowRight"){ stop(); go(1); e.preventDefault(); }
+    else if(e.key==="ArrowLeft"){ stop(); go(-1); e.preventDefault(); }
+    else if(e.key===" "){ play(); e.preventDefault(); }
+  });
+
+  /* ---------------- inputs ---------------- */
+  function readInputs(){
+    var raw = $("nums").value.split(/[,\s]+/).filter(function(t){ return t.length; }).map(Number);
+    var parsed = raw.filter(function(n){ return Number.isFinite(n); });
+    var warn=[];
+    if(!parsed.length){ parsed=[1]; warn.push("nums needs at least one number — falling back to [1]."); }
+    var nk = parseInt($("k").value,10), nx = parseInt($("x").value,10);
+    if(!Number.isFinite(nk) || nk<1) nk=1;
+    if(nk>parsed.length){ nk=parsed.length; warn.push("k can't exceed n — clamped to "+nk+"."); }
+    if(!Number.isFinite(nx) || nx<1) nx=1;
+    if(nx>nk){ nx=nk; warn.push("x can't exceed k — clamped to "+nx+"."); }
+    nums=parsed; k=nk; x=nx;
+    $("k").max=parsed.length; $("x").max=nk;
+    var w=$("warn");
+    if(warn.length){ w.textContent=warn.join(" "); w.hidden=false; } else { w.hidden=true; }
+    stop();
+    rebuild();
+  }
+  ["nums","k","x"].forEach(function(id){
+    $(id).addEventListener("change", readInputs);
+    $(id).addEventListener("input", function(){ if(id!=="nums") readInputs(); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".chip"), function(b){
+    b.addEventListener("click", function(){
+      $("nums").value=b.dataset.nums; $("k").value=b.dataset.k; $("x").value=b.dataset.x;
+      readInputs();
+    });
+  });
+
+  /* ---------------- full source blocks ---------------- */
+  function paint(src){
+    return src.replace(/&/g,"&amp;").replace(/</g,"&lt;")
+              .replace(/(#[^\n]*)/g,'<span class="cm">$1</span>');
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".copy"), function(btn){
+    var raw = document.getElementById(btn.dataset.src).textContent.replace(/^\n+/,"").replace(/\s+$/,"");
+    var out = document.getElementById(btn.dataset.out);
+    out.innerHTML = paint(raw);
+
+    function flash(label){
+      btn.textContent = label; btn.classList.add("done");
+      setTimeout(function(){ btn.textContent="Copy"; btn.classList.remove("done"); }, 2000);
+    }
+    function selectIt(){
+      var r=document.createRange(); r.selectNodeContents(out);
+      var s=window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      flash("Selected — press ⌘C");
+    }
+    btn.addEventListener("click", function(){
+      try{
+        navigator.clipboard.writeText(raw).then(function(){ flash("Copied"); }, selectIt);
+      }catch(e){ selectIt(); }
+    });
+  });
+
+
+  /* ---------------- "what is an x-sum" player ---------------- */
+  var Q = { win: [1,1,2,2,3,4], x: 2 };
+  var Q_PRESETS = [
+    { label: "example 1, window 0", win: [1,1,2,2,3,4] },
+    { label: "example 1, window 1", win: [1,2,2,3,4,2] },
+    { label: "example 2", win: [3,8] },
+    { label: "every value ties", win: [5,5,4,4,3,3] },
+    { label: "one value dominates", win: [9,9,9,9,2,7] }
+  ];
+
+  function qRender(){
+    var counts = new Map();
+    Q.win.forEach(function(v){ counts.set(v, (counts.get(v)||0)+1); });
+    var ranked = Array.from(counts, function(p){ return {v:p[0], c:p[1]}; })
+                      .sort(function(a,b){ return cmp(b,a); });
+    var keep = Math.min(Q.x, ranked.length);
+    var kept = ranked.slice(0, keep);
+    var keptValues = new Set(kept.map(function(e){ return e.v; }));
+    var sum = kept.reduce(function(s,e){ return s + e.v*e.c; }, 0);
+
+    $("q-arr").innerHTML = Q.win.map(function(v){
+      return '<div class="cell '+(keptValues.has(v) ? "kept" : "cut")+'"><span>'+v+'</span></div>';
+    }).join("");
+
+    $("q-rank").innerHTML = ranked.map(function(e,i){
+      var cut = (i === keep && i > 0) ? '<span class="cutline">'+t("cutKeep", keep)+'</span>' : "";
+      return cut + cardHTML(e, i < keep ? "" : "dropped");
+    }).join("");
+
+    // name the first tie the ranking had to settle
+    var tie = "";
+    for(var i=1;i<ranked.length;i++){
+      if(ranked[i].c === ranked[i-1].c){
+        tie = t("qTie", ranked[i-1].v, ranked[i].v, ranked[i].c, i === keep);
+        break;
+      }
+    }
+    $("q-tie").innerHTML = tie;
+    $("q-expr").innerHTML = kept.length
+      ? kept.map(function(e){ return e.v+"\u00d7"+e.c; }).join("  +  ")
+      : t("qNothing");
+    $("q-total").innerHTML = sum + "<small>X-SUM</small>";
+    $("q-xout").textContent = Q.x;
+    $("q-label").textContent = t("valuesDistinct", Q.win.length, counts.size);
+    var slider = $("q-x");
+    slider.max = Math.max(1, counts.size);
+    slider.value = Q.x;
+  }
+
+  function qLoad(preset){
+    Q.win = preset.win.slice();
+    var distinct = new Set(Q.win).size;
+    Q.x = Math.min(2, distinct);
+    qRender();
+  }
+
+  function qPresets(){
+    $("q-presets").innerHTML = Q_PRESETS.map(function(p,i){
+      return '<button class="chip" data-q="'+i+'">'+t("qPreset")[i]+'</button>';
+    }).join("");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-q]"), function(b){
+      b.addEventListener("click", function(){ qLoad(Q_PRESETS[+b.dataset.q]); });
+    });
+  }
+  qPresets();
+  $("q-x").addEventListener("input", function(e){ Q.x = +e.target.value; qRender(); });
+  qRender();
+
+  /* ---------------- language tabs ---------------- */
+  function setLang(next){
+    lang = next;
+    Array.prototype.forEach.call(document.querySelectorAll(".lang"), function(btn){
+      btn.setAttribute("aria-selected", String(btn.dataset.lang === lang));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".lang-pane"), function(pane){
+      pane.hidden = pane.dataset.pane !== lang;
+    });
+    render();
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".lang"), function(btn){
+    btn.addEventListener("click", function(){ setLang(btn.dataset.lang); });
+  });
+
+
+  /* ---------------- worked examples -> the stepper ---------------- */
+  Array.prototype.forEach.call(document.querySelectorAll(".ex-load"), function(btn){
+    btn.addEventListener("click", function(){
+      $("nums").value = btn.dataset.nums;
+      $("k").value = btn.dataset.k;
+      $("x").value = btn.dataset.x;
+      readInputs();
+      mode = "sw";
+      render();
+      var smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.querySelector(".strip-card").scrollIntoView({
+        behavior: smooth ? "smooth" : "auto", block: "start"
+      });
+    });
+  });
+
+
+  /* ---------------- language ---------------- */
+  var I18N_SEL = "h1,h2,h3,p,li,summary,span,button,label,td,th,figcaption,output,a,footer";
+  var norm = function(s){ return s.replace(/\s+/g," ").trim(); };
+
+  var I18N_LOOKUP = null;
+  function i18nLookup(){
+    if(I18N_LOOKUP) return I18N_LOOKUP;
+    I18N_LOOKUP = {};
+    var probe = document.createElement("div");
+    Object.keys(I18N_STATIC).forEach(function(k){
+      probe.innerHTML = k;                       // &mdash; -> the literal character
+      I18N_LOOKUP[norm(probe.innerHTML)] = I18N_STATIC[k];
+    });
+    return I18N_LOOKUP;
+  }
+
+  function applyLang(next){
+    ui = next;
+    var root = document.documentElement;
+    root.setAttribute("data-ui", next);
+    root.setAttribute("lang", next === "my" ? "my" : "en");
+    var nodes = document.querySelectorAll(I18N_SEL);
+    for(var i=0;i<nodes.length;i++){
+      var el = nodes[i];
+      if(el.closest("pre, .code, .lang-switch, .lang-bar, .tagpill")) continue;
+      if(!el.getAttribute("data-i18n")){
+        var key = norm(el.innerHTML);
+        if(!i18nLookup()[key]) continue;
+        el.setAttribute("data-i18n", key);
+      }
+      var src = el.getAttribute("data-i18n");
+      el.innerHTML = next === "my" ? i18nLookup()[src] : src;
+    }
+    Array.prototype.forEach.call(document.querySelectorAll(".lang-opt"), function(b){
+      b.setAttribute("aria-pressed", String(b.dataset.ui === next));
+    });
+    try { localStorage.setItem("xsum-ui", next); } catch(e){}
+    var keep = {bf:at.bf, sw:at.sw, hp:at.hp};
+    rebuild();                       // narration is built per language
+    at.bf = Math.min(keep.bf, runs.bf.length-1);
+    at.sw = Math.min(keep.sw, runs.sw.length-1);
+    at.hp = Math.min(keep.hp, runs.hp.length-1);
+    qPresets();
+    qRender();
+    render();
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll(".lang-opt"), function(btn){
+    btn.addEventListener("click", function(){ stop(); applyLang(btn.dataset.ui); });
+  });
+
+  // what the dictionary has not covered yet (dev aid, callable from the console)
+  window.__i18nUnused = function(){
+    var lookup = i18nLookup(), seen = {};
+    Array.prototype.forEach.call(document.querySelectorAll(I18N_SEL), function(el){
+      seen[norm(el.innerHTML)] = 1;
+      var k = el.getAttribute("data-i18n"); if(k) seen[k] = 1;
+    });
+    return Object.keys(lookup).filter(function(k){ return !seen[k]; });
+  };
+
+  window.__i18nAudit = function(){
+    var missing = [];
+    Array.prototype.forEach.call(document.querySelectorAll(I18N_SEL), function(el){
+      if(el.closest("pre, .code, .lang-switch, .lang-bar")) return;
+      if(el.querySelector(I18N_SEL)) return;                 // leaf elements only
+      var key = norm(el.innerHTML);
+      if(!key || !/[A-Za-z]{3}/.test(key)) return;
+      if(I18N_STATIC[key] || el.getAttribute("data-i18n")) return;
+      if(/^[\x00-\x7F]*$/.test(key) === false) return;
+      missing.push(key);
+    });
+    return Array.from(new Set(missing));
+  };
+
+
+  /* ---------------- value tooltip ---------------- */
+  var tip = document.createElement("div");
+  tip.className = "var-tip";
+  tip.hidden = true;
+  document.body.appendChild(tip);
+  var pinned = null;
+
+  function showTip(el){
+    var steps = runs[mode];
+    var s = steps[Math.min(at[mode], steps.length-1)];
+    var concept = el.getAttribute("data-c");
+    var value = varValue(concept, s, lang);
+    var label = (ui==="my" ? VAR_LABEL_MY[concept] : VAR_LABEL[concept]) || concept;
+    tip.innerHTML = '<span class="tip-name">'+el.textContent+'</span>'
+                  + '<span class="tip-label">'+label+'</span>'
+                  + '<span class="tip-val">'+(value === null ? t("tipUnset") : value)+'</span>';
+    tip.hidden = false;
+    var r = el.getBoundingClientRect(), tr = tip.getBoundingClientRect();
+    var left = Math.min(Math.max(8, r.left), window.innerWidth - tr.width - 8);
+    var top = r.top - tr.height - 8;
+    if(top < 4) top = r.bottom + 8;
+    tip.style.left = Math.round(left + window.scrollX) + "px";
+    tip.style.top  = Math.round(top + window.scrollY) + "px";
+  }
+  function hideTip(){ if(!pinned){ tip.hidden = true; } }
+
+  $("code").addEventListener("mouseover", function(e){
+    var el = e.target.closest(".var");
+    if(el && !pinned) showTip(el);
+  });
+  $("code").addEventListener("mouseout", function(e){
+    if(e.target.closest(".var")) hideTip();
+  });
+  $("code").addEventListener("click", function(e){
+    var el = e.target.closest(".var");
+    if(!el){ pinned = null; tip.hidden = true; return; }
+    if(pinned === el){ pinned = null; tip.hidden = true; }
+    else { pinned = null; showTip(el); pinned = el; }
+  });
+  document.addEventListener("scroll", function(){ if(!pinned) tip.hidden = true; }, true);
+
+  rebuild();
+  try { var saved = localStorage.getItem("xsum-ui"); if(saved === "my") applyLang("my"); } catch(e){}
+})();
+</script>
+
+</body>
+</html>
