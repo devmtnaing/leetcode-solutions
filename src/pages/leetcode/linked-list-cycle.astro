@@ -1,0 +1,47 @@
+---
+import Walkthrough from '../../layouts/Walkthrough.astro';
+import statement from '../../lessons/linked-list-cycle/statement.html?raw';
+
+const takeaway = `
+<p>Both approaches walk the list once, so the time is the same. What separates them is
+what they hold on to: the set remembers every node it passed, which is <code>O(n)</code>
+memory on a list that may have ten thousand nodes; the two pointers remember two
+references, which is <code>O(1)</code> whatever the length.</p>
+
+<p><strong>Why the two pointers must meet.</strong> Suppose the list does loop. Once both
+pointers are inside the loop, look at the distance fast still has to travel forward to
+land on slow. Each round slow advances one and fast advances two, so fast closes that
+distance by <strong>exactly one</strong> — not two, not a variable amount, one. A quantity
+that starts at some whole number and drops by one per round reaches zero, and because it
+moves in steps of one it cannot step over zero. Distance zero means the same node. So in a
+loop of length <code>L</code> they collide within <code>L</code> rounds; the
+<code>gap to close</code> readout in the walkthrough is that number counting down.</p>
+
+<p>The other half of the argument is the easy half: if the list does <em>not</em> loop it
+has an end, and fast — moving twice as fast — reaches that end first. Falling off the end
+is the proof that there was nothing to be trapped in.</p>
+
+<p>That "gain exactly one per step" argument is not specific to lists. Anything that can
+be read as <em>follow a pointer from here</em> has the same shape, which is why
+<strong>Find the Duplicate Number</strong> yields to the same trick: treat
+<code>i → nums[i]</code> as the next pointer and a duplicate value becomes a node with two
+predecessors, which is to say a cycle, detectable without touching the array and without a
+byte of extra memory.</p>
+
+<p>One detail worth copying exactly: test <code>fast</code> and <code>fast.next</code>
+before taking the two-step move, not after. Check only <code>fast</code> and the second
+hop dereferences null on every list of even length.</p>`;
+---
+<Walkthrough
+  title="Linked List Cycle"
+  summary="Record every node you visit, or race two pointers that record nothing. Same time, different memory."
+  leetcodeId={141}
+  leetcodeSlug="linked-list-cycle"
+  difficulty="Easy"
+  statement={statement}
+  takeaway={takeaway}
+/>
+
+<script>
+  import '../../lessons/linked-list-cycle/lesson.js';
+</script>

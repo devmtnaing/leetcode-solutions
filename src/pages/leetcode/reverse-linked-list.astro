@@ -1,0 +1,51 @@
+---
+import Walkthrough from '../../layouts/Walkthrough.astro';
+import statement from '../../lessons/reverse-linked-list/statement.html?raw';
+
+const takeaway = `
+<p>Reversing a link is destructive. The moment you write <code>curr.next = prev</code>
+the rest of the list stops being reachable from anywhere, so the line before it has to
+be <code>next = curr.next</code>. That ordering is not a style choice — swap the two
+lines and everything past the second node is garbage.</p>
+
+<p>So the three pointers are not three arbitrary variables. They are the minimum state
+needed to survive destroying a link: <strong>where you came from</strong>
+(<code>prev</code>, the thing the new link has to point at), <strong>where you are</strong>
+(<code>curr</code>, the node being rewired), and <strong>where you were going</strong>
+(<code>next</code>, the only remaining handle on the rest of the list). Drop any one of
+them and the step cannot be completed.</p>
+
+<p>The recursion does not avoid that state, it relocates it. Each frame still holds the
+node it was called with, so on the way back up <code>head</code> is the "where you came
+from" and <code>head.next</code> is the tail of the run that was just reversed. The
+back-pointer comes free from the call stack — which is exactly what the
+<code>O(n)</code> stack is paying for. Between <code>head.next.next = head</code> and
+<code>head.next = null</code> the list contains a real two-node loop; the second line is
+not tidying up, it is the only thing that makes the result walkable.</p>
+
+<p>This shape recurs. <strong>Reverse Nodes in k-Group</strong> is this loop run k times
+with the group's boundary nodes stitched back on, and <strong>Swap Nodes in Pairs</strong>
+is the same thing with k fixed at 2. Both are easier to write once you stop thinking of
+<code>prev</code>/<code>curr</code>/<code>next</code> as loop scaffolding and start
+thinking of them as the three things you must be holding before you are allowed to cut
+a link.</p>
+
+<p>One note on the Rust panel: safe Rust owns each node through its predecessor's
+<code>Box</code>, so a frame cannot keep a usable back-pointer into a list it has already
+handed to the recursive call. The Rust recursion therefore carries <code>prev</code> down
+as an argument rather than relinking on the way up. Same three pieces of state, spelled
+as parameters instead of as a stack frame.</p>`;
+---
+<Walkthrough
+  title="Reverse Linked List"
+  summary="Three pointers, or a call stack that holds the third one for you. Either way, something has to remember the way forward before you destroy it."
+  leetcodeId={206}
+  leetcodeSlug="reverse-linked-list"
+  difficulty="Easy"
+  statement={statement}
+  takeaway={takeaway}
+/>
+
+<script>
+  import '../../lessons/reverse-linked-list/lesson.js';
+</script>

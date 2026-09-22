@@ -1,0 +1,55 @@
+---
+import Walkthrough from '../../layouts/Walkthrough.astro';
+import statement from '../../lessons/merge-two-sorted-lists/statement.html?raw';
+
+const takeaway = `
+<p>The comparison in this problem is trivial: take whichever front node is smaller.
+The part that actually costs people submissions is the bookkeeping around it, and
+that is what the <strong>dummy head</strong> is for.</p>
+
+<p>Without a sentinel, "append to the result" is two different operations. The first
+node has to become the head, so you write <code>head = node</code>; every node after
+it hangs off the previous one, so you write <code>tail.next = node</code>. That means
+a branch, and a <code>head</code> variable, and a place to get it wrong. Allocate one
+throwaway node up front and the first case disappears: <code>tail</code> starts on the
+dummy, every append is <code>tail.next = node</code>, and the answer is
+<code>dummy.next</code>. Half the difficulty of linked-list code is the first node and
+the last node, and a sentinel deletes the first-node case outright. The same trick runs
+<strong>Remove Nth Node From End</strong> (where the node being deleted might be the
+head) and <strong>Partition List</strong> (two sentinels, one per half).</p>
+
+<p>Worth being precise about the space: the iterative version allocates
+<em>nothing</em> beyond that single sentinel. It returns a list of <code>n+m</code>
+nodes without creating any of them — every node in the output was already in one of the
+inputs, and all the loop did was re-point <code>next</code> fields. That is why the
+space is <code>O(1)</code> even though the output is a full list. The problem statement
+asks for exactly this when it says the list should be made by "splicing together the
+nodes of the first two lists".</p>
+
+<p>The recursive version makes the identical sequence of decisions, and reads better —
+"the merge of these two lists is the smaller head, followed by the merge of what's
+left". What it gives up is the constant space: one stack frame per node, so
+<code>O(n+m)</code>, and with the constraint here at 50 nodes that is free. At
+<code>10<sup>5</sup></code> nodes it is a stack overflow. Notice also <em>when</em> the
+recursion links anything — going down only chooses the order, and every
+<code>.next</code> assignment happens on the way back up, which is why the stepper shows
+the result being stitched together from the tail backwards.</p>
+
+<p>One last detail: use <code>&lt;=</code>, not <code>&lt;</code>. With <code>&lt;</code>
+the merge is still sorted and still correct for this problem, but ties get taken from
+<code>list2</code> first, which makes the merge unstable. For merge sort built on top of
+this, that difference is the whole reason the sort is stable.</p>`;
+---
+<Walkthrough
+  title="Merge Two Sorted Lists"
+  summary="Two sorted lists, one merge. The interesting part is the dummy node that makes every append look the same."
+  leetcodeId={21}
+  leetcodeSlug="merge-two-sorted-lists"
+  difficulty="Easy"
+  statement={statement}
+  takeaway={takeaway}
+/>
+
+<script>
+  import '../../lessons/merge-two-sorted-lists/lesson.js';
+</script>

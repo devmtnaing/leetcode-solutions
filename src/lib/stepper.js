@@ -54,6 +54,7 @@ export function mountLesson(cfg) {
     count: $('[data-count]', root),
     play: $('[data-act="play"]', root),
     cost: $('[data-cost]', root),
+    caveat: $('[data-caveat]', root),
     controls: $('[data-controls]', root),
   };
 
@@ -86,6 +87,13 @@ export function mountLesson(cfg) {
   }
 
   function renderCode() {
+    // Some languages cannot express the approach the narration describes —
+    // safe Rust and linked lists being the recurring case. Saying so beside
+    // the code beats letting the reader watch the highlight jump and wonder.
+    const cav = (cfg.caveats?.[state.mode] ?? {})[state.lang];
+    el.caveat.innerHTML = cav || '';
+    el.caveat.hidden = !cav;
+
     el.code.innerHTML = listing()
       .map(([key, html]) => `<div class="kit-line" data-line="${key ?? ''}">${html}</div>`)
       .join('');
@@ -253,6 +261,7 @@ function shell(cfg) {
       </div>
       <div class="kit-right">
         <div class="kit-langs" role="tablist" aria-label="Language">${langTabs}<span class="kit-cost" data-cost></span></div>
+        <p class="kit-caveat" data-caveat hidden></p>
         <pre class="kit-code" data-code></pre>
       </div>
     </div>
