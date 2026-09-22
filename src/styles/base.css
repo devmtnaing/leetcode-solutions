@@ -1,6 +1,10 @@
 /* Reset, body type, headings. Loaded on every page including the ones
    with no interactive stage. */
 *{box-sizing:border-box}
+/* Must outrank an element's own display: the UA's [hidden] rule does not,
+   and lesson scripts hide things by setting el.hidden rather than a style. */
+[hidden]{display:none!important}
+img{max-width:100%}
 body{
   background:var(--ground);
   color:var(--ink);
