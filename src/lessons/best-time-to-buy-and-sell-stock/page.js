@@ -1,18 +1,16 @@
----
-import Walkthrough from '../../layouts/Walkthrough.astro';
-import statement from '../../lessons/best-time-to-buy-and-sell-stock/statement.html?raw';
----
-<Walkthrough
-  title="Best Time to Buy and Sell Stock"
-  summary="Every pair of days, or one walk holding the cheapest price so far. The difference is what each day has to know."
-  eyebrow="LeetCode 121 &nbsp;·&nbsp; Easy"
-  lede={{ en: "You are allowed <strong>one transaction</strong> — buy once, then sell on a different day in the future. The brute force prices out every pair; the one-pass walks once asking each day a single question the running minimum answers instantly.", my: "<strong>တစ်ကြိမ်တည်း</strong> ဝယ်၊ နောက်ပိုင်းက မတူသော နေ့တစ်ရက်တွင် ရောင်းခွင့် ရှိသည်။ brute force က နေ့တွဲတိုင်းကို တွက်သည်။ တစ်ခေါက်တည်း လျှောက်သည့် နည်းက နေ့တစ်နေ့ချင်းစီကို running minimum က ချက်ချင်းဖြေနိုင်သည့် မေးခွန်း တစ်ခုတည်းသာ မေးသည်။" }}
-  links={[{ id: 121, title: 'Best Time to Buy and Sell Stock', slug: 'best-time-to-buy-and-sell-stock', difficulty: 'Easy' }]}
-  statement={statement}
-  constraints={{ en: "<span><b>n</b> 1 &le; prices.length &le; 10&#8309;</span><span>0 &le; prices[i] &le; 10&#8308;</span>", my: "<span><b>n</b> 1 &le; prices.length &le; 10&#8309;</span><span>0 &le; prices[i] &le; 10&#8308;</span>" }}
-  part1Sub={{ en: "Read the statement, then pick a buy day and a sell day on the chart to see the ordering rule in action.", my: "မေးခွန်းကို အရင်ဖတ်ပါ၊ ပြီးလျှင် chart ပေါ်တွင် ဝယ်မည့်နေ့နှင့် ရောင်းမည့်နေ့ကို ရွေးပြီး အစီအစဉ် စည်းမျဉ်းကို ကြည့်ပါ။" }}
-  widgetTitle={{ en: "Pick a buy day, then a sell day", my: "ဝယ်မည့်နေ့၊ ပြီးလျှင် ရောင်းမည့်နေ့ ရွေးပါ" }}
-  traps={{
+/* The prose of the Best Time to Buy and Sell Stock page: everything the reader sees that is not
+ * interactive. Rendered by src/pages/leetcode/[slug].astro through the
+ * Walkthrough layout; each value is a string or an { en, my } pair. */
+export default {
+  title: 'Best Time to Buy and Sell Stock',
+  summary: 'Every pair of days, or one walk holding the cheapest price so far. The difference is what each day has to know.',
+  eyebrow: 'LeetCode 121 &nbsp;·&nbsp; Easy',
+  lede: { en: "You are allowed <strong>one transaction</strong> — buy once, then sell on a different day in the future. The brute force prices out every pair; the one-pass walks once asking each day a single question the running minimum answers instantly.", my: "<strong>တစ်ကြိမ်တည်း</strong> ဝယ်၊ နောက်ပိုင်းက မတူသော နေ့တစ်ရက်တွင် ရောင်းခွင့် ရှိသည်။ brute force က နေ့တွဲတိုင်းကို တွက်သည်။ တစ်ခေါက်တည်း လျှောက်သည့် နည်းက နေ့တစ်နေ့ချင်းစီကို running minimum က ချက်ချင်းဖြေနိုင်သည့် မေးခွန်း တစ်ခုတည်းသာ မေးသည်။" },
+  links: [{ id: 121, title: 'Best Time to Buy and Sell Stock', slug: 'best-time-to-buy-and-sell-stock', difficulty: 'Easy' }],
+  constraints: { en: "<span><b>n</b> 1 &le; prices.length &le; 10&#8309;</span><span>0 &le; prices[i] &le; 10&#8308;</span>", my: "<span><b>n</b> 1 &le; prices.length &le; 10&#8309;</span><span>0 &le; prices[i] &le; 10&#8308;</span>" },
+  part1Sub: { en: "Read the statement, then pick a buy day and a sell day on the chart to see the ordering rule in action.", my: "မေးခွန်းကို အရင်ဖတ်ပါ၊ ပြီးလျှင် chart ပေါ်တွင် ဝယ်မည့်နေ့နှင့် ရောင်းမည့်နေ့ကို ရွေးပြီး အစီအစဉ် စည်းမျဉ်းကို ကြည့်ပါ။" },
+  widgetTitle: { en: "Pick a buy day, then a sell day", my: "ဝယ်မည့်နေ့၊ ပြီးလျှင် ရောင်းမည့်နေ့ ရွေးပါ" },
+  traps: {
     summary: { en: "Four ways the statement bites &mdash; worth reading before you code", my: "မေးခွန်းစာသားထဲက ချော်လွယ်သည့်နေရာ လေးခု — code မရေးမီ ဖတ်ထားသင့်သည်" },
     items: [
       { en: "<strong>One transaction only</strong> — buy once, sell once. The variant where you may trade as often as you like is <em>Best Time to Buy and Sell Stock II</em>, not this one, and its greedy answer of summing every rise is wrong here.", my: "အရောင်းအဝယ် <strong>တစ်ကြိမ်တည်း</strong> သာ — တစ်ခါဝယ်၊ တစ်ခါရောင်း။ အကြိမ်ကြိမ် ရောင်းဝယ်လို့ရသော ပုစ္ဆာမှာ <em>Best Time to Buy and Sell Stock II</em> ဖြစ်ပြီး ဤဟာ မဟုတ်ပါ။ ဈေးတက်တိုင်း ပေါင်းယူသည့် greedy အဖြေသည် ဤနေရာတွင် မှားသည်။" },
@@ -20,9 +18,9 @@ import statement from '../../lessons/best-time-to-buy-and-sell-stock/statement.h
       { en: "<strong>No profit means <code>0</code></strong> — not the least-bad loss, not an error. A losing pair is never the answer; you simply take no trade at all.", my: "အမြတ် မရနိုင်လျှင် <code>0</code> ပြန်ပေးရမည် — အရှုံး အနည်းဆုံး ဂဏန်းလည်း မဟုတ်၊ error လည်း မဟုတ်။ ရှုံးမည့် နေ့တွဲကို ဘယ်တော့မှ အဖြေအဖြစ် မယူရပါ၊ ဘာမှ မဝယ်၊ မရောင်းဘဲ နေလိုက်ရုံသာ ဖြစ်သည်။" },
       { en: "<strong>Prices may repeat on consecutive days</strong>, and may be <code>0</code>. Two equal days earn exactly 0, which can never beat a <code>best</code> that already starts at 0 — so ties need no special case.", my: "ဈေးနှုန်းများ ဆက်တိုက် တူညီနေနိုင်ပြီး <code>0</code> လည်း ဖြစ်နိုင်သည်။ ဈေးတူသော နေ့နှစ်ရက်က အမြတ် 0 သာ ပေးသဖြင့် 0 ကနေ စထားသော <code>best</code> ကို ဘယ်တော့မှ မကျော်နိုင်ပါ — ထို့ကြောင့် ဈေးတူညီမှုအတွက် သီးသန့် စစ်ဆေးစရာ မလိုပါ။" },
     ],
-  }}
-  part2Sub={{ en: "Two approaches over the same array. The stage shows the state each one carries; the panel shows the line running.", my: "Array တစ်ခုတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" }}
-  notes={{
+  },
+  part2Sub: { en: "Two approaches over the same array. The stage shows the state each one carries; the panel shows the line running.", my: "Array တစ်ခုတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" },
+  notes: {
     eyebrow: { en: "If you are implementing it", my: "ကိုယ်တိုင် ရေးမည်ဆိုလျှင်" },
     title: { en: "Three questions the one-pass raises", my: "တစ်ခေါက်တည်း လျှောက်ခြင်းနှင့် ပတ်သက်၍ မေးစရာ သုံးခု" },
     items: [
@@ -30,16 +28,12 @@ import statement from '../../lessons/best-time-to-buy-and-sell-stock/statement.h
       { q: { en: "Why start <code>cheapest</code> at infinity, and why the <code>else</code>?", my: "<code>cheapest</code> ကို infinity ဖြင့် ဘာကြောင့် စထားသလဲ၊ <code>else</code> က ဘာကြောင့်လဲ။" }, a: { en: "Starting <code>cheapest</code> at infinity removes the special case for day 0 — without it you need a separate branch for the empty prefix. And the <code>else</code> is not an optimisation: on a day that sets a new minimum, the profit is zero by construction, which can never beat a <code>best</code> that already starts at zero. Writing it as two independent <code>if</code>s is equally correct, just redundant.", my: "<code>cheapest</code> ကို infinity နှင့် စတင်ခြင်းက နေ့ 0 အတွက် သီးသန့် စစ်ဆေးမှုကို ဖယ်ရှားပေးသည် — မရှိလျှင် အလွတ် prefix အတွက် သီးခြား branch တစ်ခု လိုလာမည်။ နောက်တစ်ချက်၊ <code>else</code> သည် အမြန်အောင် လုပ်ထားခြင်း မဟုတ်ပါ — အနည်းဆုံးအသစ် သတ်မှတ်လိုက်သော နေ့တွင် အမြတ်သည် သဘာဝအားဖြင့် သုည ဖြစ်နေပြီး၊ သုညကနေ စထားသော <code>best</code> ကို ဘယ်တော့မှ မကျော်နိုင်ပါ။ <code>if</code> နှစ်ခု သီးခြားစီ ရေးလည်း မှန်သည်၊ ပိုနေရုံသာ ဖြစ်သည်။" } },
       { q: { en: "Where else does this pattern show up?", my: "ဤပုံစံကို နောက်ထပ် ဘယ်ပုစ္ဆာတွေမှာ တွေ့ရမလဲ။" }, a: { en: "Walk left to right, keep a small summary of the prefix, and at each position combine the current element with that summary — <strong>Maximum Subarray</strong> keeps a running sum, <strong>Product of Array Except Self</strong> keeps a running product, the subarray-sum problems keep a prefix-sum map. Whenever a problem reads as \"best pair where the first index comes before the second\", try asking what summary of the left half each right index actually needs.", my: "ဘယ်မှညာ လျှောက်ပါ၊ prefix ၏ အကျဉ်းချုပ် သေးသေးလေး တစ်ခုကို ကိုင်ထားပါ၊ နေရာတိုင်းတွင် လက်ရှိ element ကို ထိုအကျဉ်းချုပ်နှင့် ပေါင်းစပ်ပါ — <strong>Maximum Subarray</strong> က ပြေးနေသော ပေါင်းလဒ်ကို၊ <strong>Product of Array Except Self</strong> က ပြေးနေသော မြှောက်လဒ်ကို၊ subarray-sum ပုစ္ဆာများက prefix-sum map ကို ကိုင်ထားကြသည်။ ပထမ index က ဒုတိယ index ထက် စောရမည့် အကောင်းဆုံး နေ့တွဲ ဟု ဖတ်ရသော ပုစ္ဆာမျိုး တွေ့လျှင် — ညာဘက် index တစ်ခုစီအတွက် ဘယ်ဘက်ခြမ်း၏ ဘယ်လို အကျဉ်းချုပ်မျိုး လိုအပ်သလဲ ဟု မေးကြည့်ပါ။" } },
     ],
-  }}
-  cost={{
+  },
+  cost: {
     eyebrow: { en: "Why bother", my: "ဘာကြောင့် ဂရုစိုက်ရသလဲ" },
     title: { en: "The same answer, a different price", my: "အဖြေတူ၊ ကုန်ကျစရိတ် မတူ" },
     html: { en: "<table>\n  <thead><tr><th>Approach</th><th>Time</th><th>Extra space</th><th>At n = 10⁵ (the constraint)</th></tr></thead>\n  <tbody>\n    <tr><td><b>Brute force</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">every pair</span></td>\n        <td class=\"mono\">O(n²)</td><td class=\"mono\">O(1)</td><td class=\"cross\">≈ 5 × 10⁹ pair checks</td></tr>\n    <tr><td><b>One pass</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">running minimum</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(1)</td><td class=\"tick\">10⁵ steps</td></tr>\n  </tbody>\n</table>\n<figcaption>Counts are computed from the constraint, not measured. Both approaches use only a handful of variables — the one-pass is faster not because it uses less space but because it asks one question per day instead of per pair.</figcaption>", my: "<table>\n  <thead><tr><th>နည်းလမ်း</th><th>အချိန်</th><th>အပို memory</th><th>n = 10⁵ (ကန့်သတ်ချက်) တွင်</th></tr></thead>\n  <tbody>\n    <tr><td><b>Brute force</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">နေ့တွဲတိုင်း</span></td>\n        <td class=\"mono\">O(n²)</td><td class=\"mono\">O(1)</td><td class=\"cross\">≈ 5 × 10⁹ ကြိမ် နေ့တွဲစစ်</td></tr>\n    <tr><td><b>One pass</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">running minimum</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(1)</td><td class=\"tick\">အဆင့် 10⁵</td></tr>\n  </tbody>\n</table>\n<figcaption>ဤအရေအတွက်များကို ကန့်သတ်ချက်မှ တွက်ထားခြင်းဖြစ်ပြီး တိုင်းတာထားခြင်း မဟုတ်ပါ။ နည်းနှစ်ခုစလုံး variable အနည်းငယ်သာ သုံးသည် — one pass က ပိုမြန်ရခြင်းမှာ memory လျှော့သုံးလို့ မဟုတ်ဘဲ နေ့တွဲတစ်တွဲချင်းစီအစား တစ်ရက်လျှင် မေးခွန်း တစ်ခုသာ မေးသောကြောင့် ဖြစ်သည်။</figcaption>" },
-  }}
-  part3Sub={{ en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,007 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,007 ခု တူတူဖြင့် run ထားသည်။" }}
-  footer={{ en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>prices</code> above and both walkthroughs rebuild against your input.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>prices</code> ကို ပြင်လိုက်လျှင် walkthrough နှစ်ခုစလုံး သင့် input ဖြင့် ပြန်တည်ဆောက်မည်။" }}
-/>
-
-<script>
-  import '../../lessons/best-time-to-buy-and-sell-stock/lesson.js';
-</script>
+  },
+  part3Sub: { en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,007 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,007 ခု တူတူဖြင့် run ထားသည်။" },
+  footer: { en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>prices</code> above and both walkthroughs rebuild against your input.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>prices</code> ကို ပြင်လိုက်လျှင် walkthrough နှစ်ခုစလုံး သင့် input ဖြင့် ပြန်တည်ဆောက်မည်။" },
+};

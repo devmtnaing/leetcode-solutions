@@ -1,18 +1,16 @@
----
-import Walkthrough from '../../layouts/Walkthrough.astro';
-import statement from '../../lessons/linked-list-cycle/statement.html?raw';
----
-<Walkthrough
-  title="Linked List Cycle"
-  summary="Remember every node you pass, or run two pointers at different speeds. Both walk the list once; only one of them needs memory to do it."
-  eyebrow="LeetCode 141 &nbsp;·&nbsp; Easy"
-  lede={{ en: "Decide whether following <code>next</code> ever brings you back. One solution writes down every node it passes and waits for a repeat; the other writes down nothing and lets a fast pointer lap a slow one.", my: "<code>next</code> ကို လိုက်သွားရင်း နေရာဟောင်းသို့ ပြန်ရောက်မရောက် ဆုံးဖြတ်ပါ။ ဖြေရှင်းနည်းတစ်ခုက ဖြတ်သွားသမျှ node တိုင်းကို မှတ်ပြီး ထပ်တွေ့သည်အထိ စောင့်သည်။ နောက်တစ်ခုကမူ ဘာမျှ မမှတ်ဘဲ မြန်သော pointer က နှေးသော pointer ကို တစ်ပတ်မီအောင် လုပ်သည်။" }}
-  links={[{ id: 141, title: 'Linked List Cycle', slug: 'linked-list-cycle', difficulty: 'Easy' }]}
-  statement={statement}
-  constraints={{ en: "<span><b>n</b> the number of the nodes in the list is in the range [0, 10&#8308;]</span><span>&minus;10&#8309; &le; Node.val &le; 10&#8309;</span><span><code>pos</code> is <code>-1</code> or a valid index in the linked-list</span>", my: "<span><b>n</b> list ထဲရှိ node အရေအတွက်သည် [0, 10&#8308;] အတွင်း</span><span>&minus;10&#8309; &le; Node.val &le; 10&#8309;</span><span><code>pos</code> သည် <code>-1</code> သို့မဟုတ် linked list ၏ မှန်ကန်သော index ဖြစ်သည်</span>" }}
-  part1Sub={{ en: "Read the statement, then drag <code>pos</code> and watch what a walk from the head actually gets to see.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် <code>pos</code> ကို ဆွဲကြည့်ပြီး head မှ လျှောက်သည့်အခါ တကယ် မြင်ရသည့်အရာကို ကြည့်ပါ။" }}
-  widgetTitle={{ en: "Drag pos, watch what the walk sees", my: "pos ကို ဆွဲပါ — လျှောက်ခြင်းက ဘာမြင်ရသလဲ ကြည့်ပါ" }}
-  traps={{
+/* The prose of the Linked List Cycle page: everything the reader sees that is not
+ * interactive. Rendered by src/pages/leetcode/[slug].astro through the
+ * Walkthrough layout; each value is a string or an { en, my } pair. */
+export default {
+  title: 'Linked List Cycle',
+  summary: 'Remember every node you pass, or run two pointers at different speeds. Both walk the list once; only one of them needs memory to do it.',
+  eyebrow: 'LeetCode 141 &nbsp;·&nbsp; Easy',
+  lede: { en: "Decide whether following <code>next</code> ever brings you back. One solution writes down every node it passes and waits for a repeat; the other writes down nothing and lets a fast pointer lap a slow one.", my: "<code>next</code> ကို လိုက်သွားရင်း နေရာဟောင်းသို့ ပြန်ရောက်မရောက် ဆုံးဖြတ်ပါ။ ဖြေရှင်းနည်းတစ်ခုက ဖြတ်သွားသမျှ node တိုင်းကို မှတ်ပြီး ထပ်တွေ့သည်အထိ စောင့်သည်။ နောက်တစ်ခုကမူ ဘာမျှ မမှတ်ဘဲ မြန်သော pointer က နှေးသော pointer ကို တစ်ပတ်မီအောင် လုပ်သည်။" },
+  links: [{ id: 141, title: 'Linked List Cycle', slug: 'linked-list-cycle', difficulty: 'Easy' }],
+  constraints: { en: "<span><b>n</b> the number of the nodes in the list is in the range [0, 10&#8308;]</span><span>&minus;10&#8309; &le; Node.val &le; 10&#8309;</span><span><code>pos</code> is <code>-1</code> or a valid index in the linked-list</span>", my: "<span><b>n</b> list ထဲရှိ node အရေအတွက်သည် [0, 10&#8308;] အတွင်း</span><span>&minus;10&#8309; &le; Node.val &le; 10&#8309;</span><span><code>pos</code> သည် <code>-1</code> သို့မဟုတ် linked list ၏ မှန်ကန်သော index ဖြစ်သည်</span>" },
+  part1Sub: { en: "Read the statement, then drag <code>pos</code> and watch what a walk from the head actually gets to see.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် <code>pos</code> ကို ဆွဲကြည့်ပြီး head မှ လျှောက်သည့်အခါ တကယ် မြင်ရသည့်အရာကို ကြည့်ပါ။" },
+  widgetTitle: { en: "Drag pos, watch what the walk sees", my: "pos ကို ဆွဲပါ — လျှောက်ခြင်းက ဘာမြင်ရသလဲ ကြည့်ပါ" },
+  traps: {
     summary: { en: "Four ways the statement bites &mdash; worth reading before you code", my: "မေးခွန်းစာသားထဲက ချော်လွယ်သည့်နေရာ လေးခု — code မရေးမီ ဖတ်ထားသင့်သည်" },
     items: [
       { en: "<strong><code>pos</code> is not passed as a parameter.</strong> The examples print it, but your function only gets <code>head</code>. Whatever you know about the loop, you have to discover by walking.", my: "<strong><code>pos</code> ကို parameter အဖြစ် မပေးပါ။</strong> ဥပမာများတွင် ပြထားသော်လည်း သင့် function သည် <code>head</code> ကိုသာ ရသည်။ loop အကြောင်း သိသမျှကို လျှောက်ရင်း ရှာဖွေရမည်။" },
@@ -20,9 +18,9 @@ import statement from '../../lessons/linked-list-cycle/statement.html?raw';
       { en: "<strong>The list can be empty.</strong> The range is <code>[0, 10<sup>4</sup>]</code>, so <code>head</code> can be null — both approaches must return <code>false</code> without dereferencing it.", my: "<strong>list ဗလာ ဖြစ်နိုင်သည်။</strong> range မှာ <code>[0, 10<sup>4</sup>]</code> ဖြစ်သဖြင့် <code>head</code> သည် null ဖြစ်နိုင်သည် — နည်းနှစ်ခုလုံး ၎င်းကို မဖတ်ဘဲ <code>false</code> ပြန်ပေးရမည်။" },
       { en: "Check <code>fast</code> <em>and</em> <code>fast.next</code> before the two-step move. Checking only <code>fast</code> dereferences null on the second hop of every odd-length list without a cycle — that is where fast lands on the last node.", my: "နှစ်လှမ်း မလှမ်းမီ <code>fast</code> <em>နှင့်</em> <code>fast.next</code> ကို စစ်ပါ။ <code>fast</code> ကိုသာ စစ်လျှင် cycle မရှိသော အရှည် မကိန်း list တိုင်းတွင် ဒုတိယ ခုန်ချိန်၌ null ကို ဖတ်မိမည် — fast သည် နောက်ဆုံး node ပေါ် ရောက်သည့်နေရာ ဖြစ်သည်။" },
     ],
-  }}
-  part2Sub={{ en: "Two approaches over the same list. The stage shows the state each one carries; the panel shows the line running.", my: "List တစ်ခုတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" }}
-  notes={{
+  },
+  part2Sub: { en: "Two approaches over the same list. The stage shows the state each one carries; the panel shows the line running.", my: "List တစ်ခုတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" },
+  notes: {
     eyebrow: { en: "If you are implementing it", my: "ကိုယ်တိုင် ရေးမည်ဆိုလျှင်" },
     title: { en: "Three questions the two pointers raise", my: "pointer နှစ်ခုနှင့်ပတ်သက်၍ မေးစရာ သုံးခု" },
     items: [
@@ -30,16 +28,12 @@ import statement from '../../lessons/linked-list-cycle/statement.html?raw';
       { q: { en: "And if there is no loop?", my: "loop မရှိလျှင်ကော။" }, a: { en: "Then the list has an end, and fast — moving twice as fast — reaches it first. Falling off the end is the proof that there was nothing to be trapped in, which is why the loop condition is the only place <code>false</code> comes from.", my: "ထိုအခါ list တွင် အဆုံး ရှိပြီး နှစ်ဆ မြန်သော fast က အရင် ရောက်သည်။ အဆုံးမှ ပြုတ်ကျခြင်းသည် ပိတ်မိစရာ မရှိကြောင်း သက်သေဖြစ်ပြီး <code>false</code> ထွက်လာသည့် တစ်ခုတည်းသော နေရာမှာ loop အခြေအနေ ဖြစ်ရခြင်း၏ အကြောင်းရင်းလည်း ထိုအချက်ပင်။" } },
       { q: { en: "Where else does this trick work?", my: "ဤနည်း နောက်ထပ် ဘယ်မှာ အလုပ်ဖြစ်သလဲ။" }, a: { en: "Anything that can be read as <em>follow a pointer from here</em>. <strong>Find the Duplicate Number</strong> treats <code>i → nums[i]</code> as the next pointer: a duplicate value is a node with two predecessors, which is to say a cycle, found without modifying the array and without extra memory. <strong>Linked List Cycle II</strong> goes one step further and finds where the loop starts.", my: "<em>ဤနေရာမှ pointer တစ်ခုကို လိုက်ပါ</em> ဟု ဖတ်နိုင်သမျှ အရာတိုင်း ဖြစ်သည်။ <strong>Find the Duplicate Number</strong> သည် <code>i → nums[i]</code> ကို next pointer အဖြစ် ယူသည် — ထပ်နေသော value သည် ရှေ့ node နှစ်ခုရှိသော node ဖြစ်ပြီး ဆိုလိုသည်မှာ cycle ပင်၊ array ကို မပြင်ဘဲ အပို memory မသုံးဘဲ ရှာတွေ့သည်။ <strong>Linked List Cycle II</strong> က တစ်ဆင့် ထပ်သွားပြီး loop စသည့်နေရာကို ရှာသည်။" } },
     ],
-  }}
-  cost={{
+  },
+  cost: {
     eyebrow: { en: "Why bother", my: "ဘာကြောင့် ဂရုစိုက်ရသလဲ" },
     title: { en: "The same walk, a different footprint", my: "လျှောက်ပုံ အတူတူ၊ memory မတူ" },
     html: { en: "<table>\n  <thead><tr><th>Approach</th><th>Time</th><th>Extra space</th><th>At n = 10⁴ (the constraint)</th></tr></thead>\n  <tbody>\n    <tr><td><b>Remember every node</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">a set of references</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(n)</td><td class=\"cross\">up to 10⁴ references held</td></tr>\n    <tr><td><b>Floyd's two pointers</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">slow and fast</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(1)</td><td class=\"tick\">2 references</td></tr>\n  </tbody>\n</table>\n<figcaption>Computed from the constraint, not measured. Slow takes at most n steps before the pointers meet and fast takes twice as many, so Floyd can make more pointer moves than the set, not fewer. What it saves is memory, and memory is what the follow-up asks about.</figcaption>", my: "<table>\n  <thead><tr><th>နည်းလမ်း</th><th>အချိန်</th><th>အပို memory</th><th>n = 10⁴ (ကန့်သတ်ချက်) တွင်</th></tr></thead>\n  <tbody>\n    <tr><td><b>Remember every node</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">reference များ၏ set</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(n)</td><td class=\"cross\">reference 10⁴ ခုအထိ ကိုင်ထား</td></tr>\n    <tr><td><b>Floyd's two pointers</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">slow နှင့် fast</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(1)</td><td class=\"tick\">reference 2 ခု</td></tr>\n  </tbody>\n</table>\n<figcaption>ကန့်သတ်ချက်မှ တွက်ထားခြင်းဖြစ်ပြီး တိုင်းတာထားခြင်း မဟုတ်ပါ။ pointer များ မဆုံမီ slow သည် အများဆုံး n လှမ်း လှမ်းပြီး fast သည် ၎င်း၏ နှစ်ဆ လှမ်းသဖြင့် Floyd သည် set ထက် pointer ရွှေ့မှု ပိုများနိုင်သည်၊ မနည်းပါ။ သက်သာစေသည်မှာ memory ဖြစ်ပြီး follow-up က မေးသည်မှာလည်း memory ပင်။</figcaption>" },
-  }}
-  part3Sub={{ en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,001 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,001 ခု တူတူဖြင့် run ထားသည်။" }}
-  footer={{ en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>head</code> or <code>pos</code> above (<code>-1</code> for no cycle) and both walkthroughs rebuild against your list.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>head</code> သို့မဟုတ် <code>pos</code> ကို ပြင်လိုက်လျှင် (cycle မရှိလျှင် <code>-1</code>) walkthrough နှစ်ခုစလုံး သင့် list ဖြင့် ပြန်တည်ဆောက်မည်။" }}
-/>
-
-<script>
-  import '../../lessons/linked-list-cycle/lesson.js';
-</script>
+  },
+  part3Sub: { en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,001 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,001 ခု တူတူဖြင့် run ထားသည်။" },
+  footer: { en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>head</code> or <code>pos</code> above (<code>-1</code> for no cycle) and both walkthroughs rebuild against your list.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>head</code> သို့မဟုတ် <code>pos</code> ကို ပြင်လိုက်လျှင် (cycle မရှိလျှင် <code>-1</code>) walkthrough နှစ်ခုစလုံး သင့် list ဖြင့် ပြန်တည်ဆောက်မည်။" },
+};

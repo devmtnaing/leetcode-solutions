@@ -1,18 +1,16 @@
----
-import Walkthrough from '../../layouts/Walkthrough.astro';
-import statement from '../../lessons/two-sum/statement.html?raw';
----
-<Walkthrough
-  title="Two Sum"
-  summary="Every pair, or one pass with a hash map. The difference is what question you ask."
-  eyebrow="LeetCode 1 &nbsp;·&nbsp; Easy"
-  lede={{ en: "Find the two numbers that add up to <code>target</code>. One solution tries every pair; the other asks each number a single question that a hash map answers instantly.", my: "ပေါင်းလျှင် <code>target</code> ရသည့် ကိန်းနှစ်လုံးကို ရှာပါ။ ဖြေရှင်းနည်းတစ်ခုက အတွဲတိုင်းကို စမ်းသည်။ နောက်တစ်ခုကမူ ကိန်းတစ်လုံးချင်းစီကို hash map က ချက်ချင်းဖြေနိုင်သည့် မေးခွန်းတစ်ခုတည်းသာ မေးသည်။" }}
-  links={[{ id: 1, title: 'Two Sum', slug: 'two-sum', difficulty: 'Easy' }]}
-  statement={statement}
-  constraints={{ en: "<span><b>n</b> 2 &le; nums.length &le; 10&#8308;</span><span>&minus;10&#8313; &le; nums[i], target &le; 10&#8313;</span><span>exactly one valid answer</span>", my: "<span><b>n</b> 2 &le; nums.length &le; 10&#8308;</span><span>&minus;10&#8313; &le; nums[i], target &le; 10&#8313;</span><span>မှန်သော အဖြေ တစ်ခုတည်းသာ</span>" }}
-  part1Sub={{ en: "Read the statement, then drag the target and watch what each number needs.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် target ကို ဆွဲကြည့်ပြီး ကိန်းတစ်လုံးချင်းစီ ဘာလိုသလဲ ကြည့်ပါ။" }}
-  widgetTitle={{ en: "Drag the target, watch what each number needs", my: "target ကို ဆွဲကြည့်ပါ — ကိန်းတစ်လုံးချင်းစီ ဘာလိုသလဲ" }}
-  traps={{
+/* The prose of the Two Sum page: everything the reader sees that is not
+ * interactive. Rendered by src/pages/leetcode/[slug].astro through the
+ * Walkthrough layout; each value is a string or an { en, my } pair. */
+export default {
+  title: 'Two Sum',
+  summary: 'Every pair, or one pass with a hash map. The difference is what question you ask.',
+  eyebrow: 'LeetCode 1 &nbsp;·&nbsp; Easy',
+  lede: { en: "Find the two numbers that add up to <code>target</code>. One solution tries every pair; the other asks each number a single question that a hash map answers instantly.", my: "ပေါင်းလျှင် <code>target</code> ရသည့် ကိန်းနှစ်လုံးကို ရှာပါ။ ဖြေရှင်းနည်းတစ်ခုက အတွဲတိုင်းကို စမ်းသည်။ နောက်တစ်ခုကမူ ကိန်းတစ်လုံးချင်းစီကို hash map က ချက်ချင်းဖြေနိုင်သည့် မေးခွန်းတစ်ခုတည်းသာ မေးသည်။" },
+  links: [{ id: 1, title: 'Two Sum', slug: 'two-sum', difficulty: 'Easy' }],
+  constraints: { en: "<span><b>n</b> 2 &le; nums.length &le; 10&#8308;</span><span>&minus;10&#8313; &le; nums[i], target &le; 10&#8313;</span><span>exactly one valid answer</span>", my: "<span><b>n</b> 2 &le; nums.length &le; 10&#8308;</span><span>&minus;10&#8313; &le; nums[i], target &le; 10&#8313;</span><span>မှန်သော အဖြေ တစ်ခုတည်းသာ</span>" },
+  part1Sub: { en: "Read the statement, then drag the target and watch what each number needs.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် target ကို ဆွဲကြည့်ပြီး ကိန်းတစ်လုံးချင်းစီ ဘာလိုသလဲ ကြည့်ပါ။" },
+  widgetTitle: { en: "Drag the target, watch what each number needs", my: "target ကို ဆွဲကြည့်ပါ — ကိန်းတစ်လုံးချင်းစီ ဘာလိုသလဲ" },
+  traps: {
     summary: { en: "Four ways the statement bites &mdash; worth reading before you code", my: "မေးခွန်းစာသားထဲက ချော်လွယ်သည့်နေရာ လေးခု — code မရေးမီ ဖတ်ထားသင့်သည်" },
     items: [
       { en: "<strong>\"Exactly one solution\"</strong> is a licence to leave early. There is no second pair to find and no tie to break, so the first pair that works is the answer — <code>return</code> from inside the loop rather than collecting matches.", my: "<strong>အဖြေ တစ်ခုတည်းသာ ရှိသည်</strong> ဆိုသည်မှာ တွေ့သည်နှင့် ချက်ချင်း ပြန်ပေးလိုက်နိုင်သည်ဟု ဆိုလိုသည်။ နောက်ထပ် အတွဲ ရှာစရာ မလို၊ အတွဲနှစ်ခုကြားက ရွေးစရာလည်း မလိုသဖြင့် loop ထဲကပင် return လုပ်လိုက်ပါ။" },
@@ -20,9 +18,9 @@ import statement from '../../lessons/two-sum/statement.html?raw';
       { en: "It asks for <strong>indices</strong>, not values. The answer to example 1 is <code>[0,1]</code>, not <code>[2,7]</code>.", my: "မေးထားသည်မှာ <strong>index များ</strong> ဖြစ်သည်၊ တန်ဖိုးများ မဟုတ်ပါ။ ဥပမာ ၁ ၏ အဖြေမှာ <code>[0,1]</code> ဖြစ်ပြီး <code>[2,7]</code> မဟုတ်ပါ။" },
       { en: "<code>nums</code> is not sorted — nothing in the constraints says it is. Two-pointer only works on sorted input, so it needs a sort first: that costs <code>O(n log n)</code> and, worse, moves the very indices you were asked to return. It works only if you carry each original index alongside its value.", my: "<code>nums</code> ကို အစဉ်လိုက် စီထားသည် မဟုတ်ပါ — ကန့်သတ်ချက်များတွင် ထိုသို့ မပါပါ။ two-pointer နည်းသည် စီထားမှသာ အလုပ်လုပ်သည်ဖြစ်ရာ အရင် sort လုပ်ရမည်။ ထိုအခါ <code>O(n log n)</code> ကုန်ရုံသာမက မေးထားသည့် index များပါ ရွှေ့ကုန်မည် — တန်ဖိုးနှင့်အတူ မူလ index ကို တွဲယူသွားမှသာ အဖြေ မှန်မည်။" },
     ],
-  }}
-  part2Sub={{ en: "Two approaches over the same array. The stage shows the state each one carries; the panel shows the line running.", my: "Array တစ်ခုတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" }}
-  notes={{
+  },
+  part2Sub: { en: "Two approaches over the same array. The stage shows the state each one carries; the panel shows the line running.", my: "Array တစ်ခုတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" },
+  notes: {
     eyebrow: { en: "If you are implementing it", my: "ကိုယ်တိုင် ရေးမည်ဆိုလျှင်" },
     title: { en: "Three questions the hash map raises", my: "Hash map နှင့်ပတ်သက်၍ မေးစရာ သုံးခု" },
     items: [
@@ -30,16 +28,12 @@ import statement from '../../lessons/two-sum/statement.html?raw';
       { q: { en: "Why check for the partner <em>before</em> storing the current value?", my: "လက်ရှိတန်ဖိုးကို မသိမ်းမီ partner ကို ဘာကြောင့် <em>အရင်</em> စစ်ရသလဲ။" }, a: { en: "One detail the examples hide: store the value <em>after</em> checking for its partner, not before. Store first and an element becomes its own partner whenever <code>target</code> is double it.", my: "ဥပမာများက ဖုံးကွယ်ထားသည့် အချက်တစ်ခု — လက်ရှိတန်ဖိုးကို map ထဲ သိမ်းရမည်မှာ ၎င်း၏ partner ကို စစ်<em>ပြီးမှ</em> ဖြစ်သည်၊ မစစ်မီ မဟုတ်ပါ။ အရင်သိမ်းလိုက်လျှင် <code>target</code> သည် ထိုတန်ဖိုး၏ နှစ်ဆဖြစ်နေသည့်အခါ element သည် သူ့ကိုယ်သူ partner ဖြစ်သွားလိမ့်မည်။" } },
       { q: { en: "Where else does this trick show up?", my: "ဤနည်းကို နောက်ထပ် ဘယ်ပုစ္ဆာတွေမှာ တွေ့ရမလဲ။" }, a: { en: "That reframing — from \"check every combination\" to \"ask each element one question a lookup can answer\" — is the whole trick, and it is the same trick behind <strong>Valid Anagram</strong>, <strong>Majority Element</strong> and most of the subarray-sum problems. Trading <code>O(n)</code> memory for a quadratic factor of time is usually the right trade.", my: "ထိုသို့ အမြင်ပြောင်းလိုက်ခြင်း — ပေါင်းစပ်မှုတိုင်းကို စစ်မည် မှ element တစ်ခုချင်းစီကို lookup ဖြင့် ဖြေနိုင်သည့် မေးခွန်းတစ်ခု မေးမည် သို့ — သည်ပင် အဓိက အချက်ဖြစ်သည်။ <strong>Valid Anagram</strong>၊ <strong>Majority Element</strong> နှင့် subarray-sum ပြဿနာ အများစုတွင်လည်း ဤနည်းအတိုင်းပင် ဖြစ်သည်။ <code>O(n)</code> memory ပေးလိုက်ပြီး အချိန်မှ quadratic factor ကို လျှော့ခြင်းသည် များသောအားဖြင့် တန်သည့် အလဲအလှယ် ဖြစ်သည်။" } },
     ],
-  }}
-  cost={{
+  },
+  cost: {
     eyebrow: { en: "Why bother", my: "ဘာကြောင့် ဂရုစိုက်ရသလဲ" },
     title: { en: "The same answer, a different price", my: "အဖြေတူ၊ ကုန်ကျစရိတ် မတူ" },
     html: { en: "<table>\n  <thead><tr><th>Approach</th><th>Time</th><th>Extra space</th><th>At n = 10⁴ (the constraint)</th></tr></thead>\n  <tbody>\n    <tr><td><b>Brute force</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">every pair</span></td>\n        <td class=\"mono\">O(n²)</td><td class=\"mono\">O(1)</td><td class=\"cross\">≈ 5 × 10⁷ pair checks</td></tr>\n    <tr><td><b>Hash map</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">one pass</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(n)</td><td class=\"tick\">10⁴ lookups</td></tr>\n  </tbody>\n</table>\n<figcaption>Counts are computed from the constraint, not measured. The trade is memory for time: the map holds up to n entries so that each element asks one question instead of n.</figcaption>", my: "<table>\n  <thead><tr><th>နည်းလမ်း</th><th>အချိန်</th><th>အပို memory</th><th>n = 10⁴ (ကန့်သတ်ချက်) တွင်</th></tr></thead>\n  <tbody>\n    <tr><td><b>Brute force</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">အတွဲတိုင်း</span></td>\n        <td class=\"mono\">O(n²)</td><td class=\"mono\">O(1)</td><td class=\"cross\">≈ 5 × 10⁷ ကြိမ် အတွဲစစ်</td></tr>\n    <tr><td><b>Hash map</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">တစ်ခေါက်တည်း</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(n)</td><td class=\"tick\">lookup 10⁴ ကြိမ်</td></tr>\n  </tbody>\n</table>\n<figcaption>ဤအရေအတွက်များကို ကန့်သတ်ချက်မှ တွက်ထားခြင်းဖြစ်ပြီး တိုင်းတာထားခြင်း မဟုတ်ပါ။ Memory နှင့် အချိန်ကို အလဲအလှယ်လုပ်ခြင်း ဖြစ်သည် — map တွင် entry n ခုအထိ သိမ်းထားသဖြင့် element တစ်ခုချင်းစီက မေးခွန်း n ခုအစား တစ်ခုတည်းသာ မေးရသည်။</figcaption>" },
-  }}
-  part3Sub={{ en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,004 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,004 ခု တူတူဖြင့် run ထားသည်။" }}
-  footer={{ en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>nums</code> or <code>target</code> above and both walkthroughs rebuild against your input.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>nums</code> သို့မဟုတ် <code>target</code> ကို ပြင်လိုက်လျှင် walkthrough နှစ်ခုစလုံး သင့် input ဖြင့် ပြန်တည်ဆောက်မည်။" }}
-/>
-
-<script>
-  import '../../lessons/two-sum/lesson.js';
-</script>
+  },
+  part3Sub: { en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,004 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,004 ခု တူတူဖြင့် run ထားသည်။" },
+  footer: { en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>nums</code> or <code>target</code> above and both walkthroughs rebuild against your input.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>nums</code> သို့မဟုတ် <code>target</code> ကို ပြင်လိုက်လျှင် walkthrough နှစ်ခုစလုံး သင့် input ဖြင့် ပြန်တည်ဆောက်မည်။" },
+};

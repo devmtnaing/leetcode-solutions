@@ -1,18 +1,16 @@
----
-import Walkthrough from '../../layouts/Walkthrough.astro';
-import statement from '../../lessons/move-zeroes/statement.html?raw';
----
-<Walkthrough
-  title="Move Zeroes"
-  summary="Build the answer in a second array, or keep a boundary that is already correct and swap across it."
-  eyebrow="LeetCode 283 &nbsp;·&nbsp; Easy"
-  lede={{ en: "Move every <code>0</code> to the end of <code>nums</code> without disturbing the order of the non-zeros — and without a second array. One approach copies out and back; the other keeps a boundary that is always correct and swaps non-zeros down to it.", my: "<code>nums</code> ထဲရှိ <code>0</code> တိုင်းကို array ၏ အဆုံးသို့ ရွှေ့ပါ — non-zero များ၏ အစီအစဉ်ကို မပျက်စေဘဲ၊ ဒုတိယ array တစ်ခုလည်း မသုံးဘဲ။ နည်းတစ်ခုက ကူးထုတ်၍ ပြန်ထည့်သည်။ နောက်တစ်ခုက အမြဲမှန်ကန်နေသော boundary တစ်ခုကို ထိန်းထားပြီး non-zero များကို ထိုနေရာသို့ swap ချသည်။" }}
-  links={[{ id: 283, title: 'Move Zeroes', slug: 'move-zeroes', difficulty: 'Easy' }]}
-  statement={statement}
-  constraints={{ en: "<span><b>n</b> 1 &le; nums.length &le; 10&#8308;</span><span>&minus;2&#179;&sup1; &le; nums[i] &le; 2&#179;&sup1; &minus; 1</span>", my: "<span><b>n</b> 1 &le; nums.length &le; 10&#8308;</span><span>&minus;2&#179;&sup1; &le; nums[i] &le; 2&#179;&sup1; &minus; 1</span>" }}
-  part1Sub={{ en: "Read the statement, then sweep across the array and watch which values keep their place and which are cut.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် array ပေါ်တွင် ဖျတ်ကနဲ လျှောက်ကြည့်ပြီး မည်သည့် တန်ဖိုးများ ကျန်ရစ်သည်၊ မည်သည့် တန်ဖိုးများ ပြုတ်ထွက်သည်ကို ကြည့်ပါ။" }}
-  widgetTitle={{ en: "Sweep across — who keeps their place?", my: "ဖျတ်ကနဲ လျှောက်ကြည့် — ဘယ်ဟာတွေ ကျန်ရစ်သလဲ။" }}
-  traps={{
+/* The prose of the Move Zeroes page: everything the reader sees that is not
+ * interactive. Rendered by src/pages/leetcode/[slug].astro through the
+ * Walkthrough layout; each value is a string or an { en, my } pair. */
+export default {
+  title: 'Move Zeroes',
+  summary: 'Build the answer in a second array, or keep a boundary that is already correct and swap across it.',
+  eyebrow: 'LeetCode 283 &nbsp;·&nbsp; Easy',
+  lede: { en: "Move every <code>0</code> to the end of <code>nums</code> without disturbing the order of the non-zeros — and without a second array. One approach copies out and back; the other keeps a boundary that is always correct and swaps non-zeros down to it.", my: "<code>nums</code> ထဲရှိ <code>0</code> တိုင်းကို array ၏ အဆုံးသို့ ရွှေ့ပါ — non-zero များ၏ အစီအစဉ်ကို မပျက်စေဘဲ၊ ဒုတိယ array တစ်ခုလည်း မသုံးဘဲ။ နည်းတစ်ခုက ကူးထုတ်၍ ပြန်ထည့်သည်။ နောက်တစ်ခုက အမြဲမှန်ကန်နေသော boundary တစ်ခုကို ထိန်းထားပြီး non-zero များကို ထိုနေရာသို့ swap ချသည်။" },
+  links: [{ id: 283, title: 'Move Zeroes', slug: 'move-zeroes', difficulty: 'Easy' }],
+  constraints: { en: "<span><b>n</b> 1 &le; nums.length &le; 10&#8308;</span><span>&minus;2&#179;&sup1; &le; nums[i] &le; 2&#179;&sup1; &minus; 1</span>", my: "<span><b>n</b> 1 &le; nums.length &le; 10&#8308;</span><span>&minus;2&#179;&sup1; &le; nums[i] &le; 2&#179;&sup1; &minus; 1</span>" },
+  part1Sub: { en: "Read the statement, then sweep across the array and watch which values keep their place and which are cut.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် array ပေါ်တွင် ဖျတ်ကနဲ လျှောက်ကြည့်ပြီး မည်သည့် တန်ဖိုးများ ကျန်ရစ်သည်၊ မည်သည့် တန်ဖိုးများ ပြုတ်ထွက်သည်ကို ကြည့်ပါ။" },
+  widgetTitle: { en: "Sweep across — who keeps their place?", my: "ဖျတ်ကနဲ လျှောက်ကြည့် — ဘယ်ဟာတွေ ကျန်ရစ်သလဲ။" },
+  traps: {
     summary: { en: "Four ways the statement bites &mdash; worth reading before you code", my: "မေးခွန်းစာသားထဲက ချော်လွယ်သည့်နေရာ လေးခု — code မရေးမီ ဖတ်ထားသင့်သည်" },
     items: [
       { en: "<strong>\"Relative order\" is the whole constraint.</strong> Move zeros and there is no order to preserve among them — one zero is the same as the next. The non-zeros are the part that must stay in place relative to one another, which is exactly what rules out the lazy fix of swapping each zero with the last element: that reverse-order arrive at the front would scramble the non-zeros.", my: "<strong>မူရင်း အစီအစဉ် (relative order) သည်ပင် အဓိက ကန့်သတ်ချက် ဖြစ်သည်။</strong> သုညများကို ရွှေ့ရာတွင် ၎င်းတို့ကြားတွင် ထိန်းသိမ်းရမည့် အစီအစဉ် မရှိပါ — သုညတစ်လုံးနှင့် နောက်တစ်လုံး အတူတူပင် ဖြစ်သည်။ ထိန်းသိမ်းရမည့်အရာမှာ non-zero များအချင်းချင်း ၎င်းတို့၏ နေရာ အစီအစဉ်ပင် ဖြစ်သည်။ ဤကန့်သတ်ချက်ကြောင့်သာ သုညတစ်လုံးစီကို နောက်ဆုံး element နှင့် swap လုပ်သည့် ပျင်းရိသော နည်းလမ်းကို မသုံးနိုင်ခြင်း ဖြစ်သည် — ထိုသို့လုပ်လျှင် non-zero များ၏ အစီအစဉ် ပျက်သွားမည်။" },
@@ -20,9 +18,9 @@ import statement from '../../lessons/move-zeroes/statement.html?raw';
       { en: "<strong><code>0</code> is just a value.</strong> Nothing about this is special to zero; the same two-pointer works for \"move every <code>5</code> to the end\" or any other sentinel. The algorithm names one value to move and one side to move it to — the value happens to be <code>0</code>.", my: "<strong><code>0</code> သည် တန်ဖိုးတစ်ခုမျှသာ ဖြစ်သည်။</strong> ဤပြဿနာ၏ ဘာမှသည် သုညအတွက်သာ သီးသန့် ဖြစ်နေသည် မဟုတ်။ <code>5</code> တိုင်းကို အဆုံးသို့ ရွှေ့သည့် ပြဿနာဖြစ်စေ၊ အခြား sentinel တစ်ခုခုဖြစ်စေ ထိုနည်းတူ two-pointer က အလုပ်လုပ်သည်။ Algorithm က မည်သည့် တန်ဖိုးကို ရွှေ့မည်၊ ဘယ်ဘက်သို့ ရွှေ့မည်ဆိုသည်ကိုသာ သတ်မှတ်သည် — ထိုတန်ဖိုးမှာ <code>0</code> ဖြစ်နေရုံသာ ဖြစ်သည်။" },
       { en: "<strong>The follow-up is about writes, not comparisons.</strong> The swap version writes <code>nums[slow]</code> and <code>nums[fast]</code> even when <code>slow === fast</code>, meaning a zero-free array costs <code>n</code> pointless self-swaps. The alternative — assign <code>nums[slow] = nums[fast]</code> and zero the tail afterwards — does the same thing with fewer writes when the array is dense, at the price of a second loop.", my: "<strong>နောက်ဆက်တွဲ မေးခွန်းသည် နှိုင်းယှဉ်မှု အရေအတွက် မဟုတ်ဘဲ ရေးသွင်းမှု အရေအတွက် အကြောင်း ဖြစ်သည်။</strong> swap နည်းသည် <code>slow === fast</code> ဖြစ်နေသည့်တိုင် <code>nums[slow]</code> နှင့် <code>nums[fast]</code> ကို ရေးသွင်းသည် — ဆိုလိုသည်မှာ သုည လုံးဝ မပါသည့် array တစ်ခုတွင် <code>n</code> ကြိမ် အလဟဿ self-swap လုပ်နေခြင်း ဖြစ်သည်။ အခြားနည်း — <code>nums[slow] = nums[fast]</code> ဟု တာဝန်ပေးပြီး နောက်ဆုံးတွင် အမြီးကို သုညဖြင့် ဖြည့်ခြင်း — က array သိပ်သည်းနေချိန်တွင် ရေးသွင်းမှု နည်းပါးစေပြီး၊ ဒုတိယ loop တစ်ခု ပေးဆပ်ရသည်။" },
     ],
-  }}
-  part2Sub={{ en: "Two approaches over the same array. The stage shows the state each one carries; the panel shows the line running.", my: "Array တစ်ခုတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" }}
-  notes={{
+  },
+  part2Sub: { en: "Two approaches over the same array. The stage shows the state each one carries; the panel shows the line running.", my: "Array တစ်ခုတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" },
+  notes: {
     eyebrow: { en: "If you are implementing it", my: "ကိုယ်တိုင် ရေးမည်ဆိုလျှင်" },
     title: { en: "Three questions the two-pointer approach raises", my: "Two-pointer နည်းနှင့်ပတ်သက်၍ မေးစရာ သုံးခု" },
     items: [
@@ -30,16 +28,12 @@ import statement from '../../lessons/move-zeroes/statement.html?raw';
       { q: { en: "Why is the copy approach wrong, when it returns the right answer?", my: "အဖြေမှန် ပြန်ပေးနေလျက်နှင့် copy နည်းက ဘာကြောင့် မှားရသလဲ။" }, a: { en: "The judge checks the array, not just the printed result — and it checks it <em>in place</em>. The copy approach mutates the caller's array in the end, so it passes the examples and even most tests; where it fails is the contract: the problem bans the <code>O(n)</code> auxiliary array outright. It is the classic &ldquo;right answer to a different question&rdquo; — which is why it earns a page of its own here, as the thing to understand and then not submit.", my: "Judge သည် result ကိုသာ မဟုတ်ဘဲ array ကို စစ်ဆေးသည် — ထို့ပြင် ၎င်းကို <em>in-place</em> ဖြစ်မဖြစ် စစ်ဆေးသည်။ Copy နည်းသည် နောက်ဆုံးတွင် caller ၏ array ကို mutate လုပ်သဖြင့် ဥပမာများနှင့် test အများစုကို အောင်မြင်ပါသည်။ သို့သော် မှားသည့်နေရာမှာ သဘောတူညီချက် (contract) ဖြစ်သည် — ပြဿနာက <code>O(n)</code> auxiliary array ကို လုံးဝ တားမြစ်ထားသည်။ ဤသည်မှာ &ldquo;မတူသော မေးခွန်းအတွက် အဖြေမှန်&rdquo; ၏ ဂန္ထဝင် ဥပမာ ဖြစ်သည် — ထို့ကြောင့် ယင်းကို နားလည်ထားပြီး မတင်သွင်းသင့်သည့် နည်းလမ်းအဖြစ် ဤနေရာတွင် သီးခြားစာမျက်နှာ ပေးထားခြင်း ဖြစ်သည်။" } },
       { q: { en: "Where else does this boundary pattern show up?", my: "ဤ boundary ပုံစံမျိုးကို နောက်ထပ် ဘယ်ပုစ္ဆာတွေမှာ တွေ့ရမလဲ။" }, a: { en: "Naming the invariant &ldquo;everything left of <code>slow</code> is correct&rdquo; is what makes a whole family of problems readable rather than a pile of index arithmetic. <strong>Remove Duplicates from Sorted Array</strong> runs the identical two-pointer where <code>slow</code> fences the deduplicated prefix. <strong>Sort Colors</strong> (Dutch flag) uses two boundaries — one to fence off the <code>0</code>s at the front, one for the <code>2</code>s at the back. Once you can state what is true to the left of the pointer, the loop body usually writes itself.", my: "&ldquo;<code>slow</code> ၏ ဘယ်ဘက်ရှိ အားလုံးသည် မှန်ကန်သည်&rdquo; ဟူသော invariant ကို နာမည်ပေးနိုင်ခြင်းကသာ ဤပြဿနာအစုအဝေးကို index တွက်ချက်မှု အပုံကြီးအစား ဖတ်ရလွယ်စေသည်။ <strong>Remove Duplicates from Sorted Array</strong> တွင် <code>slow</code> သည် deduplicated ရှေ့ပိုင်းကို ကာရံထားသည့် ထပ်တူ two-pointer ကို သုံးသည်။ <strong>Sort Colors</strong> (Dutch flag) တွင် boundary နှစ်ခု သုံးသည် — တစ်ခုက ရှေ့မှ <code>0</code> များကို၊ တစ်ခုက နောက်မှ <code>2</code> များကို ကာရံသည်။ Pointer ၏ ဘယ်ဘက်တွင် မည်သည့်အရာ မှန်ကန်နေသည်ကို ပြောနိုင်သည်နှင့် loop body သည် အလိုအလျောက် ရေးဖြစ်သွားတတ်သည်။" } },
     ],
-  }}
-  cost={{
+  },
+  cost: {
     eyebrow: { en: "Why bother", my: "ဘာကြောင့် ဂရုစိုက်ရသလဲ" },
     title: { en: "The same answer, a different price", my: "အဖြေတူ၊ ကုန်ကျစရိတ် မတူ" },
     html: { en: "<table>\n  <thead><tr><th>Approach</th><th>Time</th><th>Extra space</th><th>At n = 10⁴ (the constraint)</th></tr></thead>\n  <tbody>\n    <tr><td><b>Copy out and back</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">collect, pad, paste</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(n)</td><td class=\"cross\">10⁴ cells in a second array</td></tr>\n    <tr><td><b>Two pointers</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">swap across a boundary</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(1)</td><td class=\"tick\">no extra array, ≤ n swaps</td></tr>\n  </tbody>\n</table>\n<figcaption>Both are linear in time; the difference is the space the problem cares about. The copy spends an entire second array that the statement forbids; the two-pointer spends two integers. The <code>O(1)</code> there is the whole point of the constraint.</figcaption>", my: "<table>\n  <thead><tr><th>နည်းလမ်း</th><th>အချိန်</th><th>အပို memory</th><th>n = 10⁴ (ကန့်သတ်ချက်) တွင်</th></tr></thead>\n  <tbody>\n    <tr><td><b>ကူးထုတ်၍ ပြန်ထည့်</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">စုဆောင်း၊ ဖြည့်၊ ပြန်ရေး</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(n)</td><td class=\"cross\">ဒုတိယ array တွင် 10⁴ cells</td></tr>\n    <tr><td><b>Pointer နှစ်ခု</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">boundary ကို ဖြတ်၍ swap</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(1)</td><td class=\"tick\">extra array မရှိ၊ swap ≤ n ကြိမ်</td></tr>\n  </tbody>\n</table>\n<figcaption>နှစ်ခုစလုံးမှာ အချိန်အားဖြင့် linear ဖြစ်သည် — ကွာသည်မှာ ပြဿနာက အလေးပေးသော space ဖြစ်သည်။ Copy နည်းက မေးခွန်းက တားမြစ်ထားသည့် ဒုတိယ array တစ်ခုလုံးကို သုံးစွဲသည်။ Two-pointer ကမူ ဂဏန်း နှစ်လုံးသာ သုံးစွဲသည်။ <code>O(1)</code> ဆိုသည်မှာ ဤကန့်သတ်ချက်၏ အဓိကအချက် ဖြစ်သည်။</figcaption>" },
-  }}
-  part3Sub={{ en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,007 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,007 ခု တူတူဖြင့် run ထားသည်။" }}
-  footer={{ en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>nums</code> above and both walkthroughs rebuild against your input.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>nums</code> ကို ပြင်လိုက်လျှင် walkthrough နှစ်ခုစလုံး သင့် input ဖြင့် ပြန်တည်ဆောက်မည်။" }}
-/>
-
-<script>
-  import '../../lessons/move-zeroes/lesson.js';
-</script>
+  },
+  part3Sub: { en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,007 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,007 ခု တူတူဖြင့် run ထားသည်။" },
+  footer: { en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>nums</code> above and both walkthroughs rebuild against your input.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>nums</code> ကို ပြင်လိုက်လျှင် walkthrough နှစ်ခုစလုံး သင့် input ဖြင့် ပြန်တည်ဆောက်မည်။" },
+};

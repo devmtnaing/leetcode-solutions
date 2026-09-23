@@ -1,0 +1,34 @@
+---
+/* Every lesson built on the kit is one folder under src/lessons/<slug>/:
+ *
+ *   page.js          the prose, as Walkthrough props
+ *   statement.html   LeetCode's statement
+ *   lesson.js        everything interactive
+ *
+ * This route renders all of them, so adding a lesson means adding a folder.
+ * x-sum is built by hand and has its own page, x-sum.astro. */
+import Walkthrough from '../../layouts/Walkthrough.astro';
+
+export function getStaticPaths() {
+  const pages = import.meta.glob('../../lessons/*/page.js', { eager: true });
+  const statements = import.meta.glob('../../lessons/*/statement.html', { eager: true, query: '?raw', import: 'default' });
+  return Object.entries(pages).map(([path, mod]) => {
+    const slug = path.split('/').at(-2);
+    return {
+      params: { slug },
+      props: { page: mod.default, statement: statements[`../../lessons/${slug}/statement.html`] },
+    };
+  });
+}
+
+const { page, statement } = Astro.props;
+const { slug } = Astro.params;
+---
+<Walkthrough {...page} slug={slug} statement={statement} />
+
+<script>
+  // Each lesson's script is its own chunk; load the one this page is for.
+  const lessons = import.meta.glob(['../../lessons/*/lesson.js', '!../../lessons/x-sum/lesson.js']);
+  const slug = document.getElementById('lesson')?.dataset.slug;
+  lessons[`../../lessons/${slug}/lesson.js`]?.();
+</script>

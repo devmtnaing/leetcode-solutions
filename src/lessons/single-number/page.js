@@ -1,18 +1,16 @@
----
-import Walkthrough from '../../layouts/Walkthrough.astro';
-import statement from '../../lessons/single-number/statement.html?raw';
----
-<Walkthrough
-  title="Single Number"
-  summary="Count every value, or XOR them all together and let the pairs cancel. One of them needs a table; the other needs one integer."
-  eyebrow="LeetCode 136 &nbsp;·&nbsp; Easy"
-  lede={{ en: "Find the one value that is not part of a pair. Counting works and is what you should write first — but the statement asks for constant space, and only the XOR fold, where each pair erases itself, gives you that.", my: "အတွဲ မဖြစ်သော value တစ်ခုကို ရှာပါ။ ရေတွက်ခြင်း အလုပ်ဖြစ်ပြီး ပထမဆုံး ရေးသင့်သည်မှာ ၎င်းပင် ဖြစ်သည် — သို့သော် မေးခွန်းက constant space ကို တောင်းထားပြီး အတွဲတိုင်း ကိုယ့်ကိုယ်ကို ဖျက်သွားသော XOR fold တစ်ခုတည်းကသာ ထိုအရာကို ပေးနိုင်သည်။" }}
-  links={[{ id: 136, title: 'Single Number', slug: 'single-number', difficulty: 'Easy' }]}
-  statement={statement}
-  constraints={{ en: "<span><b>n</b> 1 &le; nums.length &le; 3 &times; 10&#8308;</span><span>&minus;3 &times; 10&#8308; &le; nums[i] &le; 3 &times; 10&#8308;</span><span>each element appears twice except for one element which appears only once</span>", my: "<span><b>n</b> 1 &le; nums.length &le; 3 &times; 10&#8308;</span><span>&minus;3 &times; 10&#8308; &le; nums[i] &le; 3 &times; 10&#8308;</span><span>element တစ်ခုမှလွဲ၍ ကျန် element တိုင်း နှစ်ကြိမ် ပါဝင်ပြီး ထို element တစ်ခုသာ တစ်ကြိမ် ပါဝင်သည်</span>" }}
-  part1Sub={{ en: "Read the statement, then drag through an array and XOR as you go.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် array ကို ဆွဲဖတ်ရင်း XOR လုပ်ကြည့်ပါ။" }}
-  widgetTitle={{ en: "Drag to fold, watch the pairs cancel", my: "ဆွဲ၍ fold လုပ်ပါ — အတွဲများ ချေဖျက်သွားပုံ ကြည့်ပါ" }}
-  traps={{
+/* The prose of the Single Number page: everything the reader sees that is not
+ * interactive. Rendered by src/pages/leetcode/[slug].astro through the
+ * Walkthrough layout; each value is a string or an { en, my } pair. */
+export default {
+  title: 'Single Number',
+  summary: 'Count every value, or XOR them all together and let the pairs cancel. One of them needs a table; the other needs one integer.',
+  eyebrow: 'LeetCode 136 &nbsp;·&nbsp; Easy',
+  lede: { en: "Find the one value that is not part of a pair. Counting works and is what you should write first — but the statement asks for constant space, and only the XOR fold, where each pair erases itself, gives you that.", my: "အတွဲ မဖြစ်သော value တစ်ခုကို ရှာပါ။ ရေတွက်ခြင်း အလုပ်ဖြစ်ပြီး ပထမဆုံး ရေးသင့်သည်မှာ ၎င်းပင် ဖြစ်သည် — သို့သော် မေးခွန်းက constant space ကို တောင်းထားပြီး အတွဲတိုင်း ကိုယ့်ကိုယ်ကို ဖျက်သွားသော XOR fold တစ်ခုတည်းကသာ ထိုအရာကို ပေးနိုင်သည်။" },
+  links: [{ id: 136, title: 'Single Number', slug: 'single-number', difficulty: 'Easy' }],
+  constraints: { en: "<span><b>n</b> 1 &le; nums.length &le; 3 &times; 10&#8308;</span><span>&minus;3 &times; 10&#8308; &le; nums[i] &le; 3 &times; 10&#8308;</span><span>each element appears twice except for one element which appears only once</span>", my: "<span><b>n</b> 1 &le; nums.length &le; 3 &times; 10&#8308;</span><span>&minus;3 &times; 10&#8308; &le; nums[i] &le; 3 &times; 10&#8308;</span><span>element တစ်ခုမှလွဲ၍ ကျန် element တိုင်း နှစ်ကြိမ် ပါဝင်ပြီး ထို element တစ်ခုသာ တစ်ကြိမ် ပါဝင်သည်</span>" },
+  part1Sub: { en: "Read the statement, then drag through an array and XOR as you go.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် array ကို ဆွဲဖတ်ရင်း XOR လုပ်ကြည့်ပါ။" },
+  widgetTitle: { en: "Drag to fold, watch the pairs cancel", my: "ဆွဲ၍ fold လုပ်ပါ — အတွဲများ ချေဖျက်သွားပုံ ကြည့်ပါ" },
+  traps: {
     summary: { en: "Four ways the statement bites &mdash; worth reading before you code", my: "မေးခွန်းစာသားထဲက ချော်လွယ်သည့်နေရာ လေးခု — code မရေးမီ ဖတ်ထားသင့်သည်" },
     items: [
       { en: "<strong>\"Constant extra space\" is in the body, not a follow-up.</strong> A hash map of counts is linear and correct, and it still does not meet the statement. It will pass the judge; it will not pass an interviewer who read the problem.", my: "<strong>\"constant အပို memory\" သည် follow-up မဟုတ်ဘဲ မေးခွန်းထဲတွင် ပါသည်။</strong> count များ၏ hash map သည် linear ဖြစ်ပြီး မှန်သော်လည်း မေးခွန်းကို မကိုက်ပါ။ judge တွင် အောင်မည်၊ မေးခွန်းကို ဖတ်ထားသော interviewer ထံတွင် မအောင်ပါ။" },
@@ -20,9 +18,9 @@ import statement from '../../lessons/single-number/statement.html?raw';
       { en: "<strong>Values can be negative.</strong> XOR is fine with that in every language here — two's complement, and a pair still cancels bit for bit. What breaks is a bit-counting variant that assumes non-negative input.", my: "<strong>value များ အနုတ်ဖြစ်နိုင်သည်။</strong> ဤနေရာရှိ ဘာသာစကားတိုင်းတွင် XOR အတွက် ပြဿနာ မရှိပါ — two's complement ဖြစ်ပြီး အတွဲသည် bit တစ်ခုချင်း ချေဖျက်ဆဲ။ ပျက်သွားမည်မှာ input အနုတ်မဖြစ်ဟု ယူဆထားသော bit-ရေတွက်သည့် ပုံစံ ဖြစ်သည်။" },
       { en: "The premise is load-bearing. XOR never counts — it only knows which bits were set an odd number of times — so on an array where a value appears three times it returns a number with no meaning attached. The input box on this page refuses such arrays rather than drawing one.", my: "premise သည် အရေးကြီးသည်။ XOR သည် ဘာမျှ မရေတွက်ပါ — မည်သည့် bit များကို မကိန်းအကြိမ် set လုပ်ခဲ့သလဲ ဆိုသည်ကိုသာ သိသည် — ထို့ကြောင့် value တစ်ခု သုံးကြိမ် ပါသော array တွင် အဓိပ္ပာယ်မရှိသော ကိန်းတစ်ခုကို ပြန်ပေးမည်။ ဤစာမျက်နှာရှိ input box က ထိုကဲ့သို့ array ကို ဆွဲပြမည့်အစား လက်မခံပါ။" },
     ],
-  }}
-  part2Sub={{ en: "Two approaches over the same array. The stage shows the state each one carries; the panel shows the line running.", my: "Array တစ်ခုတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" }}
-  notes={{
+  },
+  part2Sub: { en: "Two approaches over the same array. The stage shows the state each one carries; the panel shows the line running.", my: "Array တစ်ခုတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" },
+  notes: {
     eyebrow: { en: "If you are implementing it", my: "ကိုယ်တိုင် ရေးမည်ဆိုလျှင်" },
     title: { en: "Three questions XOR raises", my: "XOR နှင့်ပတ်သက်၍ မေးစရာ သုံးခု" },
     items: [
@@ -30,16 +28,12 @@ import statement from '../../lessons/single-number/statement.html?raw';
       { q: { en: "When is counting the better answer?", my: "ရေတွက်ခြင်းက ဘယ်အချိန်မှာ ပိုကောင်းသော အဖြေ ဖြစ်သလဲ။" }, a: { en: "Whenever the premise might change. Counting survives \"every value appears three times except one\" and generalises to \"which values appear an odd number of times\"; XOR does exactly one thing. Know the trick because the constraint asks for it, not because it is shorter.", my: "premise ပြောင်းနိုင်သည့်အခါတိုင်း ဖြစ်သည်။ ရေတွက်ခြင်းသည် \"တစ်ခုမှလွဲ၍ value တိုင်း သုံးကြိမ် ပါသည်\" ဆိုလည်း အလုပ်လုပ်ဆဲဖြစ်ပြီး \"မည်သည့် value များ မကိန်းအကြိမ် ပါသလဲ\" သို့ ချဲ့နိုင်သည်။ XOR ကမူ တစ်ခုတည်းကိုသာ လုပ်နိုင်သည်။ ဤနည်းကို တိုသောကြောင့် မဟုတ်ဘဲ ကန့်သတ်ချက်က တောင်းသောကြောင့် သိထားပါ။" } },
       { q: { en: "Where else does this identity show up?", my: "ဤ identity ကို နောက်ထပ် ဘယ်မှာ တွေ့ရမလဲ။" }, a: { en: "<strong>Missing Number</strong> XORs the values against the indices and the gap survives. <strong>Single Number III</strong> folds everything, then splits the array on any set bit of the result to separate its two loners. Finding a swapped or duplicated item between two collections that should match is the same move.", my: "<strong>Missing Number</strong> သည် value များကို index များနှင့် XOR လုပ်ပြီး ပျောက်နေသည့်အရာ ကျန်ရစ်သည်။ <strong>Single Number III</strong> သည် အားလုံးကို fold လုပ်ပြီး ရလဒ်၏ set bit တစ်ခုဖြင့် array ကို ခွဲကာ တစ်ခုတည်းသော value နှစ်ခုကို ခွဲထုတ်သည်။ ကိုက်ညီသင့်သော collection နှစ်ခုကြား လဲနေသော သို့မဟုတ် ထပ်နေသော item ကို ရှာခြင်းလည်း ဤနည်းအတိုင်း ဖြစ်သည်။" } },
     ],
-  }}
-  cost={{
+  },
+  cost: {
     eyebrow: { en: "Why bother", my: "ဘာကြောင့် ဂရုစိုက်ရသလဲ" },
     title: { en: "The same time, a different footprint", my: "အချိန်တူ၊ memory မတူ" },
     html: { en: "<table>\n  <thead><tr><th>Approach</th><th>Time</th><th>Extra space</th><th>At n = 3 × 10⁴ (the constraint)</th></tr></thead>\n  <tbody>\n    <tr><td><b>Count them</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">hash map</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(n)</td><td class=\"cross\">≈ 1.5 × 10⁴ table rows</td></tr>\n    <tr><td><b>XOR fold</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">one integer</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(1)</td><td class=\"tick\">one integer</td></tr>\n  </tbody>\n</table>\n<figcaption>Computed from the constraint, not measured: a valid input of n values has (n + 1) / 2 distinct ones, and the table keeps a row for each. Both read the array once, so the difference is memory alone — and memory is what the statement constrains.</figcaption>", my: "<table>\n  <thead><tr><th>နည်းလမ်း</th><th>အချိန်</th><th>အပို memory</th><th>n = 3 × 10⁴ (ကန့်သတ်ချက်) တွင်</th></tr></thead>\n  <tbody>\n    <tr><td><b>Count them</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">hash map</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(n)</td><td class=\"cross\">table row ≈ 1.5 × 10⁴</td></tr>\n    <tr><td><b>XOR fold</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">integer တစ်ခု</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(1)</td><td class=\"tick\">integer တစ်ခု</td></tr>\n  </tbody>\n</table>\n<figcaption>ကန့်သတ်ချက်မှ တွက်ထားခြင်းဖြစ်ပြီး တိုင်းတာထားခြင်း မဟုတ်ပါ — value n ခုပါသော မှန်ကန်သည့် input တွင် မတူသော value (n + 1) / 2 ခု ရှိပြီး table က တစ်ခုစီအတွက် row တစ်ခု ထားသည်။ နှစ်ခုစလုံး array ကို တစ်ကြိမ် ဖတ်သဖြင့် ကွာခြားချက်မှာ memory သာ ဖြစ်သည် — မေးခွန်းက ကန့်သတ်ထားသည်မှာလည်း memory ပင်။</figcaption>" },
-  }}
-  part3Sub={{ en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,010 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,010 ခု တူတူဖြင့် run ထားသည်။" }}
-  footer={{ en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>nums</code> above (values 0–255, so the bits stay readable) and both walkthroughs rebuild against your input.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>nums</code> ကို ပြင်လိုက်လျှင် (bit များ ဖတ်ရလွယ်စေရန် value 0–255) walkthrough နှစ်ခုစလုံး သင့် input ဖြင့် ပြန်တည်ဆောက်မည်။" }}
-/>
-
-<script>
-  import '../../lessons/single-number/lesson.js';
-</script>
+  },
+  part3Sub: { en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,010 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,010 ခု တူတူဖြင့် run ထားသည်။" },
+  footer: { en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>nums</code> above (values 0–255, so the bits stay readable) and both walkthroughs rebuild against your input.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>nums</code> ကို ပြင်လိုက်လျှင် (bit များ ဖတ်ရလွယ်စေရန် value 0–255) walkthrough နှစ်ခုစလုံး သင့် input ဖြင့် ပြန်တည်ဆောက်မည်။" },
+};

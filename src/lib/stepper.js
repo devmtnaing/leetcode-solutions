@@ -1,6 +1,6 @@
 /* The walkthrough engine, rendering the x-sum page's format.
  *
- * x-sum (src/interactive/x-sum/) is the reference design. This file emits the
+ * x-sum (src/lessons/x-sum/) is the reference design. This file emits the
  * same markup it uses — mode cards, controls with preset chips, the array strip
  * card, transport, narration, the stage/code bench, example cards, and the
  * part 3 solution blocks — so lesson.css styles every lesson exactly as it

@@ -16,8 +16,11 @@ import { resolve } from 'node:path';
 
 const LESSONS = resolve('src/lessons');
 const only = process.argv[2];
+// A lesson with its own body.html (x-sum) is built by hand rather than on the
+// kit, so there is no mountLesson config to inspect; it is skipped here.
 const slugs = readdirSync(LESSONS, { withFileTypes: true })
   .filter((d) => d.isDirectory() && existsSync(resolve(LESSONS, d.name, 'lesson.js')))
+  .filter((d) => !existsSync(resolve(LESSONS, d.name, 'body.html')))
   .map((d) => d.name)
   .filter((s) => !only || s === only);
 

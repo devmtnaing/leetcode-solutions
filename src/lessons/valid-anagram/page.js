@@ -1,18 +1,16 @@
----
-import Walkthrough from '../../layouts/Walkthrough.astro';
-import statement from '../../lessons/valid-anagram/statement.html?raw';
----
-<Walkthrough
-  title="Valid Anagram"
-  summary="Sort both strings, or keep one tally. The difference is whether you rebuild the letter counts or just count them."
-  eyebrow="LeetCode 242 &nbsp;·&nbsp; Easy"
-  lede={{ en: "Given two strings <code>s</code> and <code>t</code>, decide whether <code>t</code> is an anagram of <code>s</code>. One approach sorts both and compares; the other tallies the letters of <code>s</code> and spends them with <code>t</code>.", my: "စာကြောင်းနှစ်ကြောင်း <code>s</code> နှင့် <code>t</code> ပေးထားသည် — <code>t</code> သည် <code>s</code> ၏ anagram ဟုတ်မဟုတ် ဆုံးဖြတ်ပါ။ နည်းတစ်ခုက နှစ်ခုလုံးကို sort လုပ်ပြီး နှိုင်းယှဉ်သည်။ နောက်တစ်ခုက <code>s</code> ၏ စာလုံးများကို ရေတွက်ပြီး <code>t</code> ဖြင့် နုတ်သွားသည်။" }}
-  links={[{ id: 242, title: 'Valid Anagram', slug: 'valid-anagram', difficulty: 'Easy' }]}
-  statement={statement}
-  constraints={{ en: "<span><b>n</b> 1 &le; s.length, t.length &le; 5 × 10&#8308;</span><span>s and t consist of lowercase English letters</span>", my: "<span><b>n</b> 1 &le; s.length, t.length &le; 5 × 10&#8308;</span><span>s နှင့် t တွင် အင်္ဂလိပ် စာလုံးအသေးများသာ ပါသည်</span>" }}
-  part1Sub={{ en: "Read the statement, then rearrange the letters of t and watch what changes — and what doesn't.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် t ၏ စာလုံးများကို ပြန်စီကြည့်ပြီး ဘာပြောင်းသည်၊ ဘာ မပြောင်းသည်ကို ကြည့်ပါ။" }}
-  widgetTitle={{ en: "Order or count — which one decides?", my: "အစီအစဉ်လား၊ အရေအတွက်လား — ဘယ်ဟာက ဆုံးဖြတ်သလဲ။" }}
-  traps={{
+/* The prose of the Valid Anagram page: everything the reader sees that is not
+ * interactive. Rendered by src/pages/leetcode/[slug].astro through the
+ * Walkthrough layout; each value is a string or an { en, my } pair. */
+export default {
+  title: 'Valid Anagram',
+  summary: 'Sort both strings, or keep one tally. The difference is whether you rebuild the letter counts or just count them.',
+  eyebrow: 'LeetCode 242 &nbsp;·&nbsp; Easy',
+  lede: { en: "Given two strings <code>s</code> and <code>t</code>, decide whether <code>t</code> is an anagram of <code>s</code>. One approach sorts both and compares; the other tallies the letters of <code>s</code> and spends them with <code>t</code>.", my: "စာကြောင်းနှစ်ကြောင်း <code>s</code> နှင့် <code>t</code> ပေးထားသည် — <code>t</code> သည် <code>s</code> ၏ anagram ဟုတ်မဟုတ် ဆုံးဖြတ်ပါ။ နည်းတစ်ခုက နှစ်ခုလုံးကို sort လုပ်ပြီး နှိုင်းယှဉ်သည်။ နောက်တစ်ခုက <code>s</code> ၏ စာလုံးများကို ရေတွက်ပြီး <code>t</code> ဖြင့် နုတ်သွားသည်။" },
+  links: [{ id: 242, title: 'Valid Anagram', slug: 'valid-anagram', difficulty: 'Easy' }],
+  constraints: { en: "<span><b>n</b> 1 &le; s.length, t.length &le; 5 × 10&#8308;</span><span>s and t consist of lowercase English letters</span>", my: "<span><b>n</b> 1 &le; s.length, t.length &le; 5 × 10&#8308;</span><span>s နှင့် t တွင် အင်္ဂလိပ် စာလုံးအသေးများသာ ပါသည်</span>" },
+  part1Sub: { en: "Read the statement, then rearrange the letters of t and watch what changes — and what doesn't.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် t ၏ စာလုံးများကို ပြန်စီကြည့်ပြီး ဘာပြောင်းသည်၊ ဘာ မပြောင်းသည်ကို ကြည့်ပါ။" },
+  widgetTitle: { en: "Order or count — which one decides?", my: "အစီအစဉ်လား၊ အရေအတွက်လား — ဘယ်ဟာက ဆုံးဖြတ်သလဲ။" },
+  traps: {
     summary: { en: "Four ways the statement bites &mdash; worth reading before you code", my: "မေးခွန်းစာသားထဲက ချော်လွယ်သည့်နေရာ လေးခု — code မရေးမီ ဖတ်ထားသင့်သည်" },
     items: [
       { en: "<strong>Different lengths end it immediately.</strong> Nothing in the problem is cheaper: one comparison, <code>O(1)</code>, before a single letter is read. For the counting solution it is not merely an optimisation — equal totals are what make &ldquo;no row went negative&rdquo; enough to conclude &ldquo;no row was left positive&rdquo; either.", my: "<strong>အရှည် မတူလျှင် ချက်ချင်း ပြီးသွားသည်။</strong> ဤပြဿနာတွင် ဤထက် ပေါ့သော စစ်ဆေးမှု မရှိပါ — စာလုံးတစ်လုံးမှ မဖတ်ရသေးဘဲ နှိုင်းယှဉ်မှု တစ်ကြိမ်တည်း၊ <code>O(1)</code> ဖြင့် ပြီးသည်။ ရေတွက်သည့် နည်းအတွက်မူ ဤစစ်ဆေးမှုသည် အမြန်ဖြစ်အောင် ထည့်ထားသည့် အပိုအဆင့် မဟုတ်ပါ — စုစုပေါင်း အရေအတွက် တူညီနေမှသာ &ldquo;အတန်းတစ်ခုမှ အနုတ် မဖြစ်ခဲ့&rdquo; ဆိုသည်က &ldquo;အတန်းတစ်ခုမှ အပေါင်းဘက် မကျန်ခဲ့&rdquo; ကို ကောက်ချက်ချနိုင်စေသည်။" },
@@ -20,9 +18,9 @@ import statement from '../../lessons/valid-anagram/statement.html?raw';
       { en: "<strong>A word is an anagram of itself.</strong> <code>s = \"rat\", t = \"rat\"</code> returns <code>true</code>. The everyday sense of <em>anagram</em> implies a rearrangement into something different, and nothing in the statement asks for that — the question is only whether the letters match.", my: "<strong>စကားလုံးတစ်လုံးသည် သူ့ကိုယ်သူ anagram ဖြစ်သည်။</strong> <code>s = \"rat\", t = \"rat\"</code> ဆိုလျှင် <code>true</code> ပြန်သည်။ နေ့စဉ်သုံး စကားအရ anagram ဆိုသည်မှာ မတူညီသော အသစ်တစ်ခုအဖြစ် ပြန်စီထားခြင်း ဟု နားလည်ကြသော်လည်း၊ မေးခွန်းစာသားတွင် ထိုသို့ မတောင်းဆိုထားပါ — စာလုံးများ ကိုက်ညီ မကိုက်ညီကိုသာ မေးထားသည်။" },
       { en: "<strong>Sorting is not the wrong answer.</strong> It is <code>O(n log n)</code> against <code>O(n)</code>, and in an interview it is a perfectly good answer as long as you can say why you would reach for counting instead: one pass each way, <code>O(1)</code> space under this constraint, and an exit the moment a count goes negative. Sorting keeps one advantage of its own — it survives the Unicode follow-up without an edit.", my: "<strong>sort လုပ်ခြင်းသည် အဖြေမှား မဟုတ်ပါ။</strong> <code>O(n)</code> နှင့် ယှဉ်လျှင် <code>O(n log n)</code> ဖြစ်သော်လည်း၊ ဘာကြောင့် ရေတွက်သည့်နည်းကို ပိုရွေးမည်ကို ရှင်းပြနိုင်လျှင် အင်တာဗျူးတွင် လုံလောက်သော အဖြေတစ်ခု ဖြစ်သည် — တစ်ဖက်စီ တစ်ကျော့စီ၊ ဤကန့်သတ်ချက်အောက်တွင် နေရာ <code>O(1)</code>၊ ပြီးတော့ အရေအတွက် အနုတ် ဖြစ်သည်နှင့် ချက်ချင်း ထွက်နိုင်ခြင်း။ sort ကလည်း အားသာချက် တစ်ခု ပြန်ရှိသည် — Unicode နောက်ဆက်တွဲ မေးခွန်းကို ဘာမှ မပြင်ဘဲ ရင်ဆိုင်နိုင်သည်။" },
     ],
-  }}
-  part2Sub={{ en: "Two approaches over the same two strings. The stage shows the state each one carries; the panel shows the line running.", my: "စာကြောင်းနှစ်ကြောင်းတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" }}
-  notes={{
+  },
+  part2Sub: { en: "Two approaches over the same two strings. The stage shows the state each one carries; the panel shows the line running.", my: "စာကြောင်းနှစ်ကြောင်းတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" },
+  notes: {
     eyebrow: { en: "If you are implementing it", my: "ကိုယ်တိုင် ရေးမည်ဆိုလျှင်" },
     title: { en: "Three questions the count approach raises", my: "ရေတွက်သည့် နည်းနှင့်ပတ်သက်၍ မေးစရာ သုံးခု" },
     items: [
@@ -30,16 +28,12 @@ import statement from '../../lessons/valid-anagram/statement.html?raw';
       { q: { en: "Why check the length first? Isn't it just an optimisation?", my: "အရှည်ကို အရင် ဘာကြောင့် စစ်ရသလဲ — optimization တစ်ခုပဲ မဟုတ်လား။" }, a: { en: "It is also what makes the rule sound. The tally says: walk <code>s</code> and add, walk <code>t</code> and subtract, and if no row went negative, return <code>true</code>. But if the strings have different lengths, a row could be left positive — <code>s</code> had more of a letter than <code>t</code> consumed — and the tally would never notice. Equal lengths mean the totals balance; &ldquo;no row went negative&rdquo; is then enough.", my: "၎င်းသည်လည်း စည်းမျဉ်းကို မှန်ကန်စေသည့် အချက် ဖြစ်သည်။ ဇယားနည်းက <code>s</code> ကို လျှောက်ပြီး တိုး၊ <code>t</code> ကို လျှောက်ပြီး နုတ်၊ အတန်းတစ်ခုမှ အနုတ် မဖြစ်ခဲ့လျှင် <code>true</code> ပြန်သည် ဟု ဆိုထားသည်။ သို့သော် အရှည် မတူလျှင် အတန်းတစ်ခုသည် အပေါင်းဘက်တွင် ကျန်နေနိုင်သည် — <code>s</code> က <code>t</code> သုံးသည်ထက် စာလုံးတစ်လုံးကို ပိုပေးထားသော်လည်း ဇယားနည်းက ထိုအချက်ကို ဘယ်တော့မှ သတိမထားမိနိုင်ပါ။ အရှည် တူညီမှုကြောင့် စုစုပေါင်း တူညီနေပြီး &ldquo;အတန်းတစ်ခုမှ အနုတ် မဖြစ်ခဲ့&rdquo; ဆိုသည်က &ldquo;အတန်းတစ်ခုမှ အပေါင်းဘက်တွင် မကျန်ခဲ့&rdquo; ကို ကောက်ချက်ချရန် လုံလောက်သွားသည်။" } },
       { q: { en: "What about Unicode?", my: "Unicode အတွက်ကရော။" }, a: { en: "The fixed <code>[26]int</code> stops working the moment a character is not a-z. Swap it for a hash map keyed by code point and the algorithm is the same — the same two passes, the same early exit on a negative row. Sorting handles Unicode without any change, which is its one real advantage. Grapheme clusters — an emoji with a skin-tone modifier, an accent written as a combining mark — are a separate problem: normalise first, then count, or you will call two identical-looking strings different.", my: "<code>[26]int</code> အသေသည် စာလုံးတစ်လုံး a-z မဟုတ်သည်နှင့် အလုပ် မဖြစ်တော့ပါ။ code point ကို key ထားသော hash map ဖြင့် လဲလိုက်လျှင် algorithm မှာ အတူတူပင် ဖြစ်သည် — ထိုနည်းတူ အကျော့နှစ်ကျော့၊ အနုတ်ပြသည်နှင့် ချက်ချင်းထွက်ခြင်း။ sort လုပ်ခြင်းကမူ ဘာမှ မပြင်ဘဲ လိုက်လျောညီထွေ ဖြစ်နေသည် — ဤသည်မှာ သူ၏ တကယ့် အားသာချက် တစ်ခုတည်း ဖြစ်သည်။ Grapheme cluster များ — အသားအရောင် modifier ပါသော emoji၊ combining mark ဖြင့် ရေးထားသော သံနေသံထား — မှာမူ သီးခြား ပြဿနာ ဖြစ်သည် — အရင် normalise လုပ်ပြီးမှ ရေတွက်ပါ၊ မဟုတ်လျှင် အမြင်တူသော စာကြောင်းနှစ်ကြောင်းကို မတူဟု ပြောမိလိမ့်မည်။" } },
     ],
-  }}
-  cost={{
+  },
+  cost: {
     eyebrow: { en: "Why bother", my: "ဘာကြောင့် ဂရုစိုက်ရသလဲ" },
     title: { en: "The same answer, a different price", my: "အဖြေတူ၊ ကုန်ကျစရိတ် မတူ" },
     html: { en: "<table>\n  <thead><tr><th>Approach</th><th>Time</th><th>Extra space</th><th>At n = 5 × 10⁴ (the constraint)</th></tr></thead>\n  <tbody>\n    <tr><td><b>Sort both</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">rearrange, then compare</span></td>\n        <td class=\"mono\">O(n log n)</td><td class=\"mono\">O(n)</td><td class=\"cross\">≈ 8 × 10⁵ comparisons</td></tr>\n    <tr><td><b>Count letters</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">one tally, two passes</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(1)</td><td class=\"tick\">10⁵ increments</td></tr>\n  </tbody>\n</table>\n<figcaption>Counts are computed from the constraint, not measured. The constant in O(1) space is 26 — the tally never grows past lowercase letters. In practice sorting often wins on the tiny strings LeetCode runs, but the tally answers the question directly rather than rebuilding order to throw it away.</figcaption>", my: "<table>\n  <thead><tr><th>နည်းလမ်း</th><th>အချိန်</th><th>အပို memory</th><th>n = 5 × 10⁴ (ကန့်သတ်ချက်) တွင်</th></tr></thead>\n  <tbody>\n    <tr><td><b>Sort လုပ်ခြင်း</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">ပြန်စီ၊ ပြီးမှ နှိုင်းယှဉ်</span></td>\n        <td class=\"mono\">O(n log n)</td><td class=\"mono\">O(n)</td><td class=\"cross\">≈ 8 × 10⁵ ကြိမ် နှိုင်းယှဉ်</td></tr>\n    <tr><td><b>စာလုံး ရေတွက်ခြင်း</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">ဇယားတစ်ခု၊ အကျော့နှစ်ကျော့</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(1)</td><td class=\"tick\">10⁵ ကြိမ် တိုး/နုတ်</td></tr>\n  </tbody>\n</table>\n<figcaption>ဤအရေအတွက်များကို ကန့်သတ်ချက်မှ တွက်ထားခြင်းဖြစ်ပြီး တိုင်းတာထားခြင်း မဟုတ်ပါ။ O(1) space ၏ ကိန်းသေမှာ 26 ဖြစ်သည် — ရေတွက်ဇယားသည် အင်္ဂလိပ် စာလုံးအသေးများထက် ဘယ်တော့မှ မကြီးပါ။ LeetCode ၏ သေးငယ်သည့် စာကြောင်းများတွင် sort က ပိုမြန်လေ့ရှိသော်လည်း ရေတွက်နည်းက အစီအစဉ်ကို ပြန်တည်ဆောက်ပြီးမှ လွှင့်ပစ်မည့်အစား မေးခွန်းကို တိုက်ရိုက် ဖြေပေးသည်။</figcaption>" },
-  }}
-  part3Sub={{ en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,009 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,009 ခု တူတူဖြင့် run ထားသည်။" }}
-  footer={{ en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>s</code> or <code>t</code> above and both walkthroughs rebuild against your input.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>s</code> သို့မဟုတ် <code>t</code> ကို ပြင်လိုက်လျှင် walkthrough နှစ်ခုစလုံး သင့် input ဖြင့် ပြန်တည်ဆောက်မည်။" }}
-/>
-
-<script>
-  import '../../lessons/valid-anagram/lesson.js';
-</script>
+  },
+  part3Sub: { en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,009 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,009 ခု တူတူဖြင့် run ထားသည်။" },
+  footer: { en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>s</code> or <code>t</code> above and both walkthroughs rebuild against your input.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>s</code> သို့မဟုတ် <code>t</code> ကို ပြင်လိုက်လျှင် walkthrough နှစ်ခုစလုံး သင့် input ဖြင့် ပြန်တည်ဆောက်မည်။" },
+};

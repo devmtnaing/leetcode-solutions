@@ -1,18 +1,16 @@
----
-import Walkthrough from '../../layouts/Walkthrough.astro';
-import statement from '../../lessons/merge-two-sorted-lists/statement.html?raw';
----
-<Walkthrough
-  title="Merge Two Sorted Lists"
-  summary="Splice with a dummy head and a tail pointer, or pick the smaller head and recurse. Same decisions; the difference is who holds the half-built answer."
-  eyebrow="LeetCode 21 &nbsp;·&nbsp; Easy"
-  lede={{ en: "Stitch two sorted lists into one by re-pointing the nodes they already have. The comparison is trivial — take the smaller front — and what makes it easy or fiddly is the bookkeeping around it.", my: "sort လုပ်ထားသော list နှစ်ခုကို ရှိပြီးသား node များကို ပြန်ညွှန်ခြင်းဖြင့် တစ်ခုတည်းအဖြစ် ချုပ်ပါ။ နှိုင်းယှဉ်ခြင်းမှာ ရိုးရှင်းသည် — ရှေ့ဆုံးထဲက ငယ်သည့်တစ်ခုကို ယူရုံသာ — လွယ်မလား ရှုပ်မလား ဆုံးဖြတ်သည်မှာ ၎င်းပတ်လည်ရှိ စာရင်းကိုင်ခြင်း ဖြစ်သည်။" }}
-  links={[{ id: 21, title: 'Merge Two Sorted Lists', slug: 'merge-two-sorted-lists', difficulty: 'Easy' }]}
-  statement={statement}
-  constraints={{ en: "<span><b>n</b> the number of nodes in both lists is in the range [0, 50]</span><span>&minus;100 &le; Node.val &le; 100</span><span>both lists are sorted in non-decreasing order</span>", my: "<span><b>n</b> list နှစ်ခုလုံးရှိ node အရေအတွက်သည် [0, 50] အတွင်း</span><span>&minus;100 &le; Node.val &le; 100</span><span>list နှစ်ခုလုံးကို မလျော့သော အစီအစဉ် (non-decreasing) ဖြင့် sort လုပ်ထားသည်</span>" }}
-  part1Sub={{ en: "Read the statement, then merge two lists one node at a time and watch how little each step has to look at.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် list နှစ်ခုကို node တစ်ခုချင်း ပေါင်းကြည့်ပြီး အဆင့်တစ်ခုစီက မည်မျှ နည်းနည်းသာ ကြည့်ရသလဲ သတိပြုပါ။" }}
-  widgetTitle={{ en: "Drag to merge, watch only the fronts", my: "ဆွဲ၍ ပေါင်းပါ — ရှေ့ဆုံးများကိုသာ ကြည့်ပါ" }}
-  traps={{
+/* The prose of the Merge Two Sorted Lists page: everything the reader sees that is not
+ * interactive. Rendered by src/pages/leetcode/[slug].astro through the
+ * Walkthrough layout; each value is a string or an { en, my } pair. */
+export default {
+  title: 'Merge Two Sorted Lists',
+  summary: 'Splice with a dummy head and a tail pointer, or pick the smaller head and recurse. Same decisions; the difference is who holds the half-built answer.',
+  eyebrow: 'LeetCode 21 &nbsp;·&nbsp; Easy',
+  lede: { en: "Stitch two sorted lists into one by re-pointing the nodes they already have. The comparison is trivial — take the smaller front — and what makes it easy or fiddly is the bookkeeping around it.", my: "sort လုပ်ထားသော list နှစ်ခုကို ရှိပြီးသား node များကို ပြန်ညွှန်ခြင်းဖြင့် တစ်ခုတည်းအဖြစ် ချုပ်ပါ။ နှိုင်းယှဉ်ခြင်းမှာ ရိုးရှင်းသည် — ရှေ့ဆုံးထဲက ငယ်သည့်တစ်ခုကို ယူရုံသာ — လွယ်မလား ရှုပ်မလား ဆုံးဖြတ်သည်မှာ ၎င်းပတ်လည်ရှိ စာရင်းကိုင်ခြင်း ဖြစ်သည်။" },
+  links: [{ id: 21, title: 'Merge Two Sorted Lists', slug: 'merge-two-sorted-lists', difficulty: 'Easy' }],
+  constraints: { en: "<span><b>n</b> the number of nodes in both lists is in the range [0, 50]</span><span>&minus;100 &le; Node.val &le; 100</span><span>both lists are sorted in non-decreasing order</span>", my: "<span><b>n</b> list နှစ်ခုလုံးရှိ node အရေအတွက်သည် [0, 50] အတွင်း</span><span>&minus;100 &le; Node.val &le; 100</span><span>list နှစ်ခုလုံးကို မလျော့သော အစီအစဉ် (non-decreasing) ဖြင့် sort လုပ်ထားသည်</span>" },
+  part1Sub: { en: "Read the statement, then merge two lists one node at a time and watch how little each step has to look at.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် list နှစ်ခုကို node တစ်ခုချင်း ပေါင်းကြည့်ပြီး အဆင့်တစ်ခုစီက မည်မျှ နည်းနည်းသာ ကြည့်ရသလဲ သတိပြုပါ။" },
+  widgetTitle: { en: "Drag to merge, watch only the fronts", my: "ဆွဲ၍ ပေါင်းပါ — ရှေ့ဆုံးများကိုသာ ကြည့်ပါ" },
+  traps: {
     summary: { en: "Four ways the statement bites &mdash; worth reading before you code", my: "မေးခွန်းစာသားထဲက ချော်လွယ်သည့်နေရာ လေးခု — code မရေးမီ ဖတ်ထားသင့်သည်" },
     items: [
       { en: "<strong>\"Splicing together the nodes\"</strong> means re-point, not copy. Building new nodes gives the right output and ignores the one instruction the statement actually gives about how.", my: "<strong>\"node များကို ဆက်စပ်ချိတ်ဆက်ခြင်း\"</strong> ဆိုသည်မှာ ကူးယူရန် မဟုတ်ဘဲ ပြန်ညွှန်ရန် ဖြစ်သည်။ node အသစ်များ တည်ဆောက်လျှင် output မှန်သော်လည်း မေးခွန်းက မည်သို့ လုပ်ရမည်ဟု ပေးထားသည့် တစ်ခုတည်းသော ညွှန်ကြားချက်ကို လျစ်လျူရှုရာ ရောက်သည်။" },
@@ -20,9 +18,9 @@ import statement from '../../lessons/merge-two-sorted-lists/statement.html?raw';
       { en: "<strong>The leftovers need no loop.</strong> When one list runs out, the rest of the other is already sorted and already linked — one pointer write attaches all of it.", my: "<strong>ကျန်သည့်အပိုင်းအတွက် loop မလိုပါ။</strong> list တစ်ခု ကုန်သွားလျှင် ကျန် list ၏ အပိုင်းသည် sort ဖြစ်ပြီးသား၊ ချိတ်ပြီးသား ဖြစ်သည် — pointer တစ်ခါ ရေးရုံဖြင့် အားလုံး ချိတ်မိသည်။" },
       { en: "\"Non-decreasing\" means duplicates are allowed, within a list and across both. Use <code>&lt;=</code> when comparing: <code>&lt;</code> still merges correctly here, but takes ties from list2 first, which makes the merge unstable — and stability is the whole reason merge sort built on this is stable.", my: "\"non-decreasing\" ဆိုသည်မှာ list တစ်ခုအတွင်းနှင့် နှစ်ခုကြား တန်ဖိုးတူများ ခွင့်ပြုသည်ဟု ဆိုလိုသည်။ နှိုင်းယှဉ်ရာတွင် <code>&lt;=</code> ကို သုံးပါ — <code>&lt;</code> ဖြင့်လည်း ဤနေရာတွင် မှန်ကန်စွာ ပေါင်းသော်လည်း တူသည့်အခါ list2 မှ အရင်ယူသဖြင့် merge သည် stable မဖြစ်တော့ပါ — ဤအပေါ် တည်ဆောက်ထားသော merge sort stable ဖြစ်ရခြင်း၏ အကြောင်းရင်းမှာ ထိုအချက်ပင်။" },
     ],
-  }}
-  part2Sub={{ en: "Two approaches over the same two lists. The stage shows the state each one carries; the panel shows the line running.", my: "List နှစ်ခု တူတူပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" }}
-  notes={{
+  },
+  part2Sub: { en: "Two approaches over the same two lists. The stage shows the state each one carries; the panel shows the line running.", my: "List နှစ်ခု တူတူပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" },
+  notes: {
     eyebrow: { en: "If you are implementing it", my: "ကိုယ်တိုင် ရေးမည်ဆိုလျှင်" },
     title: { en: "Three questions the dummy head raises", my: "dummy head နှင့်ပတ်သက်၍ မေးစရာ သုံးခု" },
     items: [
@@ -30,16 +28,12 @@ import statement from '../../lessons/merge-two-sorted-lists/statement.html?raw';
       { q: { en: "How can the space be O(1) when the output is a whole list?", my: "output က list တစ်ခုလုံး ဖြစ်နေသည် — space က ဘယ်လို O(1) ဖြစ်နိုင်သလဲ။" }, a: { en: "Because the loop allocates nothing but the sentinel. Every node in the answer was already in one of the inputs; all the loop did was re-point <code>next</code> fields. That is exactly what the statement means by \"splicing together the nodes of the first two lists\".", my: "loop က sentinel မှလွဲ၍ ဘာမျှ memory အသစ် မယူသောကြောင့် ဖြစ်သည်။ အဖြေထဲရှိ node တိုင်းသည် input တစ်ခုခုထဲတွင် ရှိပြီးသား ဖြစ်သည် — loop လုပ်ခဲ့သမျှမှာ <code>next</code> field များကို ပြန်ညွှန်ခြင်းသာ။ မေးခွန်းက \"list နှစ်ခု၏ node များကို ဆက်စပ်ချိတ်ဆက်ခြင်း\" ဟု ဆိုလိုသည်မှာ ထိုအရာ အတိအကျပင်။" } },
       { q: { en: "When does the recursion link anything?", my: "recursion က ဘယ်အချိန်မှာ ချိတ်သလဲ။" }, a: { en: "Only on the way back up. Going down just chooses the order — one frame per node, each remembering which head it picked. Every <code>.next</code> assignment happens as the calls return, which is why the stepper shows the result being stitched from the tail backwards. That is also its cost: <code>O(n+m)</code> stack, free at the 50-node constraint and a stack overflow at <code>10<sup>5</sup></code>.", my: "ပြန်တက်လာချိန်မှသာ ဖြစ်သည်။ ဆင်းသွားစဉ် အစီအစဉ်ကိုသာ ရွေးသည် — node တစ်ခုလျှင် frame တစ်ခု၊ တစ်ခုစီက မည်သည့် head ကို ရွေးခဲ့သည်ကို မှတ်ထားသည်။ <code>.next</code> ရေးခြင်း တိုင်းသည် call များ ပြန်လာစဉ် ဖြစ်သဖြင့် stepper တွင် ရလဒ်ကို tail မှ နောက်ပြန် ချုပ်သွားသည်ကို မြင်ရသည်။ ၎င်း၏ ကုန်ကျမှုလည်း ထိုအရာပင် — <code>O(n+m)</code> stack၊ node 50 ကန့်သတ်ချက်တွင် အခမဲ့ဖြစ်ပြီး <code>10<sup>5</sup></code> တွင် stack overflow ဖြစ်သည်။" } },
     ],
-  }}
-  cost={{
+  },
+  cost: {
     eyebrow: { en: "Why bother", my: "ဘာကြောင့် ဂရုစိုက်ရသလဲ" },
     title: { en: "The same decisions, a different memory bill", my: "ဆုံးဖြတ်ချက် အတူတူ၊ memory ကုန်ကျမှု မတူ" },
     html: { en: "<table>\n  <thead><tr><th>Approach</th><th>Time</th><th>Extra space</th><th>At 50 + 50 nodes (the constraint)</th></tr></thead>\n  <tbody>\n    <tr><td><b>Iterative</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">dummy + tail</span></td>\n        <td class=\"mono\">O(n+m)</td><td class=\"mono\">O(1)</td><td class=\"tick\">one sentinel node</td></tr>\n    <tr><td><b>Recursive</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">the call stack</span></td>\n        <td class=\"mono\">O(n+m)</td><td class=\"mono\">O(n+m) stack</td><td class=\"cross\">up to 100 frames</td></tr>\n  </tbody>\n</table>\n<figcaption>Computed from the constraint, not measured. Both make at most n + m − 1 comparisons and allocate no nodes for the answer; the recursion's frames are harmless at this size and are what would break it on long lists.</figcaption>", my: "<table>\n  <thead><tr><th>နည်းလမ်း</th><th>အချိန်</th><th>အပို memory</th><th>node 50 + 50 (ကန့်သတ်ချက်) တွင်</th></tr></thead>\n  <tbody>\n    <tr><td><b>Iterative</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">dummy + tail</span></td>\n        <td class=\"mono\">O(n+m)</td><td class=\"mono\">O(1)</td><td class=\"tick\">sentinel node တစ်ခု</td></tr>\n    <tr><td><b>Recursive</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">call stack</span></td>\n        <td class=\"mono\">O(n+m)</td><td class=\"mono\">O(n+m) stack</td><td class=\"cross\">frame 100 အထိ</td></tr>\n  </tbody>\n</table>\n<figcaption>ကန့်သတ်ချက်မှ တွက်ထားခြင်းဖြစ်ပြီး တိုင်းတာထားခြင်း မဟုတ်ပါ။ နှစ်ခုစလုံး နှိုင်းယှဉ်မှု အများဆုံး n + m − 1 ကြိမ်သာ လုပ်ပြီး အဖြေအတွက် node အသစ် မယူပါ။ recursion ၏ frame များသည် ဤအရွယ်တွင် အန္တရာယ်မရှိသော်လည်း list ရှည်များတွင် ၎င်းကို ပျက်စေမည့်အရာ ဖြစ်သည်။</figcaption>" },
-  }}
-  part3Sub={{ en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,008 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,008 ခု တူတူဖြင့် run ထားသည်။" }}
-  footer={{ en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>list1</code> or <code>list2</code> above (sorted, up to 8 nodes) and both walkthroughs rebuild against your lists.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>list1</code> သို့မဟုတ် <code>list2</code> ကို ပြင်လိုက်လျှင် (sort ဖြစ်ရမည်၊ node 8 ခုအထိ) walkthrough နှစ်ခုစလုံး သင့် list များဖြင့် ပြန်တည်ဆောက်မည်။" }}
-/>
-
-<script>
-  import '../../lessons/merge-two-sorted-lists/lesson.js';
-</script>
+  },
+  part3Sub: { en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,008 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,008 ခု တူတူဖြင့် run ထားသည်။" },
+  footer: { en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>list1</code> or <code>list2</code> above (sorted, up to 8 nodes) and both walkthroughs rebuild against your lists.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>list1</code> သို့မဟုတ် <code>list2</code> ကို ပြင်လိုက်လျှင် (sort ဖြစ်ရမည်၊ node 8 ခုအထိ) walkthrough နှစ်ခုစလုံး သင့် list များဖြင့် ပြန်တည်ဆောက်မည်။" },
+};

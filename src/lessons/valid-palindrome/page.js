@@ -1,18 +1,16 @@
----
-import Walkthrough from '../../layouts/Walkthrough.astro';
-import statement from '../../lessons/valid-palindrome/statement.html?raw';
----
-<Walkthrough
-  title="Valid Palindrome"
-  summary="Clean the string and reverse it, or walk in from both ends and skip what does not count."
-  eyebrow="LeetCode 125 &nbsp;·&nbsp; Easy"
-  lede={{ en: "Decide whether a string reads the same both ways once case and punctuation stop counting. One solution builds the cleaned string and a reversed copy; the other never builds anything — it steps over what the filter would have removed.", my: "အကြီးအသေးနှင့် သင်္ကေတများကို ထည့်မတွက်တော့သည့်အခါ string တစ်ခုသည် နှစ်ဖက်စလုံးမှ အတူတူ ဖတ်ရသလား ဆုံးဖြတ်ပါ။ ဖြေရှင်းနည်းတစ်ခုက သန့်စင်ထားသော string နှင့် ပြောင်းပြန် copy ကို တည်ဆောက်သည်။ နောက်တစ်ခုကမူ ဘာမျှ မတည်ဆောက်ဘဲ filter က ဖယ်မည့်အရာများကို ကျော်သွားရုံသာ ဖြစ်သည်။" }}
-  links={[{ id: 125, title: 'Valid Palindrome', slug: 'valid-palindrome', difficulty: 'Easy' }]}
-  statement={statement}
-  constraints={{ en: "<span><b>n</b> 1 &le; s.length &le; 2 &times; 10&#8309;</span><span><code>s</code> consists only of printable ASCII characters</span>", my: "<span><b>n</b> 1 &le; s.length &le; 2 &times; 10&#8309;</span><span><code>s</code> တွင် ပုံနှိပ်နိုင်သော ASCII စာလုံးများသာ ပါဝင်သည်</span>" }}
-  part1Sub={{ en: "Read the statement, then pick a string and drag through the pairs that actually get compared.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် string တစ်ခု ရွေးပြီး တကယ် နှိုင်းယှဉ်ခံရသော အတွဲများကို ဆွဲကြည့်ပါ။" }}
-  widgetTitle={{ en: "Drag through the pairs, watch what counts", my: "အတွဲများကို ဆွဲကြည့်ပါ — ဘာတွေ အရေးပါသလဲ" }}
-  traps={{
+/* The prose of the Valid Palindrome page: everything the reader sees that is not
+ * interactive. Rendered by src/pages/leetcode/[slug].astro through the
+ * Walkthrough layout; each value is a string or an { en, my } pair. */
+export default {
+  title: 'Valid Palindrome',
+  summary: 'Clean the string and reverse it, or walk in from both ends and skip what does not count.',
+  eyebrow: 'LeetCode 125 &nbsp;·&nbsp; Easy',
+  lede: { en: "Decide whether a string reads the same both ways once case and punctuation stop counting. One solution builds the cleaned string and a reversed copy; the other never builds anything — it steps over what the filter would have removed.", my: "အကြီးအသေးနှင့် သင်္ကေတများကို ထည့်မတွက်တော့သည့်အခါ string တစ်ခုသည် နှစ်ဖက်စလုံးမှ အတူတူ ဖတ်ရသလား ဆုံးဖြတ်ပါ။ ဖြေရှင်းနည်းတစ်ခုက သန့်စင်ထားသော string နှင့် ပြောင်းပြန် copy ကို တည်ဆောက်သည်။ နောက်တစ်ခုကမူ ဘာမျှ မတည်ဆောက်ဘဲ filter က ဖယ်မည့်အရာများကို ကျော်သွားရုံသာ ဖြစ်သည်။" },
+  links: [{ id: 125, title: 'Valid Palindrome', slug: 'valid-palindrome', difficulty: 'Easy' }],
+  constraints: { en: "<span><b>n</b> 1 &le; s.length &le; 2 &times; 10&#8309;</span><span><code>s</code> consists only of printable ASCII characters</span>", my: "<span><b>n</b> 1 &le; s.length &le; 2 &times; 10&#8309;</span><span><code>s</code> တွင် ပုံနှိပ်နိုင်သော ASCII စာလုံးများသာ ပါဝင်သည်</span>" },
+  part1Sub: { en: "Read the statement, then pick a string and drag through the pairs that actually get compared.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် string တစ်ခု ရွေးပြီး တကယ် နှိုင်းယှဉ်ခံရသော အတွဲများကို ဆွဲကြည့်ပါ။" },
+  widgetTitle: { en: "Drag through the pairs, watch what counts", my: "အတွဲများကို ဆွဲကြည့်ပါ — ဘာတွေ အရေးပါသလဲ" },
+  traps: {
     summary: { en: "Four ways the statement bites &mdash; worth reading before you code", my: "မေးခွန်းစာသားထဲက ချော်လွယ်သည့်နေရာ လေးခု — code မရေးမီ ဖတ်ထားသင့်သည်" },
     items: [
       { en: "<strong>Digits count.</strong> \"Alphanumeric characters include letters and numbers\" — so <code>\"0P\"</code> is <code>false</code>, not an empty string. A filter that keeps only letters gets it wrong.", my: "<strong>ဂဏန်းများလည်း ပါသည်။</strong> \"Alphanumeric စာလုံးများတွင် စာလုံးများနှင့် ဂဏန်းများ ပါဝင်သည်\" — ထို့ကြောင့် <code>\"0P\"</code> သည် string ဗလာ မဟုတ်ဘဲ <code>false</code> ဖြစ်သည်။ စာလုံးများကိုသာ ထားသော filter က မှားမည်။" },
@@ -20,9 +18,9 @@ import statement from '../../lessons/valid-palindrome/statement.html?raw';
       { en: "<strong>Underscore is not alphanumeric.</strong> <code>\\w</code> in most regex flavours includes <code>_</code>, so <code>\"ab_a\"</code> filtered with <code>\\w</code> becomes <code>\"ab_a\"</code> and fails. Spell the class out: <code>[a-zA-Z0-9]</code>.", my: "<strong>Underscore သည် alphanumeric မဟုတ်ပါ။</strong> regex အများစုရှိ <code>\\w</code> တွင် <code>_</code> ပါဝင်သဖြင့် <code>\"ab_a\"</code> ကို <code>\\w</code> ဖြင့် filter လုပ်လျှင် <code>\"ab_a\"</code> ဖြစ်နေပြီး ကျရှုံးမည်။ <code>[a-zA-Z0-9]</code> ဟု အတိအကျ ရေးပါ။" },
       { en: "Lowercase <em>both</em> sides before comparing. Comparing <code>'A'</code> to <code>'a'</code> directly says they differ, and every example with a capital fails.", my: "နှိုင်းယှဉ်ခြင်းမပြုမီ <em>နှစ်ဖက်စလုံး</em>ကို အသေးပြောင်းပါ။ <code>'A'</code> နှင့် <code>'a'</code> ကို တိုက်ရိုက် နှိုင်းယှဉ်လျှင် မတူဟု ဆိုမည်ဖြစ်ပြီး စာလုံးကြီး ပါသော ဥပမာတိုင်း ကျရှုံးမည်။" },
     ],
-  }}
-  part2Sub={{ en: "Two approaches over the same string. The stage shows the state each one carries; the panel shows the line running.", my: "String တစ်ခုတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" }}
-  notes={{
+  },
+  part2Sub: { en: "Two approaches over the same string. The stage shows the state each one carries; the panel shows the line running.", my: "String တစ်ခုတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" },
+  notes: {
     eyebrow: { en: "If you are implementing it", my: "ကိုယ်တိုင် ရေးမည်ဆိုလျှင်" },
     title: { en: "Three questions the two pointers raise", my: "Two pointers နှင့်ပတ်သက်၍ မေးစရာ သုံးခု" },
     items: [
@@ -30,16 +28,12 @@ import statement from '../../lessons/valid-palindrome/statement.html?raw';
       { q: { en: "Why does each skip loop need its own <code>left &lt; right</code>?", my: "skip loop တစ်ခုစီတွင် <code>left &lt; right</code> ကို ဘာကြောင့် သီးခြား လိုအပ်သလဲ။" }, a: { en: "Without it, a string of pure punctuation runs a pointer off the end: <code>\".,\"</code> would walk <code>left</code> past index 1 looking for a letter that is not there. With the guard, skipping can instead land both pointers on the same character — the comparison then runs against itself, is trivially true, and the loop exits. Correct, if briefly odd to watch; load <em>Pointers meet</em> to see it.", my: "၎င်းမရှိလျှင် သင်္ကေတချည်းသာ ပါသော string တွင် pointer သည် အဆုံးကို ကျော်ထွက်သွားမည် — <code>\".,\"</code> တွင် မရှိသော စာလုံးကို ရှာရင်း <code>left</code> သည် index 1 ကို ကျော်သွားမည်။ စစ်ချက်ရှိလျှင်မူ ကျော်ရင်း pointer နှစ်ခုလုံး စာလုံးတစ်လုံးတည်းပေါ် ရောက်နိုင်သည် — ထိုအခါ သူ့ကိုယ်သူ နှိုင်းယှဉ်ပြီး မှန်သည်မှာ သေချာကာ loop ထွက်သွားသည်။ မှန်ကန်သည်၊ ကြည့်ရသည်မှာ ခဏ ထူးဆန်းသည် — <em>Pointer ဆုံ</em> ကို load လုပ်၍ ကြည့်ပါ။" } },
       { q: { en: "Where else does this move show up?", my: "ဤနည်းကို နောက်ထပ် ဘယ်မှာ တွေ့ရမလဲ။" }, a: { en: "Whenever the work happens at both ends of a sequence. <strong>Reverse String</strong> swaps in place instead of building a reversed copy, <strong>Container With Most Water</strong> converges two pointers instead of scoring every pair, and <strong>Valid Palindrome II</strong> is this same loop with one deletion allowed. The shared precondition is that you can decide which end to advance by looking only at the two ends.", my: "sequence တစ်ခု၏ အစွန်းနှစ်ဖက်တွင် အလုပ်လုပ်ရတိုင်း ဖြစ်သည်။ <strong>Reverse String</strong> သည် ပြောင်းပြန် copy မတည်ဆောက်ဘဲ နေရာ၌ပင် လဲလှယ်သည်၊ <strong>Container With Most Water</strong> သည် အတွဲတိုင်းကို မတွက်ဘဲ pointer နှစ်ခုကို ချဉ်းကပ်စေသည်၊ <strong>Valid Palindrome II</strong> မှာ ဤ loop အတိုင်းပင် ဖြစ်ပြီး ဖျက်ခွင့် တစ်ကြိမ် ရှိသည်။ အတူတူ လိုအပ်ချက်မှာ အစွန်းနှစ်ဖက်ကိုသာ ကြည့်၍ မည်သည့်ဘက်ကို ရှေ့တိုးရမည် ဆုံးဖြတ်နိုင်ခြင်း ဖြစ်သည်။" } },
     ],
-  }}
-  cost={{
+  },
+  cost: {
     eyebrow: { en: "Why bother", my: "ဘာကြောင့် ဂရုစိုက်ရသလဲ" },
     title: { en: "The same time, a different footprint", my: "အချိန်တူ၊ memory မတူ" },
     html: { en: "<table>\n  <thead><tr><th>Approach</th><th>Time</th><th>Extra space</th><th>At n = 2 × 10⁵ (the constraint)</th></tr></thead>\n  <tbody>\n    <tr><td><b>Clean, then reverse</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">two copies</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(n)</td><td class=\"cross\">up to 4 × 10⁵ characters of scratch</td></tr>\n    <tr><td><b>Two pointers</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">skip in place</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(1)</td><td class=\"tick\">two integers</td></tr>\n  </tbody>\n</table>\n<figcaption>Computed from the constraint, not measured. Both read each character once, so the time is the same; the two pointers can also stop at the first mismatch, while the first approach builds both copies in full before comparing anything.</figcaption>", my: "<table>\n  <thead><tr><th>နည်းလမ်း</th><th>အချိန်</th><th>အပို memory</th><th>n = 2 × 10⁵ (ကန့်သတ်ချက်) တွင်</th></tr></thead>\n  <tbody>\n    <tr><td><b>Clean, then reverse</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">copy နှစ်ခု</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(n)</td><td class=\"cross\">ယာယီ စာလုံး 4 × 10⁵ လုံးအထိ</td></tr>\n    <tr><td><b>Two pointers</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">နေရာ၌ပင် ကျော်</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(1)</td><td class=\"tick\">integer နှစ်ခု</td></tr>\n  </tbody>\n</table>\n<figcaption>ကန့်သတ်ချက်မှ တွက်ထားခြင်းဖြစ်ပြီး တိုင်းတာထားခြင်း မဟုတ်ပါ။ နှစ်ခုစလုံး စာလုံးတိုင်းကို တစ်ကြိမ်စီ ဖတ်သဖြင့် အချိန်တူသည်။ two pointers သည် ပထမဆုံး မကိုက်သည့်နေရာတွင် ရပ်နိုင်ပြီး ပထမနည်းကမူ ဘာမျှ မနှိုင်းယှဉ်မီ copy နှစ်ခုလုံးကို အပြည့် တည်ဆောက်ရသည်။</figcaption>" },
-  }}
-  part3Sub={{ en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,016 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,016 ခု တူတူဖြင့် run ထားသည်။" }}
-  footer={{ en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>s</code> above and both walkthroughs rebuild against your input.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>s</code> ကို ပြင်လိုက်လျှင် walkthrough နှစ်ခုစလုံး သင့် input ဖြင့် ပြန်တည်ဆောက်မည်။" }}
-/>
-
-<script>
-  import '../../lessons/valid-palindrome/lesson.js';
-</script>
+  },
+  part3Sub: { en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,016 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,016 ခု တူတူဖြင့် run ထားသည်။" },
+  footer: { en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>s</code> above and both walkthroughs rebuild against your input.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>s</code> ကို ပြင်လိုက်လျှင် walkthrough နှစ်ခုစလုံး သင့် input ဖြင့် ပြန်တည်ဆောက်မည်။" },
+};

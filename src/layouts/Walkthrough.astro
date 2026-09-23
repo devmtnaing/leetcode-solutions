@@ -1,7 +1,7 @@
 ---
 /* A walkthrough page in the x-sum format.
  *
- * x-sum (src/interactive/x-sum/body.html) is the reference design, and this
+ * x-sum (src/lessons/x-sum/body.html) is the reference design, and this
  * layout reproduces its skeleton element for element — the same header, the
  * same numbered parts, the same two-column question section, example cards,
  * disclosures, bench and solution blocks — so lesson.css styles it exactly as
@@ -22,6 +22,8 @@ interface Link { id: number; title: string; slug: string; difficulty: 'Easy' | '
 interface Note { q: T; a: T }
 
 interface Props {
+  /** The lesson folder under src/lessons/, so the page can load its script. */
+  slug?: string;
   title: T;
   summary: string;
   eyebrow?: T;
@@ -153,7 +155,7 @@ const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
     </div>
   </div>
 
-  <div id="lesson">
+  <div id="lesson" data-slug={p.slug}>
     <noscript><p>The walkthrough needs JavaScript. The whole solution is in part 3 either way.</p></noscript>
   </div>
 
