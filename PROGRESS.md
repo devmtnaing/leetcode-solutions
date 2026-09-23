@@ -21,7 +21,7 @@ passes all ten.
 | Phase | What | Status |
 | --- | --- | --- |
 | 1 | Shared lesson kit + Two Sum as the proof | **done** |
-| 2 | Remaining 14 lessons, 3 at a time | in progress — 13 of 15 done |
+| 2 | Remaining 14 lessons, 3 at a time | in progress — 14 of 15 done |
 | 2b | Retrofit the 10 built lessons to full spec | in progress — 3 of 10 |
 | 3 | Cross-check pass: every page at 3 widths, both themes, both languages | not started |
 
@@ -45,7 +45,7 @@ ships, per `~/.claude/skills/leetcode-solution-page`.
 | 9 | 136 | Single Number | count map | XOR fold | strip + bit view | **done** |
 | 10 | 242 | Valid Anagram | sort both O(n log n) | count array O(n) | two strips + counts | **done** |
 | 11 | 70 | Climbing Stairs | naive recursion O(2ⁿ) | memo → iterative O(1) space | recursion tree → DP row | not started |
-| 12 | 169 | Majority Element | count map | Boyer–Moore vote | strip + candidate/count | not started |
+| 12 | 169 | Majority Element | count map | Boyer–Moore vote | strip + candidate/count | **done** |
 | 13 | 283 | Move Zeroes | build new array | two pointers in place | strip + 2 pointers | **done** |
 | 14 | 125 | Valid Palindrome | clean + reverse + compare | two pointers in place | strip + converging | **done** |
 | 15 | 543 | Diameter of Binary Tree | height at every node O(n²) | one DFS returning height O(n) | tree + per-node values | **done** |
