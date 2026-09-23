@@ -1,79 +1,44 @@
 ---
 import Walkthrough from '../../layouts/Walkthrough.astro';
 import statement from '../../lessons/two-sum/statement.html?raw';
-
-const takeaway = `
-<p data-i18n="Brute force သည် <strong>အတွဲတစ်တွဲ</strong> အကြောင်း မေးသည် — ဤနှစ်ခု ပေါင်းလျှင် ကိုက်သလား။ အတွဲပေါင်း <code>n(n-1)/2</code> ရှိသဖြင့် ကုန်ကျစရိတ်မှာ ထိုမျှဖြစ်သည်။">The brute force asks a question about <strong>a pair</strong>: do these two add up?
-There are <code>n(n-1)/2</code> pairs, so that is the cost.</p>
-
-<p data-i18n="Hash map ကမူ <strong>element တစ်ခုတည်း</strong> အကြောင်း မေးသည် — ငါ့ကို ပြည့်စုံစေမည့် ကိန်းသည် ဖြတ်သွားပြီးပြီလား။ ထိုမေးခွန်းကို အချိန်ကုန် မတိုးဘဲ (constant time) ဖြေနိုင်ပြီး၊ မေးစရာ element မှာလည်း <code>n</code> ခုသာ ရှိသည်။">The hash map asks a question about <strong>one element</strong>: has the number that
-would complete me already gone by? That question is answerable in constant time, and
-there are only <code>n</code> elements to ask it of.</p>
-
-<p data-i18n="ထိုသို့ အမြင်ပြောင်းလိုက်ခြင်း — ပေါင်းစပ်မှုတိုင်းကို စစ်မည် မှ element တစ်ခုချင်းစီကို lookup ဖြင့် ဖြေနိုင်သည့် မေးခွန်းတစ်ခု မေးမည် သို့ — သည်ပင် အဓိက အချက်ဖြစ်သည်။ <strong>Valid Anagram</strong>၊ <strong>Majority Element</strong> နှင့် subarray-sum ပြဿနာ အများစုတွင်လည်း ဤနည်းအတိုင်းပင် ဖြစ်သည်။ <code>O(n)</code> memory ပေးလိုက်ပြီး အချိန်မှ quadratic factor ကို လျှော့ခြင်းသည် များသောအားဖြင့် တန်သည့် အလဲအလှယ် ဖြစ်သည်။">That reframing — from "check every combination" to "ask each element one question a
-lookup can answer" — is the whole trick, and it is the same trick behind
-<strong>Valid Anagram</strong>, <strong>Majority Element</strong> and most of the
-subarray-sum problems. Trading <code>O(n)</code> memory for a quadratic factor of time
-is usually the right trade.</p>
-
-<p data-i18n="ဥပမာများက ဖုံးကွယ်ထားသည့် အချက်တစ်ခု — လက်ရှိတန်ဖိုးကို map ထဲ သိမ်းရမည်မှာ ၎င်း၏ partner ကို စစ်<em>ပြီးမှ</em> ဖြစ်သည်၊ မစစ်မီ မဟုတ်ပါ။ အရင်သိမ်းလိုက်လျှင် <code>target</code> သည် ထိုတန်ဖိုး၏ နှစ်ဆဖြစ်နေသည့်အခါ element သည် သူ့ကိုယ်သူ partner ဖြစ်သွားလိမ့်မည်။">One detail the examples hide: store the value <em>after</em> checking for its partner,
-not before. Store first and an element becomes its own partner whenever
-<code>target</code> is double it.</p>`;
-
-const traps = `
-<ul>
-  <li data-i18n="<strong>အဖြေ တစ်ခုတည်းသာ ရှိသည်</strong> ဆိုသည်မှာ တွေ့သည်နှင့် ချက်ချင်း ပြန်ပေးလိုက်နိုင်သည်ဟု ဆိုလိုသည်။ နောက်ထပ် အတွဲ ရှာစရာ မလို၊ အတွဲနှစ်ခုကြားက ရွေးစရာလည်း မလိုသဖြင့် loop ထဲကပင် return လုပ်လိုက်ပါ။"><strong>"Exactly one solution"</strong> is a licence to leave early. There is no second
-    pair to find and no tie to break, so the first pair that works is the answer —
-    <code>return</code> from inside the loop rather than collecting matches.</li>
-
-  <li data-i18n="<strong>element တစ်ခုတည်းကို နှစ်ကြိမ် မသုံးရ</strong> ဆိုသည်မှာ နေရာ (index) အတွက် ဖြစ်သည်၊ တန်ဖိုးအတွက် မဟုတ်ပါ။ ဥပမာ ၃ တွင် <code>nums = [3,3]</code>၊ <code>target = 6</code> ၏ အဖြေမှာ <code>[0,1]</code> — တန်ဖိုးတူသော်လည်း element နှစ်ခု ကွဲပြားသောကြောင့် ရသည်။ ထို့ကြောင့် <code>j &gt; i</code> ဖြင့်ဖြစ်စေ၊ လက်ရှိတန်ဖိုးကို မသိမ်းမီ map ကို စစ်ခြင်းဖြင့်ဖြစ်စေ ကာကွယ်ပါ — တန်ဖိုးချင်း နှိုင်းယှဉ်၍ ကာကွယ်ခြင်းက မှားသည်။"><strong>"You may not use the same element twice"</strong> is about positions, not values.
-    Example 3 is <code>nums = [3,3]</code>, <code>target = 6</code>, and the answer is
-    <code>[0,1]</code> — two different elements that happen to hold the same number.
-    Keep them apart with <code>j &gt; i</code>, or by checking the map before storing the
-    current value. Comparing the values themselves rejects a legal answer.</li>
-
-  <li data-i18n="မေးထားသည်မှာ <strong>index များ</strong> ဖြစ်သည်၊ တန်ဖိုးများ မဟုတ်ပါ။ ဥပမာ ၁ ၏ အဖြေမှာ <code>[0,1]</code> ဖြစ်ပြီး <code>[2,7]</code> မဟုတ်ပါ။">It asks for <strong>indices</strong>, not values. The answer to example 1 is
-    <code>[0,1]</code>, not <code>[2,7]</code>.</li>
-
-  <li data-i18n="<code>nums</code> ကို အစဉ်လိုက် စီထားသည် မဟုတ်ပါ — ကန့်သတ်ချက်များတွင် ထိုသို့ မပါပါ။ two-pointer နည်းသည် စီထားမှသာ အလုပ်လုပ်သည်ဖြစ်ရာ အရင် sort လုပ်ရမည်။ ထိုအခါ <code>O(n log n)</code> ကုန်ရုံသာမက မေးထားသည့် index များပါ ရွှေ့ကုန်မည် — တန်ဖိုးနှင့်အတူ မူလ index ကို တွဲယူသွားမှသာ အဖြေ မှန်မည်။"><code>nums</code> is not sorted — nothing in the constraints says it is. Two-pointer
-    only works on sorted input, so it needs a sort first: that costs
-    <code>O(n log n)</code> and, worse, moves the very indices you were asked to return.
-    It works only if you carry each original index alongside its value.</li>
-</ul>`;
 ---
 <Walkthrough
   title="Two Sum"
   summary="Every pair, or one pass with a hash map. The difference is what question you ask."
-  leetcodeId={1}
-  leetcodeSlug="two-sum"
-  difficulty="Easy"
+  eyebrow="LeetCode 1 &nbsp;·&nbsp; Easy"
+  lede={{ en: "Find the two numbers that add up to <code>target</code>. One solution tries every pair; the other asks each number a single question that a hash map answers instantly.", my: "ပေါင်းလျှင် <code>target</code> ရသည့် ကိန်းနှစ်လုံးကို ရှာပါ။ ဖြေရှင်းနည်းတစ်ခုက အတွဲတိုင်းကို စမ်းသည်။ နောက်တစ်ခုကမူ ကိန်းတစ်လုံးချင်းစီကို hash map က ချက်ချင်းဖြေနိုင်သည့် မေးခွန်းတစ်ခုတည်းသာ မေးသည်။" }}
+  links={[{ id: 1, title: 'Two Sum', slug: 'two-sum', difficulty: 'Easy' }]}
   statement={statement}
-  takeaway={takeaway}
-  traps={traps}
+  constraints={{ en: "<span><b>n</b> 2 &le; nums.length &le; 10&#8308;</span><span>&minus;10&#8313; &le; nums[i], target &le; 10&#8313;</span><span>exactly one valid answer</span>", my: "<span><b>n</b> 2 &le; nums.length &le; 10&#8308;</span><span>&minus;10&#8313; &le; nums[i], target &le; 10&#8313;</span><span>မှန်သော အဖြေ တစ်ခုတည်းသာ</span>" }}
+  part1Sub={{ en: "Read the statement, then drag the target and watch what each number needs.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် target ကို ဆွဲကြည့်ပြီး ကိန်းတစ်လုံးချင်းစီ ဘာလိုသလဲ ကြည့်ပါ။" }}
+  widgetTitle={{ en: "Drag the target, watch what each number needs", my: "target ကို ဆွဲကြည့်ပါ — ကိန်းတစ်လုံးချင်းစီ ဘာလိုသလဲ" }}
+  traps={{
+    summary: { en: "Four ways the statement bites &mdash; worth reading before you code", my: "မေးခွန်းစာသားထဲက ချော်လွယ်သည့်နေရာ လေးခု — code မရေးမီ ဖတ်ထားသင့်သည်" },
+    items: [
+      { en: "<strong>\"Exactly one solution\"</strong> is a licence to leave early. There is no second pair to find and no tie to break, so the first pair that works is the answer — <code>return</code> from inside the loop rather than collecting matches.", my: "<strong>အဖြေ တစ်ခုတည်းသာ ရှိသည်</strong> ဆိုသည်မှာ တွေ့သည်နှင့် ချက်ချင်း ပြန်ပေးလိုက်နိုင်သည်ဟု ဆိုလိုသည်။ နောက်ထပ် အတွဲ ရှာစရာ မလို၊ အတွဲနှစ်ခုကြားက ရွေးစရာလည်း မလိုသဖြင့် loop ထဲကပင် return လုပ်လိုက်ပါ။" },
+      { en: "<strong>\"You may not use the same element twice\"</strong> is about positions, not values. Example 3 is <code>nums = [3,3]</code>, <code>target = 6</code>, and the answer is <code>[0,1]</code> — two different elements that happen to hold the same number. Keep them apart with <code>j &gt; i</code>, or by checking the map before storing the current value. Comparing the values themselves rejects a legal answer.", my: "<strong>element တစ်ခုတည်းကို နှစ်ကြိမ် မသုံးရ</strong> ဆိုသည်မှာ နေရာ (index) အတွက် ဖြစ်သည်၊ တန်ဖိုးအတွက် မဟုတ်ပါ။ ဥပမာ ၃ တွင် <code>nums = [3,3]</code>၊ <code>target = 6</code> ၏ အဖြေမှာ <code>[0,1]</code> — တန်ဖိုးတူသော်လည်း element နှစ်ခု ကွဲပြားသောကြောင့် ရသည်။ ထို့ကြောင့် <code>j &gt; i</code> ဖြင့်ဖြစ်စေ၊ လက်ရှိတန်ဖိုးကို မသိမ်းမီ map ကို စစ်ခြင်းဖြင့်ဖြစ်စေ ကာကွယ်ပါ — တန်ဖိုးချင်း နှိုင်းယှဉ်၍ ကာကွယ်ခြင်းက မှားသည်။" },
+      { en: "It asks for <strong>indices</strong>, not values. The answer to example 1 is <code>[0,1]</code>, not <code>[2,7]</code>.", my: "မေးထားသည်မှာ <strong>index များ</strong> ဖြစ်သည်၊ တန်ဖိုးများ မဟုတ်ပါ။ ဥပမာ ၁ ၏ အဖြေမှာ <code>[0,1]</code> ဖြစ်ပြီး <code>[2,7]</code> မဟုတ်ပါ။" },
+      { en: "<code>nums</code> is not sorted — nothing in the constraints says it is. Two-pointer only works on sorted input, so it needs a sort first: that costs <code>O(n log n)</code> and, worse, moves the very indices you were asked to return. It works only if you carry each original index alongside its value.", my: "<code>nums</code> ကို အစဉ်လိုက် စီထားသည် မဟုတ်ပါ — ကန့်သတ်ချက်များတွင် ထိုသို့ မပါပါ။ two-pointer နည်းသည် စီထားမှသာ အလုပ်လုပ်သည်ဖြစ်ရာ အရင် sort လုပ်ရမည်။ ထိုအခါ <code>O(n log n)</code> ကုန်ရုံသာမက မေးထားသည့် index များပါ ရွှေ့ကုန်မည် — တန်ဖိုးနှင့်အတူ မူလ index ကို တွဲယူသွားမှသာ အဖြေ မှန်မည်။" },
+    ],
+  }}
+  part2Sub={{ en: "Two approaches over the same array. The stage shows the state each one carries; the panel shows the line running.", my: "Array တစ်ခုတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" }}
+  notes={{
+    eyebrow: { en: "If you are implementing it", my: "ကိုယ်တိုင် ရေးမည်ဆိုလျှင်" },
+    title: { en: "Three questions the hash map raises", my: "Hash map နှင့်ပတ်သက်၍ မေးစရာ သုံးခု" },
+    items: [
+      { q: { en: "What makes the hash map faster, when both approaches look at every element?", my: "Approach နှစ်ခုစလုံး element တိုင်းကို ကြည့်နေသည် — hash map က ဘာကြောင့် ပိုမြန်သလဲ။" }, a: { en: "The brute force asks a question about <strong>a pair</strong>: do these two add up? There are <code>n(n-1)/2</code> pairs, so that is the cost. The hash map asks a question about <strong>one element</strong>: has the number that would complete me already gone by? That question is answerable in constant time, and there are only <code>n</code> elements to ask it of.", my: "Brute force သည် <strong>အတွဲတစ်တွဲ</strong> အကြောင်း မေးသည် — ဤနှစ်ခု ပေါင်းလျှင် ကိုက်သလား။ အတွဲပေါင်း <code>n(n-1)/2</code> ရှိသဖြင့် ကုန်ကျစရိတ်မှာ ထိုမျှဖြစ်သည်။ Hash map ကမူ <strong>element တစ်ခုတည်း</strong> အကြောင်း မေးသည် — ငါ့ကို ပြည့်စုံစေမည့် ကိန်းသည် ဖြတ်သွားပြီးပြီလား။ ထိုမေးခွန်းကို အချိန်ကုန် မတိုးဘဲ (constant time) ဖြေနိုင်ပြီး၊ မေးစရာ element မှာလည်း <code>n</code> ခုသာ ရှိသည်။" } },
+      { q: { en: "Why check for the partner <em>before</em> storing the current value?", my: "လက်ရှိတန်ဖိုးကို မသိမ်းမီ partner ကို ဘာကြောင့် <em>အရင်</em> စစ်ရသလဲ။" }, a: { en: "One detail the examples hide: store the value <em>after</em> checking for its partner, not before. Store first and an element becomes its own partner whenever <code>target</code> is double it.", my: "ဥပမာများက ဖုံးကွယ်ထားသည့် အချက်တစ်ခု — လက်ရှိတန်ဖိုးကို map ထဲ သိမ်းရမည်မှာ ၎င်း၏ partner ကို စစ်<em>ပြီးမှ</em> ဖြစ်သည်၊ မစစ်မီ မဟုတ်ပါ။ အရင်သိမ်းလိုက်လျှင် <code>target</code> သည် ထိုတန်ဖိုး၏ နှစ်ဆဖြစ်နေသည့်အခါ element သည် သူ့ကိုယ်သူ partner ဖြစ်သွားလိမ့်မည်။" } },
+      { q: { en: "Where else does this trick show up?", my: "ဤနည်းကို နောက်ထပ် ဘယ်ပုစ္ဆာတွေမှာ တွေ့ရမလဲ။" }, a: { en: "That reframing — from \"check every combination\" to \"ask each element one question a lookup can answer\" — is the whole trick, and it is the same trick behind <strong>Valid Anagram</strong>, <strong>Majority Element</strong> and most of the subarray-sum problems. Trading <code>O(n)</code> memory for a quadratic factor of time is usually the right trade.", my: "ထိုသို့ အမြင်ပြောင်းလိုက်ခြင်း — ပေါင်းစပ်မှုတိုင်းကို စစ်မည် မှ element တစ်ခုချင်းစီကို lookup ဖြင့် ဖြေနိုင်သည့် မေးခွန်းတစ်ခု မေးမည် သို့ — သည်ပင် အဓိက အချက်ဖြစ်သည်။ <strong>Valid Anagram</strong>၊ <strong>Majority Element</strong> နှင့် subarray-sum ပြဿနာ အများစုတွင်လည်း ဤနည်းအတိုင်းပင် ဖြစ်သည်။ <code>O(n)</code> memory ပေးလိုက်ပြီး အချိန်မှ quadratic factor ကို လျှော့ခြင်းသည် များသောအားဖြင့် တန်သည့် အလဲအလှယ် ဖြစ်သည်။" } },
+    ],
+  }}
+  cost={{
+    eyebrow: { en: "Why bother", my: "ဘာကြောင့် ဂရုစိုက်ရသလဲ" },
+    title: { en: "The same answer, a different price", my: "အဖြေတူ၊ ကုန်ကျစရိတ် မတူ" },
+    html: { en: "<table>\n  <thead><tr><th>Approach</th><th>Time</th><th>Extra space</th><th>At n = 10⁴ (the constraint)</th></tr></thead>\n  <tbody>\n    <tr><td><b>Brute force</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">every pair</span></td>\n        <td class=\"mono\">O(n²)</td><td class=\"mono\">O(1)</td><td class=\"cross\">≈ 5 × 10⁷ pair checks</td></tr>\n    <tr><td><b>Hash map</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">one pass</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(n)</td><td class=\"tick\">10⁴ lookups</td></tr>\n  </tbody>\n</table>\n<figcaption>Counts are computed from the constraint, not measured. The trade is memory for time: the map holds up to n entries so that each element asks one question instead of n.</figcaption>", my: "<table>\n  <thead><tr><th>နည်းလမ်း</th><th>အချိန်</th><th>အပို memory</th><th>n = 10⁴ (ကန့်သတ်ချက်) တွင်</th></tr></thead>\n  <tbody>\n    <tr><td><b>Brute force</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">အတွဲတိုင်း</span></td>\n        <td class=\"mono\">O(n²)</td><td class=\"mono\">O(1)</td><td class=\"cross\">≈ 5 × 10⁷ ကြိမ် အတွဲစစ်</td></tr>\n    <tr><td><b>Hash map</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">တစ်ခေါက်တည်း</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(n)</td><td class=\"tick\">lookup 10⁴ ကြိမ်</td></tr>\n  </tbody>\n</table>\n<figcaption>ဤအရေအတွက်များကို ကန့်သတ်ချက်မှ တွက်ထားခြင်းဖြစ်ပြီး တိုင်းတာထားခြင်း မဟုတ်ပါ။ Memory နှင့် အချိန်ကို အလဲအလှယ်လုပ်ခြင်း ဖြစ်သည် — map တွင် entry n ခုအထိ သိမ်းထားသဖြင့် element တစ်ခုချင်းစီက မေးခွန်း n ခုအစား တစ်ခုတည်းသာ မေးရသည်။</figcaption>" },
+  }}
+  part3Sub={{ en: "Two approaches in five languages. Every block is a complete submission; each badge says exactly how it was checked, including the ones that were not run.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး၊ မည်သို့ စမ်းသပ်ခဲ့သည်ကို badge က အတိအကျ ဖော်ပြသည် — မစမ်းသပ်ရသေးသည့်အရာများပါ အပါအဝင်။" }}
+  footer={{ en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>nums</code> or <code>target</code> above and both walkthroughs rebuild against your input.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>nums</code> သို့မဟုတ် <code>target</code> ကို ပြင်လိုက်လျှင် walkthrough နှစ်ခုစလုံး သင့် input ဖြင့် ပြန်တည်ဆောက်မည်။" }}
 />
-
-<style is:global>
-  /* The part-1 widget. Everything it draws is a kit shape already; these are
-     only the few things the kit has no class for — the slider row, and cells
-     that are clickable here but not in the walkthrough. */
-  #question-widget{margin-top:20px;max-width:74ch}
-  #question-widget h3{font-size:14.5px;color:var(--ink);margin-bottom:5px}
-  #question-widget .qw{display:flex;flex-direction:column;gap:12px}
-  #question-widget .qw-sub{font-size:13.5px;color:var(--ink-2);line-height:1.65}
-  #question-widget .kit-stage{min-height:0;padding:16px 15px}
-  #question-widget .qw-slider{flex-direction:row;align-items:center;gap:12px;flex:1;min-width:0}
-  #question-widget .qw-slider > span{white-space:nowrap}
-  #question-widget .qw-slider b{
-    font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--accent);margin-left:5px;
-  }
-  #question-widget input[type=range]{
-    flex:1;min-width:120px;max-width:340px;accent-color:var(--accent);
-    background:transparent;border:0;padding:0;
-  }
-  #question-widget .st-cell{cursor:pointer}
-  #question-widget .st-cell:hover{border-color:var(--accent)}
-  #question-widget .st-cell:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-</style>
 
 <script>
   import '../../lessons/two-sum/lesson.js';

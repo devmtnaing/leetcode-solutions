@@ -10,7 +10,7 @@
  *
  * Exits non-zero if anything fails, so it can gate a commit.
  */
-import { readdirSync, existsSync } from 'node:fs';
+import { readdirSync, existsSync, readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 
@@ -29,6 +29,7 @@ let failures = 0;
 const fail = (slug, msg) => { failures++; console.log(`  FAIL  ${slug}: ${msg}`); };
 
 for (const slug of slugs) {
+  const before = failures;
   let cfg = null;
   globalThis.__LESSON_PROBE__ = (c) => { cfg = c; };
   try {
@@ -102,10 +103,42 @@ for (const slug of slugs) {
     notes.push(`${mode.id} ${steps.length} steps${unused.length ? `, ${unused.length} line(s) never highlighted` : ''}`);
   }
 
+  /* ---- the x-sum format: the page must carry every part x-sum has ---- */
+  const hasMy = (v) => v && typeof v === 'object' && v.my && v.my !== v.en;
+  if (typeof cfg.widget !== 'function') fail(slug, 'no part 1 widget (cfg.widget) — x-sum has one beside the statement');
+  if (!cfg.examples?.length) fail(slug, 'no example cards (cfg.examples)');
+  for (const [i, ex] of (cfg.examples || []).entries()) {
+    if (!ex.load) fail(slug, `example ${i + 1} has no load input — x-sum's cards load into the stepper`);
+    if (!ex.why) fail(slug, `example ${i + 1} has no explanation (why)`);
+    else if (![].concat(ex.why).every(hasMy)) fail(slug, `example ${i + 1}'s explanation has no Burmese side`);
+  }
+  if (!cfg.presets?.length) fail(slug, 'no preset chips (cfg.presets)');
+  for (const m of cfg.modes) {
+    if (!m.desc) fail(slug, `mode "${m.id}" has no desc for its mode card`);
+    else if (!hasMy(m.desc)) fail(slug, `mode "${m.id}" desc has no Burmese side`);
+    if (!cfg.solutions?.[m.id]?.desc) fail(slug, `mode "${m.id}" has no part 3 caption (cfg.solutions)`);
+    else if (!hasMy(cfg.solutions[m.id].desc)) fail(slug, `mode "${m.id}" part 3 caption has no Burmese side`);
+  }
+  if (cfg.strip == null && !cfg.noStrip) fail(slug, 'no strip card — set cfg.strip, or cfg.noStrip: true when the input is not a row');
+  if (!cfg.answer) fail(slug, 'no answer card (cfg.answer)');
+  for (const [lang, how] of Object.entries(cfg.verification || {})) {
+    const s = typeof how === 'string' ? how : how?.en;
+    if (!/^(ran here|written here)/.test(s || '')) fail(slug, `${lang} badge "${s}" — say "ran here · …" or "written here · not compiled"`);
+  }
+
+  const page = resolve(`src/pages/leetcode/${slug}.astro`);
+  if (existsSync(page)) {
+    const src = readFileSync(page, 'utf8');
+    if (!/\blinks=\{/.test(src)) fail(slug, 'page still uses the pre-x-sum props (no links=) — it renders in legacy fallback');
+    for (const prop of ['lede', 'part1Sub', 'widgetTitle', 'part2Sub', 'part3Sub', 'footer', 'notes'])
+      if (!new RegExp(`\\b${prop}=\\{`).test(src)) fail(slug, `page has no ${prop}= prop`);
+  }
+
   if (!existsSync(resolve(LESSONS, slug, 'statement.html'))) fail(slug, 'no statement.html');
   if (!existsSync(resolve(`src/pages/leetcode/${slug}.astro`))) fail(slug, `no page at src/pages/leetcode/${slug}.astro`);
 
-  console.log(`${failures ? ' ' : '  ok'}  ${slug.padEnd(34)} ${notes.join(' · ')}`);
+  const mine = failures - before;
+  console.log(`${mine ? 'FAIL' : '  ok'}  ${slug.padEnd(34)} ${mine ? `${mine} problem(s)` : notes.join(' · ')}`);
 }
 
 console.log(`\n${slugs.length} lesson(s), ${failures} failure(s)`);

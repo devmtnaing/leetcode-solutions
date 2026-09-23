@@ -5,23 +5,16 @@ lesson lands; everything needed to pick this up in a fresh session is here.
 
 ## Where we are
 
-**Phase: 2b — retrofitting the built lessons to the skill's full spec.**
+**Phase: 2c — converting every lesson to the x-sum format.**
 
-The first ten were built short of the spec: no part 1 widget, no traps
-list, part 3 replaced by a takeaway, and no Burmese. The layout and the
-translation mechanism are fixed centrally; the per-lesson content —
-widget, traps, Burmese strings — is being written three lessons at a time.
+The first ten lessons were built on a kit with its own layout, not x-sum's, and
+the three "retrofitted" ones only added a widget and Burmese to that wrong
+layout. The kit now renders x-sum's own markup with x-sum's stylesheet, and the
+checker fails any lesson that is missing an x-sum component.
 
-**Retrofitted so far: Two Sum, Best Time, Valid Anagram (3 of 10).**
-
-The x-sum page was written as one bespoke 4,000-line file. Fifteen more of
-those would mean fifteen reimplementations of the same transport, code panel
-and narration, all drifting apart. So the generic half gets built once as a kit
-(`src/lib/`, `src/styles/kit.css`), Two Sum gets built on it as the worked
-example, and only then do the rest fan out three at a time.
-
-x-sum itself stays on its own code. It works, it is verified, and refactoring it
-buys nothing.
+**In x-sum format: Two Sum (1 of 10).** It is the worked example — every other
+lesson converts by copying its shape. The other nine build through a legacy
+fallback in the layout and each fails `check-lessons.mjs` until converted.
 
 | Phase | What | Status |
 | --- | --- | --- |

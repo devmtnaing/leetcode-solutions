@@ -1,77 +1,207 @@
 ---
+/* A walkthrough page in the x-sum format.
+ *
+ * x-sum (src/interactive/x-sum/body.html) is the reference design, and this
+ * layout reproduces its skeleton element for element — the same header, the
+ * same numbered parts, the same two-column question section, example cards,
+ * disclosures, bench and solution blocks — so lesson.css styles it exactly as
+ * it styles x-sum. If the two ever look different, this file has drifted.
+ *
+ * Every reader-facing prop takes a plain string or an { en, my } pair. HTML is
+ * allowed in the prose props. The interactive parts — the widget, the example
+ * cards, the whole of part 2 and the part 3 solution blocks — are rendered by
+ * the lesson's script into the #q-widget, #examples, #lesson and #solutions
+ * mounts below.
+ */
 import Lesson from './Lesson.astro';
+import '../styles/lesson.css';
 import '../styles/kit.css';
 
+type T = string | { en: string; my?: string };
+interface Link { id: number; title: string; slug: string; difficulty: 'Easy' | 'Medium' | 'Hard' }
+interface Note { q: T; a: T }
+
 interface Props {
-  title: string;
+  title: T;
   summary: string;
-  leetcodeId: number;
-  leetcodeSlug: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
-  /** Raw HTML of the problem statement, quoted from LeetCode. */
-  statement: string;
-  /** What to take away. Closes part 2 — it is about the algorithm, not a part of its own. */
-  takeaway: string;
-  /** Optional: traps in the wording, as HTML. Collapsed under part 1. */
-  traps?: string;
+  eyebrow?: T;
+  lede?: T;
+  links?: Link[];
+  /* Pre-x-sum props, accepted only so unconverted lessons keep building during
+     the migration. scripts/check-lessons.mjs fails any page still relying on
+     them, so this fallback cannot quietly become permanent. */
+  leetcodeId?: number;
+  leetcodeSlug?: string;
+  difficulty?: 'Easy' | 'Medium' | 'Hard';
+  takeaway?: string;
+  statement: string;          // raw HTML, data-i18n already on its elements
+  constraints?: T;
+  part1Sub?: T;
+  widgetTitle?: T;
+  traps?: { summary: T; items: T[] } | string;
+  part2Sub?: T;
+  notes?: { eyebrow: T; title: T; items: Note[] };
+  cost?: { eyebrow: T; title: T; html: T };
+  part3Sub?: T;
+  footer?: T;
 }
-const { title, summary, leetcodeId, leetcodeSlug, difficulty, statement, takeaway, traps } = Astro.props;
+const raw = Astro.props;
+const legacy = !raw.links;
+const p = {
+  ...raw,
+  eyebrow: raw.eyebrow ?? `LeetCode ${raw.leetcodeId} &nbsp;·&nbsp; ${raw.difficulty}`,
+  lede: raw.lede ?? raw.summary,
+  links: raw.links ?? [{ id: raw.leetcodeId!, title: String(raw.title), slug: raw.leetcodeSlug!, difficulty: raw.difficulty! }],
+  part1Sub: raw.part1Sub ?? 'Read the statement first.',
+  widgetTitle: raw.widgetTitle ?? 'Try it',
+  part2Sub: raw.part2Sub ?? 'Pick an approach and step through it.',
+  part3Sub: raw.part3Sub ?? 'Every approach in every language, with a badge saying how it was checked.',
+  footer: raw.footer ?? '<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause.',
+};
+const trapsObj = typeof p.traps === 'string' ? null : p.traps;
+const trapsHtml = typeof p.traps === 'string' ? p.traps : null;
+const en = (v?: T) => (v == null ? '' : typeof v === 'string' ? v : v.en);
+const my = (v?: T) => (v == null || typeof v === 'string' ? undefined : v.my);
+const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
 ---
 <Lesson
-  title={title}
-  summary={summary}
+  title={plain(p.title)}
+  summary={p.summary}
   track="leetcode"
   interactive
+  ownHeader
   up={{ href: '/leetcode', title: 'All algorithm lessons' }}
 >
-  <div class="shell">
-    <div class="lang-switch" role="group" aria-label="Page language">
-      <button class="lang-opt" data-lang-opt="en" aria-pressed="true">English</button>
-      <button class="lang-opt" data-lang-opt="my" aria-pressed="false" lang="my">မြန်မာ</button>
+<div class="wrap" data-format={legacy ? "legacy" : "xsum"}>
+  <header>
+    <div class="top-row">
+      <span class="eyebrow" data-i18n={my(p.eyebrow)} set:html={en(p.eyebrow)} />
+      <div class="lang-switch" role="group" aria-label="Page language">
+        <button class="lang-opt" data-lang-opt="en" aria-pressed="true">English</button>
+        <button class="lang-opt" data-lang-opt="my" aria-pressed="false" lang="my">မြန်မာ</button>
+      </div>
+    </div>
+    <h1 set:html={en(p.title)} />
+    <p class="lede" data-i18n={my(p.lede)} set:html={en(p.lede)} />
+    <nav class="jump">
+      <a href="#part-1"><b>1</b> <span data-i18n="မေးခွန်း">The question</span></a>
+      <a href="#part-2"><b>2</b> <span data-i18n="အဖြေ">The answer</span></a>
+      <a href="#part-3"><b>3</b> <span data-i18n="Code">The code</span></a>
+    </nav>
+  </header>
+
+  <!-- ============ 1 · the question ============ -->
+  <div class="part" id="part-1">
+    <span class="part-n">1</span>
+    <div class="part-text">
+      <h2 data-i18n="မေးခွန်း">The question</h2>
+      <p data-i18n={my(p.part1Sub)} set:html={en(p.part1Sub)} />
+    </div>
+  </div>
+
+  <section class="question">
+    <div class="q-statement">
+      <div class="q-head">
+        <h2 data-i18n="ပုစ္ဆာ">The problem</h2>
+        <span class="q-src" data-i18n="LeetCode မှ ကူးယူဖော်ပြသည်">quoted from LeetCode</span>
+      </div>
+      <div class="statement" set:html={p.statement} />
+      {p.constraints && <div class="constraints" data-i18n={my(p.constraints)} set:html={en(p.constraints)} />}
+      <div class="source-links">
+        {p.links.map((l) => (
+          <a class="plink" href={`https://leetcode.com/problems/${l.slug}/`} target="_blank" rel="noopener">
+            <span class="pnum">{l.id}</span> {l.title} <span class={`pdiff ${l.difficulty.toLowerCase()}`}>{l.difficulty}</span>
+          </a>
+        ))}
+      </div>
     </div>
 
-    <section class="part">
-      <h2><span class="part-n">1</span> <span data-i18n="မေးခွန်း">The question</span></h2>
-      <p class="part-sub">
-        <span data-i18n="LeetCode မှ ကူးယူဖော်ပြသည် —">Quoted from LeetCode —</span>
-        <a href={`https://leetcode.com/problems/${leetcodeSlug}/`} target="_blank" rel="noopener">
-          {leetcodeId}. {title}</a>
-        <span class={`diff ${difficulty.toLowerCase()}`}>{difficulty}</span>
-      </p>
-      <div class="statement" set:html={statement} />
-
-      {traps && (
-        <details class="traps">
-          <summary data-i18n="မေးခွန်းစာသားထဲက ချော်လွယ်သည့်နေရာများ">Where the wording catches people out</summary>
-          <div set:html={traps} />
-        </details>
-      )}
-
-      <div id="question-widget"></div>
-    </section>
-
-    <section class="part">
-      <h2><span class="part-n">2</span> <span data-i18n="အဖြေ — အဆင့်ဆင့်">The answer, step by step</span></h2>
-      <p class="part-sub">
-        <span data-i18n="နည်းလမ်းတစ်ခုကို ရွေးပြီး တစ်ဆင့်ချင်း လျှောက်ကြည့်ပါ။ အရောင်ခြယ်ထားသော ကြောင်းသည် အလုပ်လုပ်နေသည့် ကြောင်းဖြစ်ပြီး၊ ဘယ်ဘက်ကမူ ၎င်းပြုပြင်နေသော အခြေအနေကို ပြသည်။">Pick an approach, then drive it one step at a time. The highlighted line is the one
-        running; the stage on the left is the state it is acting on.</span>
-      </p>
-      <div id="lesson">
-        <noscript><p class="part-sub">The walkthrough needs JavaScript. The whole solution is in part 3 either way.</p></noscript>
+    <div class="q-play panel">
+      <div class="panel-head">
+        <h2 data-i18n={my(p.widgetTitle)} set:html={en(p.widgetTitle)} />
+        <span class="note" id="q-label"></span>
       </div>
+      <div id="q-widget"></div>
+    </div>
+  </section>
 
-      <div class="takeaway" set:html={takeaway} />
-    </section>
+  <div class="ex-grid" id="examples"></div>
 
-    <section class="part">
-      <h2><span class="part-n">3</span> <span data-i18n="အဖြေ code အပြည့်အစုံ">The whole solution</span></h2>
-      <p class="part-sub">
-        <span data-i18n="နည်းလမ်းတိုင်းကို ဘာသာစကားတိုင်းဖြင့် ပြည့်စုံစွာ ရေးထားသည်၊ copy ကူးပြီး တင်နိုင်သည်။ တစ်ခုစီတွင် မည်သို့ စမ်းသပ်ခဲ့သည်ကို ပြသော အမှတ်အသား ပါသည် — မစမ်းသပ်ရသေးသည့်အရာများပါ အပါအဝင်။">Every approach in every language, complete and paste-ready. Each carries a badge
-        saying exactly how it was checked — including the ones that were not run.</span>
-      </p>
-      <div id="solutions"></div>
-    </section>
+  {trapsObj && (
+    <details class="disclose">
+      <summary><span data-i18n={my(trapsObj.summary)} set:html={en(trapsObj.summary)} /></summary>
+      <div class="disclose-body">
+        <ul class="why">
+          {trapsObj.items.map((t) => <li data-i18n={my(t)} set:html={en(t)} />)}
+        </ul>
+      </div>
+    </details>
+  )}
+  {trapsHtml && (
+    <details class="disclose">
+      <summary><span data-i18n="မေးခွန်းစာသားထဲက ချော်လွယ်သည့်နေရာများ">Where the wording catches people out</span></summary>
+      <div class="disclose-body why" set:html={trapsHtml} />
+    </details>
+  )}
+
+  <!-- ============ 2 · the answer ============ -->
+  <div class="part" id="part-2">
+    <span class="part-n">2</span>
+    <div class="part-text">
+      <h2 data-i18n="အဖြေ — အဆင့်ဆင့်">The answer, step by step</h2>
+      <p data-i18n={my(p.part2Sub)} set:html={en(p.part2Sub)} />
+    </div>
   </div>
+
+  <div id="lesson">
+    <noscript><p>The walkthrough needs JavaScript. The whole solution is in part 3 either way.</p></noscript>
+  </div>
+
+  {legacy && p.takeaway && (
+    <details class="disclose" open>
+      <summary><span>What carries over to other problems?</span></summary>
+      <div class="disclose-body" set:html={p.takeaway} />
+    </details>
+  )}
+  {p.notes && (
+    <>
+      <div class="sec-head">
+        <span class="eyebrow" data-i18n={my(p.notes.eyebrow)} set:html={en(p.notes.eyebrow)} />
+        <h2 data-i18n={my(p.notes.title)} set:html={en(p.notes.title)} />
+      </div>
+      <div class="notes">
+        {p.notes.items.map((n) => (
+          <details class="disclose">
+            <summary><span data-i18n={my(n.q)} set:html={en(n.q)} /></summary>
+            <div class="disclose-body"><p data-i18n={my(n.a)} set:html={en(n.a)} /></div>
+          </details>
+        ))}
+      </div>
+    </>
+  )}
+
+  {p.cost && (
+    <>
+      <div class="sec-head">
+        <span class="eyebrow" data-i18n={my(p.cost.eyebrow)} set:html={en(p.cost.eyebrow)} />
+        <h2 data-i18n={my(p.cost.title)} set:html={en(p.cost.title)} />
+      </div>
+      <figure class="cost" style="margin:0" data-i18n={my(p.cost.html)} set:html={en(p.cost.html)} />
+    </>
+  )}
+
+  <!-- ============ 3 · the code ============ -->
+  <div class="part" id="part-3">
+    <span class="part-n">3</span>
+    <div class="part-text">
+      <h2 data-i18n="အဖြေ code အပြည့်အစုံ">The whole solution</h2>
+      <p data-i18n={my(p.part3Sub)} set:html={en(p.part3Sub)} />
+    </div>
+  </div>
+  <div id="solutions"></div>
+
+  <footer data-i18n={my(p.footer)} set:html={en(p.footer)} />
+</div>
 </Lesson>
 
 <script>

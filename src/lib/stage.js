@@ -32,6 +32,39 @@ export function strip(items, o = {}) {
   return box(label, `<div class="st-strip">${cells || '<span class="st-empty">empty</span>'}</div>`);
 }
 
+/* The array strip card, in x-sum's own cell markup, so a lesson's strip is
+ * indistinguishable from x-sum's. `tone` takes x-sum's cell states:
+ *   inwin    amber — the element(s) being looked at
+ *   entering green — the element that just joined, or that matched
+ *   leaving  red, dashed — the element that just dropped out, or failed
+ *   done     faded — already settled, out of play
+ * `marks` puts a pointer label (i, j, slow, fast…) under a cell. */
+export function cells(items, o = {}) {
+  const { tone = {}, marks = {}, index = true } = o;
+  const hasMarks = Object.keys(marks).length > 0;
+  const html = items.map((v, i) => `<div class="cell${tone[i] ? ` ${tone[i]}` : ''}">
+      <span>${esc(v)}</span>${index ? `<span class="idx">${i}</span>` : ''}${
+      marks[i] ? `<span class="ptr">${esc(marks[i])}</span>` : ''}</div>`).join('');
+  return hasMarks ? `<div class="strip has-ptr">${html}</div>` : html;
+}
+
+/* x-sum's answer card slots: filled ones hold a value, `just` marks the one
+ * this step wrote. */
+export function slots(values, o = {}) {
+  const { total = values.length, just = -1 } = o;
+  let html = '';
+  for (let i = 0; i < total; i++) {
+    const filled = i < values.length;
+    html += `<span class="slot${filled ? ' filled' : ''}${i === just ? ' just' : ''}">${filled ? esc(values[i]) : '·'}</span>`;
+  }
+  return html;
+}
+
+/* A titled block inside the stage panel, in x-sum's panel-head style. */
+export function stagePanel(title, note, inner) {
+  return `<div class="panel-head"><h2>${esc(title)}</h2>${note ? `<span class="note">${esc(note)}</span>` : ''}</div>${inner}`;
+}
+
 /* A key/value table: hash maps, counters, memo tables. */
 export function kv(pairs, o = {}) {
   const { at, tone = {}, label, keyName = 'key', valName = 'value' } = o;

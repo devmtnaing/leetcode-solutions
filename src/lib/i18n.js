@@ -21,8 +21,11 @@ const subs = new Set();
 
 export let lang = 'en';
 
+// x-sum predates this module and stores its choice under its own key. Read
+// either, write both, so the reader's language follows them between pages.
+const LEGACY_KEY = 'xsum-ui';
 try {
-  const saved = localStorage.getItem(KEY);
+  const saved = localStorage.getItem(KEY) ?? localStorage.getItem(LEGACY_KEY);
   if (saved === 'my' || saved === 'en') lang = saved;
 } catch {}
 
@@ -37,7 +40,7 @@ export function setLang(next) {
   if (next !== 'en' && next !== 'my') return;
   lang = next;
   document.documentElement.setAttribute('data-ui', next);
-  try { localStorage.setItem(KEY, next); } catch {}
+  try { localStorage.setItem(KEY, next); localStorage.setItem(LEGACY_KEY, next); } catch {}
   applyStatic();
   document.querySelectorAll('[data-lang-opt]').forEach((b) =>
     b.setAttribute('aria-pressed', String(b.dataset.langOpt === next)));
