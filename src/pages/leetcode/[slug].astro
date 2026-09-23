@@ -4,6 +4,7 @@
  *   page.js          the prose, as Walkthrough props
  *   statement.html   LeetCode's statement
  *   lesson.js        everything interactive
+ *   style.css        optional — styles only this lesson uses
  *
  * This route renders all of them, so adding a lesson means adding a folder.
  * x-sum is built by hand and has its own page, x-sum.astro. */
@@ -12,19 +13,24 @@ import Walkthrough from '../../layouts/Walkthrough.astro';
 export function getStaticPaths() {
   const pages = import.meta.glob('../../lessons/*/page.js', { eager: true });
   const statements = import.meta.glob('../../lessons/*/statement.html', { eager: true, query: '?raw', import: 'default' });
+  const styles = import.meta.glob('../../lessons/*/style.css', { eager: true, query: '?inline', import: 'default' });
   return Object.entries(pages).map(([path, mod]) => {
     const slug = path.split('/').at(-2);
     return {
       params: { slug },
-      props: { page: mod.default, statement: statements[`../../lessons/${slug}/statement.html`] },
+      props: {
+        page: mod.default,
+        statement: statements[`../../lessons/${slug}/statement.html`],
+        css: styles[`../../lessons/${slug}/style.css`],
+      },
     };
   });
 }
 
-const { page, statement } = Astro.props;
+const { page, statement, css } = Astro.props;
 const { slug } = Astro.params;
 ---
-<Walkthrough {...page} slug={slug} statement={statement} />
+<Walkthrough {...page} slug={slug} statement={statement} css={css} />
 
 <script>
   // Each lesson's script is its own chunk; load the one this page is for.

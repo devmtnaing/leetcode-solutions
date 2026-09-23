@@ -1,0 +1,36 @@
+/* Best Time's part 1 widget has its own vocabulary (qw-*) rather than the
+   shared q-* one. Loaded only on this lesson's page, by [slug].astro. */
+#question-widget{margin-top:22px}
+.qw{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:15px 16px 14px;display:flex;flex-direction:column;gap:12px}
+.qw > div{display:flex;flex-direction:column;gap:12px}
+.qw-head{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;justify-content:space-between}
+.qw-title{margin:0;font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.5}
+.qw-tabs{display:flex;gap:4px;flex-wrap:wrap}
+.qw-tab{background:transparent;border:1px solid var(--line);border-radius:7px;padding:3px 9px;
+  font:inherit;font-size:12px;color:var(--ink-2);cursor:pointer}
+.qw-tab:hover{background:var(--sunk)}
+.qw-tab[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);
+  color:var(--accent);font-weight:600}
+.qw-chart{padding-top:2px}
+.qw .st-bar{min-width:40px;border-radius:6px;padding:3px 3px 0}
+.qw .st-bar.t-warn .st-fill{background:var(--amber)}
+.qw-pick{cursor:pointer;outline-offset:2px}
+.qw-pick:hover{background:var(--sunk)}
+.qw-pick:focus-visible{outline:2px solid var(--accent)}
+.qw-say{font-size:13px;line-height:1.6;color:var(--ink-2);background:var(--sunk);
+  border-left:3px solid var(--line-2);border-radius:0 7px 7px 0;padding:9px 12px}
+.qw-say.good{border-left-color:var(--up);background:var(--up-soft);color:var(--ink)}
+.qw-say.bad{border-left-color:var(--down);background:var(--down-soft);color:var(--ink)}
+.qw-say.meh{border-left-color:var(--amber);background:var(--amber-soft);color:var(--ink)}
+.qw-point{font-size:12.5px;line-height:1.65;color:var(--ink-2);
+  border-top:1px dashed var(--line);padding-top:11px;margin:0}
+.qw-point code{background:var(--sunk);border:1px solid var(--line);padding:1px 5px;
+  border-radius:4px;font-size:.92em;font-family:"IBM Plex Mono",ui-monospace,monospace}
+.qw-clear{align-self:flex-start;background:transparent;border:1px solid var(--line);
+  border-radius:7px;padding:3px 10px;font:inherit;font-size:12px;color:var(--ink-3);cursor:pointer}
+.qw-clear:hover{background:var(--sunk);color:var(--ink-2)}
+@keyframes qw-nope{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}
+  75%{transform:translateX(5px)}}
+.qw-say.bad{animation:qw-nope .26s ease-in-out}
+@media (prefers-reduced-motion:reduce){.qw-say.bad{animation:none}}

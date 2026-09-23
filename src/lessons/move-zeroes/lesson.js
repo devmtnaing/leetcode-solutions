@@ -6,11 +6,11 @@
  * `slow` is already where it belongs — so the array is partially correct at
  * every single step, and no second array is ever allocated.
  */
+import { t, exampleTitle, LANGUAGES, k, c } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { cells, panels, stagePanel } from '../../lib/stage.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 
-const t = (en, my) => ({ en, my });
 
 /* ---------------- step generators ---------------- */
 
@@ -205,7 +205,7 @@ function draw(s, input) {
 
     const items = kept.map((v) => {
       const zer = v === 0;
-      return zer ? `<span style="opacity:0.5">0</span>` : String(v);
+      return zer ? '<span class="faint">0</span>' : String(v);
     });
 
     // Use an inline cell strip (not the main `cells()` which expects real numbers) so
@@ -250,7 +250,7 @@ function answer(s) {
     const arr = s.arr;
     const nz = arr.filter((v) => v !== 0).length;
     return {
-      html: `<strong style="color:var(--up);font-size:15px">${nz} non-zeros in front, ${arr.length - nz} zeros at the end</strong>`,
+      html: `<strong class="verdict sm yes">${nz} non-zeros in front, ${arr.length - nz} zeros at the end</strong>`,
       note: t('done', 'ပြီး'),
     };
   }
@@ -258,12 +258,12 @@ function answer(s) {
     const kept = s.kept;
     const nz = kept.filter((v) => v !== 0).length;
     return {
-      html: `<span style="font-size:16px;font-weight:600">${nz} / ${s.arr.length}</span>`,
+      html: `<span class="answer-num">${nz} / ${s.arr.length}</span>`,
       note: t('non-zeros collected in extra array', 'extra array ထဲတွင် non-zero များ စုဆောင်းပီး'),
     };
   }
   return {
-    html: `<span style="font-size:16px;font-weight:600">${s.slow} / ${s.arr.length}</span>`,
+    html: `<span class="answer-num">${s.slow} / ${s.arr.length}</span>`,
     note: t('non-zero values settled', 'non-zero များ နေရာချပြီး'),
   };
 }
@@ -281,8 +281,6 @@ function vars(s) {
 
 /* ---------------- the code, one key per line ---------------- */
 
-const c = (t) => `<span class="c">${t}</span>`;
-const k = (t) => `<span class="k">${t}</span>`;
 
 const CODE = {
   copy: {
@@ -412,8 +410,8 @@ const CODE = {
  */
 
 const Q_SETS = [
-  { label: t('Example 1', 'ဥပမာ ၁'), nums: [0, 1, 0, 3, 12] },
-  { label: t('Example 2', 'ဥပမာ ၂'), nums: [0] },
+  { label: exampleTitle(1), nums: [0, 1, 0, 3, 12] },
+  { label: exampleTitle(2), nums: [0] },
   { label: t('All zeros', 'သုညချည်း'), nums: [0, 0, 0, 0, 0] },
   { label: t('No zeros', 'သုည မရှိ'), nums: [1, 2, 3, 4, 5] },
 ];
@@ -452,8 +450,8 @@ function mountWidget(host) {
       let cls = '';
       if (i <= p) cls = v !== 0 ? 'kept' : 'cut';
       if (i === p) cls += ' inwin';
-      return `<div class="cell ${cls}" role="button" tabindex="0" aria-pressed="${i === p}"
-                   data-i="${i}"${i === p ? ' style="outline:2px solid var(--accent);outline-offset:2px"' : ''}>
+      return `<div class="cell ${cls}${i === p ? ' picked' : ''}" role="button" tabindex="0" aria-pressed="${i === p}"
+                   data-i="${i}">
         <span>${v}</span><span class="idx">${i}</span></div>`;
     }).join('');
 
@@ -527,19 +525,19 @@ mountLesson({
     { key: 'nums', label: 'nums', value: '0, 1, 0, 3, 12', parse: parseNums },
   ],
   presets: [
-    { label: t('Example 1', 'ဥပမာ ၁'), input: { nums: [0, 1, 0, 3, 12] } },
-    { label: t('Example 2', 'ဥပမာ ၂'), input: { nums: [0] } },
+    { label: exampleTitle(1), input: { nums: [0, 1, 0, 3, 12] } },
+    { label: exampleTitle(2), input: { nums: [0] } },
     { label: t('All zeros', 'သုညချည်း'), input: { nums: [0, 0, 0, 0, 0] } },
     { label: t('No zeros', 'သုည မရှိ'), input: { nums: [1, 2, 3, 4, 5] } },
   ],
   examples: [
-    { title: t('Example 1', 'ဥပမာ ၁'),
+    { title: exampleTitle(1),
       inputHtml: '<code>nums = [0,1,0,3,12]</code>', output: '[1,3,12,0,0]',
       why: [t(
         'All non-zeros — 1, 3, and 12 — keep their relative order in the front. The zeros fill in afterwards, any way they like.',
         'Non-zero အားလုံး — 1, 3, နှင့် 12 — တို့သည် ၎င်းတို့၏ မူရင်း အစီအစဉ်အတိုင်း ရှေ့တွင် ရှိနေသည်။ သုညများက နောက်မှ လိုက်လာပြီး ၎င်းတို့အချင်းချင်း မည်သည့် အစီအစဉ်ဖြင့်မဆို ရှိနိုင်သည်။')],
       load: { nums: [0, 1, 0, 3, 12] } },
-    { title: t('Example 2', 'ဥပမာ ၂'),
+    { title: exampleTitle(2),
       inputHtml: '<code>nums = [0]</code>', output: '[0]',
       why: [t(
         'A single zero — nothing to move, nothing to preserve. The array is already the answer.',
@@ -558,10 +556,7 @@ mountLesson({
                'နယ်ခြားမျဉ်း တစ်ခုနှင့် scanner တစ်ခု — လဲလှယ်လိုက်တိုင်း invariant က မှန်နေသည်။'),
       cost: 'O(n) time · O(1) space', build: buildTwoPointer },
   ],
-  languages: [
-    { id: 'ruby', name: 'Ruby' }, { id: 'python', name: 'Python' },
-    { id: 'javascript', name: 'JavaScript' }, { id: 'go', name: 'Go' }, { id: 'rust', name: 'Rust' },
-  ],
+  languages: LANGUAGES,
   code: CODE,
   solutions: {
     copy: { desc: t(

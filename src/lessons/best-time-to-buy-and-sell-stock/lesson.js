@@ -11,12 +11,12 @@
  * the sell has to come after the buy, which is the whole reason the answer is
  * not max(prices) - min(prices).
  */
+import { t, plural, exampleTitle, LANGUAGES, k, c } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { bars, cells, slots, stagePanel } from '../../lib/stage.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 
 /* A bilingual string: the { en, my } pair pick() reads at render time. */
-const t = (en, my) => ({ en, my });
 
 /* Labels that appear in more than one place, so they only get translated once. */
 const L = {
@@ -253,17 +253,15 @@ function answer(s) {
       note: t(`best trade — day ${s.bestPair[0]} → day ${s.bestPair[1]}`, `အကောင်းဆုံး — နေ့ ${s.bestPair[0]} → နေ့ ${s.bestPair[1]}`) };
   }
   if (s.best === 0 && s.bestPair === null) {
-    return { html: `<span style="font-size:16px;font-weight:600;color:var(--ink-2)">0</span>`,
+    return { html: `<span class="answer-num muted">0</span>`,
       note: t('no profitable trade', 'အမြတ်ရသော အရောင်းအဝယ် မရှိ') };
   }
-  return { html: `<span style="font-size:16px;font-weight:600;color:var(--ink-2)">${s.best}</span>`,
+  return { html: `<span class="answer-num muted">${s.best}</span>`,
     note: t('best so far', 'ယခုအထိ အကောင်းဆုံး') };
 }
 
 /* ---------------- the code, one key per line ---------------- */
 
-const c = (t) => `<span class="c">${t}</span>`;
-const k = (t) => `<span class="k">${t}</span>`;
 
 const CODE = {
   brute: {
@@ -418,19 +416,19 @@ mountLesson({
       } },
   ],
   presets: [
-    { label: t('Example 1', 'ဥပမာ ၁'), input: { prices: [7, 1, 5, 3, 6, 4] } },
-    { label: t('Example 2', 'ဥပမာ ၂'), input: { prices: [7, 6, 4, 3, 1] } },
+    { label: exampleTitle(1), input: { prices: [7, 1, 5, 3, 6, 4] } },
+    { label: exampleTitle(2), input: { prices: [7, 6, 4, 3, 1] } },
     { label: t('Single day', 'တစ်ရက်တည်း'), input: { prices: [5] } },
     { label: t('All same', 'ဈေးတူ'), input: { prices: [3, 3, 3, 3] } },
   ],
   examples: [
-    { title: t('Example 1', 'ဥပမာ ၁'),
+    { title: exampleTitle(1),
       inputHtml: '<code>prices = [7,1,5,3,6,4]</code>', output: '5',
       why: [t(
         'Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6 - 1 = 5. Note that buying on day 2 and selling on day 1 is not allowed because you must buy before you sell.',
         'နေ့ 2 (ဈေး = 1) မှာ ဝယ်ပြီး နေ့ 5 (ဈေး = 6) မှာ ရောင်းပါ၊ အမြတ် = 6 - 1 = 5။ နေ့ 2 မှာ ဝယ်ပြီး နေ့ 1 မှာ ရောင်းတာ မရပါ — ရောင်းမည့်နေ့ မတိုင်မီ ဝယ်ထားရမည် ဖြစ်သောကြောင့် ဖြစ်သည်။')],
       load: { prices: [7, 1, 5, 3, 6, 4] } },
-    { title: t('Example 2', 'ဥပမာ ၂'),
+    { title: exampleTitle(2),
       inputHtml: '<code>prices = [7,6,4,3,1]</code>', output: '0',
       why: [t(
         'Prices only go down — any later sell after buying on day 0 loses money. <code>max - min = 6</code> is wrong because the cheapest day (day 4) comes after the dearest (day 0). Not taking a trade is the best move: return <code>0</code>.',
@@ -457,10 +455,7 @@ mountLesson({
       'The submission worth writing. One walk, two variables — <code>cheapest</code> starts at ∞ so day 0 needs no special case.',
       'ရေးသင့်သည့် submission ဖြစ်သည်။ တစ်ခေါက်တည်း၊ variable နှစ်လုံး — <code>cheapest</code> ကို ∞ ဖြင့် စတင်သဖြင့် နေ့ 0 အတွက် သီးသန့် စစ်ဆေးစရာ မလိုပါ။') },
   },
-  languages: [
-    { id: 'ruby', name: 'Ruby' }, { id: 'python', name: 'Python' },
-    { id: 'javascript', name: 'JavaScript' }, { id: 'go', name: 'Go' }, { id: 'rust', name: 'Rust' },
-  ],
+  languages: LANGUAGES,
   code: CODE,
   // How each language was actually checked, printed as the part 3 badges.
   // The corpus: 4 examples, 15,000 short price lists over 0..6, 5,000 up to 10⁴, three of 3,000 — against all-pairs search; the one-pass versions also ran four at n = 10⁵.
@@ -480,46 +475,9 @@ mountLesson({
     const state = { ex: 0, buy: null, sell: null };
 
     const WIDGET_EXAMPLES = [
-      { prices: [7, 1, 5, 3, 6, 4], label: t('Example 1', 'ဥပမာ ၁') },
-      { prices: [7, 6, 4, 3, 1], label: t('Example 2', 'ဥပမာ ၂') },
+      { prices: [7, 1, 5, 3, 6, 4], label: exampleTitle(1) },
+      { prices: [7, 6, 4, 3, 1], label: exampleTitle(2) },
     ];
-
-    const WIDGET_CSS = `
-#question-widget{margin-top:22px}
-.qw{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-  padding:15px 16px 14px;display:flex;flex-direction:column;gap:12px}
-.qw > div{display:flex;flex-direction:column;gap:12px}
-.qw-head{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;justify-content:space-between}
-.qw-title{margin:0;font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.5}
-.qw-tabs{display:flex;gap:4px;flex-wrap:wrap}
-.qw-tab{background:transparent;border:1px solid var(--line);border-radius:7px;padding:3px 9px;
-  font:inherit;font-size:12px;color:var(--ink-2);cursor:pointer}
-.qw-tab:hover{background:var(--sunk)}
-.qw-tab[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);
-  color:var(--accent);font-weight:600}
-.qw-chart{padding-top:2px}
-.qw .st-bar{min-width:40px;border-radius:6px;padding:3px 3px 0}
-.qw .st-bar.t-warn .st-fill{background:var(--amber)}
-.qw-pick{cursor:pointer;outline-offset:2px}
-.qw-pick:hover{background:var(--sunk)}
-.qw-pick:focus-visible{outline:2px solid var(--accent)}
-.qw-say{font-size:13px;line-height:1.6;color:var(--ink-2);background:var(--sunk);
-  border-left:3px solid var(--line-2);border-radius:0 7px 7px 0;padding:9px 12px}
-.qw-say.good{border-left-color:var(--up);background:var(--up-soft);color:var(--ink)}
-.qw-say.bad{border-left-color:var(--down);background:var(--down-soft);color:var(--ink)}
-.qw-say.meh{border-left-color:var(--amber);background:var(--amber-soft);color:var(--ink)}
-.qw-point{font-size:12.5px;line-height:1.65;color:var(--ink-2);
-  border-top:1px dashed var(--line);padding-top:11px;margin:0}
-.qw-point code{background:var(--sunk);border:1px solid var(--line);padding:1px 5px;
-  border-radius:4px;font-size:.92em;font-family:"IBM Plex Mono",ui-monospace,monospace}
-.qw-clear{align-self:flex-start;background:transparent;border:1px solid var(--line);
-  border-radius:7px;padding:3px 10px;font:inherit;font-size:12px;color:var(--ink-3);cursor:pointer}
-.qw-clear:hover{background:var(--sunk);color:var(--ink-2)}
-@keyframes qw-nope{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}
-  75%{transform:translateX(5px)}}
-.qw-say.bad{animation:qw-nope .26s ease-in-out}
-@media (prefers-reduced-motion:reduce){.qw-say.bad{animation:none}}
-`;
 
     const prices = () => WIDGET_EXAMPLES[state.ex].prices;
 
@@ -652,7 +610,7 @@ mountLesson({
       if (hadFocus) topEl.querySelector(`[data-day="${day}"]`)?.focus();
     }
 
-    host.innerHTML = `<style>${WIDGET_CSS}</style>
+    host.innerHTML = `
       <div class="qw" data-qw>
         <div data-qw-top></div>
         <p class="qw-say" role="status" aria-live="polite" data-qw-say></p>

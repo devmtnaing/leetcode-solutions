@@ -44,22 +44,40 @@ the build.
 
 ## Adding an interactive lesson
 
-A walkthrough ships markup and a script of its own, so it gets a page file rather
-than a collection entry — a shared route would bundle every lesson's script into
-every lesson. See `src/pages/leetcode/x-sum.astro` for the pattern:
+Every LeetCode lesson is one folder under `src/lessons/<slug>/`. A lesson built
+on the shared kit is four files, and `src/pages/leetcode/[slug].astro` renders
+every folder it finds — nothing else needs wiring up:
 
 ```
-src/interactive/<name>/body.html    markup for the stage, panels and listings
-src/interactive/<name>/lesson.js    the step generators and wiring
-src/pages/<track>/<name>.astro      imports both, adds lesson.css
+src/lessons/<slug>/page.js          the prose: title, lede, traps, notes, cost table…
+src/lessons/<slug>/statement.html   LeetCode's statement, data-i18n on each element
+src/lessons/<slug>/lesson.js        approaches, step generators, drawing, code, mountLesson
+src/lessons/<slug>/style.css        optional — styles only this lesson uses
 ```
 
-The markup lives in a plain `.html` file because it contains Ruby, Go and Rust
-listings full of braces and angle brackets, which `.astro` and `.mdx` would try
-to read as expressions. `?raw` + `set:html` sidesteps that entirely.
+Each lesson's script is its own chunk, and a page loads only its own.
+`src/lessons/two-sum/` is the worked example to copy.
 
-The `leetcode-solution-page` skill builds these; it produces the standalone page,
-and the split above is the last step.
+The shared pieces:
+
+| File | Holds |
+| --- | --- |
+| `src/layouts/Walkthrough.astro` | the page skeleton, in x-sum's markup |
+| `src/lib/stepper.js` | `mountLesson` — transport, narration, code panel, example cards, part 3 |
+| `src/lib/stage.js` | stage shapes: `cells` `slots` `kv` `stack` `chain` `tree` `bars` `readout` `panels` |
+| `src/lib/kit.js` | helpers every lesson uses: `t` `plural` `exampleTitle` `LANGUAGES` `k` `c` `verdictAnswer` `stageRow` `stageGap` `labelledRows` |
+| `src/lib/i18n.js` | English / မြန်မာ switching |
+
+`node scripts/check-lessons.mjs` checks every lesson's structure.
+
+x-sum (`src/lessons/x-sum/`) is the reference design, built by hand before the
+kit existed: `body.html` holds its markup and `lesson.js` its behaviour, and it
+has its own page, `src/pages/leetcode/x-sum.astro`. The markup is a plain `.html`
+file because its Ruby, Go and Rust listings are full of braces and angle
+brackets that `.astro` would read as expressions; `?raw` + `set:html` sidesteps
+that.
+
+The `leetcode-solution-page` skill builds these lessons.
 
 ## Styles
 
@@ -68,7 +86,11 @@ and the split above is the last step.
 | `tokens.css` | every page | the palette, in all three theme states |
 | `base.css` | every page | reset, body type, headings |
 | `site.css` | every page | masthead, indexes, prose, pager |
-| `lesson.css` | walkthroughs only | stage, transport, code panel, tooltips |
+| `lesson.css` | walkthroughs only | x-sum's page structure — every lesson uses it |
+| `kit.css` | walkthroughs only | stage shapes and the shared lesson pieces from `kit.js` |
+
+Lessons carry no inline styles: anything a lesson draws uses a class from these
+files, or from its own `style.css`.
 
 Colour is only ever read through a token, so the shell and the walkthrough inside
 it stay the same design. Theme has three states: unset (follow the OS), and the

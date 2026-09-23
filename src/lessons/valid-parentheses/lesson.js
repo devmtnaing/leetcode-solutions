@@ -7,12 +7,11 @@
  * opener nobody has closed yet?" — and the top of a stack is exactly that, so
  * the answer is free and one pass is enough.
  */
+import { t, exampleTitle, LANGUAGES, k, c, verdictAnswer, stageRow } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, stack, stagePanel } from '../../lib/stage.js';
 
-/* Every reader-facing sentence is a pair; `pick()` chooses the side. */
-const t = (en, my) => ({ en, my });
 
 const CLOSER_OF = { '(': ')', '[': ']', '{': '}' };
 const OPENER_OF = { ')': '(', ']': '[', '}': '{' };
@@ -167,10 +166,6 @@ function buildStack({ s }) {
  * after the cuts; for the stack, the openers still waiting to be closed.
  */
 
-const row = (html, empty) => (html
-  ? (html.startsWith('<div class="strip') ? html : `<div class="strip" style="flex-wrap:wrap;overflow:visible">${html}</div>`)
-  : `<p class="note mono" style="margin:6px 0">${empty}</p>`);
-
 function strip(s, { s: str }) {
   const tone = {};
   const marks = {};
@@ -203,7 +198,7 @@ function draw(s) {
     return stagePanel(
       pick(t('chars — what is left of s', 'chars — s မှ ကျန်သည့်အရာ')),
       pick(t(`${s.cuts} cut${s.cuts === 1 ? '' : 's'} · ${s.chars.length} left`, `${s.cuts} ကြိမ် ဖြတ်ပြီး · ${s.chars.length} လုံး ကျန်`)),
-      row(cells(s.chars, { tone }), pick(t('empty — every character was cut', 'ဗလာ — စာလုံးအားလုံး ဖြတ်ပြီး'))),
+      stageRow(cells(s.chars, { tone }), pick(t('empty — every character was cut', 'ဗလာ — စာလုံးအားလုံး ဖြတ်ပြီး'))),
     );
   }
   const stackTone = {};
@@ -218,13 +213,11 @@ function draw(s) {
 }
 
 function answer(s) {
-  if (s.verdict == null) return { html: '', note: t('true or false', 'true သို့မဟုတ် false') };
-  return {
-    html: s.verdict
-      ? '<strong style="color:var(--up);font-size:18px">true</strong>'
-      : '<strong style="color:var(--down);font-size:18px">false</strong>',
-    note: s.verdict ? t('valid', 'valid ဖြစ်သည်') : t('not valid', 'valid မဖြစ်'),
-  };
+  return verdictAnswer(s.verdict, {
+    yes: t('valid', 'valid ဖြစ်သည်'),
+    no: t('not valid', 'valid မဖြစ်'),
+    pending: t('true or false', 'true သို့မဟုတ် false'),
+  });
 }
 
 function vars(s) {
@@ -242,8 +235,6 @@ function vars(s) {
 
 /* ---------------- the code, one key per line ---------------- */
 
-const c = (t) => `<span class="c">${t}</span>`;
-const k = (t) => `<span class="k">${t}</span>`;
 
 const CODE = {
   strip: {
@@ -553,39 +544,37 @@ const brackets = (v) => {
   return x.slice(0, 14);
 };
 
-const ex = (n) => t(`Example ${n}`, `ဥပမာ ${n}`);
-
 mountLesson({
   input: { s: '([])' },
   controls: [
     { key: 's', label: 's', value: '([])', parse: brackets },
   ],
   presets: [
-    { label: ex(2), input: { s: '()[]{}' } },
-    { label: ex(3), input: { s: '(]' } },
-    { label: ex(4), input: { s: '([])' } },
-    { label: ex(5), input: { s: '([)]' } },
+    { label: exampleTitle(2), input: { s: '()[]{}' } },
+    { label: exampleTitle(3), input: { s: '(]' } },
+    { label: exampleTitle(4), input: { s: '([])' } },
+    { label: exampleTitle(5), input: { s: '([)]' } },
     { label: t('Never closed', 'မပိတ်'), input: { s: '{[()](' } },
     { label: t('Closer first', 'ပိတ်ကွင်း အရင်'), input: { s: ']()' } },
   ],
   examples: [
-    { title: ex(1), inputHtml: '<code>s = "()"</code>', output: 'true',
+    { title: exampleTitle(1), inputHtml: '<code>s = "()"</code>', output: 'true',
       why: [t('One pair, closed by the right type straight away.',
               'အတွဲ တစ်တွဲ — အမျိုးအစား မှန်သော ပိတ်ကွင်းဖြင့် ချက်ချင်း ပိတ်သည်။')],
       load: { s: '()' } },
-    { title: ex(2), inputHtml: '<code>s = "()[]{}"</code>', output: 'true',
+    { title: exampleTitle(2), inputHtml: '<code>s = "()[]{}"</code>', output: 'true',
       why: [t('Three pairs side by side. Each closes before the next opens, so nothing is ever waiting for long.',
               'အတွဲ သုံးတွဲ ဘေးချင်းကပ်လျက်။ တစ်တွဲ ပိတ်ပြီးမှ နောက်တစ်တွဲ ဖွင့်သဖြင့် ကြာကြာ စောင့်နေရသည့်အရာ မရှိပါ။')],
       load: { s: '()[]{}' } },
-    { title: ex(3), inputHtml: '<code>s = "(]"</code>', output: 'false',
+    { title: exampleTitle(3), inputHtml: '<code>s = "(]"</code>', output: 'false',
       why: [t('<code>]</code> can only close a <code>[</code>. The one thing open is a <code>(</code> — rule 1.',
               '<code>]</code> သည် <code>[</code> ကိုသာ ပိတ်နိုင်သည်။ ဖွင့်ထားသည်မှာ <code>(</code> တစ်ခုတည်း — စည်းမျဉ်း ၁။')],
       load: { s: '(]' } },
-    { title: ex(4), inputHtml: '<code>s = "([])"</code>', output: 'true',
+    { title: exampleTitle(4), inputHtml: '<code>s = "([])"</code>', output: 'true',
       why: [t('Nested: <code>[]</code> closes inside <code>()</code>. The inner pair has to close first, and it does.',
               'အထပ်လိုက်: <code>[]</code> သည် <code>()</code> အတွင်း၌ ပိတ်သည်။ အတွင်းအတွဲ အရင်ပိတ်ရမည်ဖြစ်ပြီး ထိုအတိုင်း ပိတ်သည်။')],
       load: { s: '([])' } },
-    { title: ex(5), inputHtml: '<code>s = "([)]"</code>', output: 'false',
+    { title: exampleTitle(5), inputHtml: '<code>s = "([)]"</code>', output: 'false',
       why: [t('Every bracket has a partner of the right type and the counts balance — and it is still invalid. <code>)</code> arrives while <code>[</code> is the most recent opener: the pairs cross instead of nesting. Rule 2.',
               'ကွင်းတိုင်းတွင် အမျိုးအစားမှန်သော အဖော် ရှိပြီး အရေအတွက်လည်း ညီသည် — သို့သော် invalid ဖြစ်နေဆဲ။ <code>)</code> ရောက်လာချိန်တွင် နောက်ဆုံး ဖွင့်ကွင်းမှာ <code>[</code> ဖြစ်နေသည် — အတွဲများ အထပ်လိုက် မဟုတ်ဘဲ ဖြတ်ကျော်နေသည်။ စည်းမျဉ်း ၂။')],
       load: { s: '([)]' } },
@@ -598,10 +587,7 @@ mountLesson({
       desc: t('One pass. Match each closer against the most recent opener.', 'တစ်ခေါက်တည်း။ ပိတ်ကွင်းတိုင်းကို နောက်ဆုံး ဖွင့်ကွင်းနှင့် တိုက်စစ်သည်။'),
       cost: 'O(n) time · O(n) space', build: buildStack },
   ],
-  languages: [
-    { id: 'ruby', name: 'Ruby' }, { id: 'python', name: 'Python' },
-    { id: 'javascript', name: 'JavaScript' }, { id: 'go', name: 'Go' }, { id: 'rust', name: 'Rust' },
-  ],
+  languages: LANGUAGES,
   code: CODE,
   solutions: {
     strip: { desc: t('Correct, and worth seeing work — but every deletion restarts the scan from the left, a pass per cut. Quadratic, and it passes LeetCode only because <code>n ≤ 10⁴</code>.',

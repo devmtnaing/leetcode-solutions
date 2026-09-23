@@ -23,45 +23,28 @@ interface Note { q: T; a: T }
 
 interface Props {
   /** The lesson folder under src/lessons/, so the page can load its script. */
-  slug?: string;
+  slug: string;
   title: T;
   summary: string;
-  eyebrow?: T;
-  lede?: T;
-  links?: Link[];
-  /* Pre-x-sum props, accepted only so unconverted lessons keep building during
-     the migration. scripts/check-lessons.mjs fails any page still relying on
-     them, so this fallback cannot quietly become permanent. */
-  leetcodeId?: number;
-  leetcodeSlug?: string;
-  difficulty?: 'Easy' | 'Medium' | 'Hard';
-  takeaway?: string;
+  eyebrow: T;
+  lede: T;
+  links: Link[];
   statement: string;          // raw HTML, data-i18n already on its elements
-  constraints?: T;
-  part1Sub?: T;
-  widgetTitle?: T;
-  traps?: { summary: T; items: T[] } | string;
-  part2Sub?: T;
-  notes?: { eyebrow: T; title: T; items: Note[] };
-  cost?: { eyebrow: T; title: T; html: T };
-  part3Sub?: T;
-  footer?: T;
+  constraints: T;
+  part1Sub: T;
+  widgetTitle: T;
+  traps: { summary: T; items: T[] };
+  part2Sub: T;
+  notes: { eyebrow: T; title: T; items: Note[] };
+  cost: { eyebrow: T; title: T; html: T };
+  part3Sub: T;
+  footer: T;
+  /** A lesson's own style.css, when it has one; inlined on its page only. */
+  css?: string;
 }
-const raw = Astro.props;
-const legacy = !raw.links;
-const p = {
-  ...raw,
-  eyebrow: raw.eyebrow ?? `LeetCode ${raw.leetcodeId} &nbsp;·&nbsp; ${raw.difficulty}`,
-  lede: raw.lede ?? raw.summary,
-  links: raw.links ?? [{ id: raw.leetcodeId!, title: String(raw.title), slug: raw.leetcodeSlug!, difficulty: raw.difficulty! }],
-  part1Sub: raw.part1Sub ?? 'Read the statement first.',
-  widgetTitle: raw.widgetTitle ?? 'Try it',
-  part2Sub: raw.part2Sub ?? 'Pick an approach and step through it.',
-  part3Sub: raw.part3Sub ?? 'Every approach in every language, with a badge saying how it was checked.',
-  footer: raw.footer ?? '<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause.',
-};
-const trapsObj = typeof p.traps === 'string' ? null : p.traps;
-const trapsHtml = typeof p.traps === 'string' ? p.traps : null;
+// Every prop is supplied by the lesson's page.js; scripts/check-lessons.mjs
+// fails a lesson that leaves one out.
+const p = Astro.props;
 const en = (v?: T) => (v == null ? '' : typeof v === 'string' ? v : v.en);
 const my = (v?: T) => (v == null || typeof v === 'string' ? undefined : v.my);
 const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
@@ -74,7 +57,8 @@ const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
   ownHeader
   up={{ href: '/leetcode', title: 'All algorithm lessons' }}
 >
-<div class="wrap" data-format={legacy ? "legacy" : "xsum"}>
+<div class="wrap">
+  {p.css && <style is:inline set:html={p.css} />}
   <header>
     <div class="top-row">
       <span class="eyebrow" data-i18n={my(p.eyebrow)} set:html={en(p.eyebrow)} />
@@ -129,22 +113,14 @@ const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
 
   <div class="ex-grid" id="examples"></div>
 
-  {trapsObj && (
-    <details class="disclose">
-      <summary><span data-i18n={my(trapsObj.summary)} set:html={en(trapsObj.summary)} /></summary>
-      <div class="disclose-body">
-        <ul class="why">
-          {trapsObj.items.map((t) => <li data-i18n={my(t)} set:html={en(t)} />)}
-        </ul>
-      </div>
-    </details>
-  )}
-  {trapsHtml && (
-    <details class="disclose">
-      <summary><span data-i18n="မေးခွန်းစာသားထဲက ချော်လွယ်သည့်နေရာများ">Where the wording catches people out</span></summary>
-      <div class="disclose-body why" set:html={trapsHtml} />
-    </details>
-  )}
+  <details class="disclose">
+    <summary><span data-i18n={my(p.traps.summary)} set:html={en(p.traps.summary)} /></summary>
+    <div class="disclose-body">
+      <ul class="why">
+        {p.traps.items.map((t) => <li data-i18n={my(t)} set:html={en(t)} />)}
+      </ul>
+    </div>
+  </details>
 
   <!-- ============ 2 · the answer ============ -->
   <div class="part" id="part-2">
@@ -159,12 +135,6 @@ const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
     <noscript><p>The walkthrough needs JavaScript. The whole solution is in part 3 either way.</p></noscript>
   </div>
 
-  {legacy && p.takeaway && (
-    <details class="disclose" open>
-      <summary><span>What carries over to other problems?</span></summary>
-      <div class="disclose-body" set:html={p.takeaway} />
-    </details>
-  )}
   {p.notes && (
     <>
       <div class="sec-head">

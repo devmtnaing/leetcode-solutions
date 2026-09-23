@@ -10,12 +10,11 @@
  * resolves with pick(). Only the cost strings stay as they are: "O(n log n)
  * time" is notation, not prose.
  */
+import { t, plural, exampleTitle, LANGUAGES, k, c, verdictAnswer, labelledRows } from '../../lib/kit.js';
 import { mountLesson, esc } from '../../lib/stepper.js';
 import { cells, strip, kv, panels } from '../../lib/stage.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 
-const t = (en, my) => ({ en, my });
-const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
 /* ---------------- step generators ---------------- */
 
@@ -199,8 +198,6 @@ function vars(s) {
 
 /* ---------------- the code, one key per line ---------------- */
 
-const c = (t) => `<span class="c">${t}</span>`;
-const k = (t) => `<span class="k">${t}</span>`;
 
 const CODE = {
   sort: {
@@ -603,25 +600,15 @@ function stripCard(s, input) {
 
   const sRow = cells(sc, { tone: toneS, marks: marksS });
   const tRow = cells(tc, { tone: toneT, marks: marksT });
-  return `<div style="display:flex;flex-direction:column;gap:12px">
-    <div style="display:flex;align-items:center;gap:8px">
-      <span style="font-size:12px;color:var(--ink-3);width:11px;flex-shrink:0;font-family:IBM Plex Mono,monospace">s</span>
-      ${sRow}
-    </div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <span style="font-size:12px;color:var(--ink-3);width:11px;flex-shrink:0;font-family:IBM Plex Mono,monospace">t</span>
-      ${tRow}
-    </div></div>`;
+  return labelledRows([['s', sRow], ['t', tRow]]);
 }
 
 function answer(s) {
-  if (s.verdict == null) return { html: '', note: t('...', '...') };
-  return {
-    html: s.verdict
-      ? '<strong style="color:var(--up);font-size:18px">true</strong>'
-      : '<strong style="color:var(--down);font-size:18px">false</strong>',
-    note: s.verdict ? t('is an anagram', 'anagram ဖြစ်သည်') : t('not an anagram', 'anagram မဟုတ်'),
-  };
+  return verdictAnswer(s.verdict, {
+    yes: t('is an anagram', 'anagram ဖြစ်သည်'),
+    no: t('not an anagram', 'anagram မဟုတ်'),
+    pending: t('true or false', 'true သို့မဟုတ် false'),
+  });
 }
 
 /* ---------------- mount ---------------- */
@@ -630,18 +617,18 @@ mountLesson({
   input: { s: 'anagram', t: 'nagaram' },
   controls: CONTROLS,
   presets: [
-    { label: t('Example 1', 'ဥပမာ ၁'), input: { s: 'anagram', t: 'nagaram' } },
-    { label: t('Example 2', 'ဥပမာ ၂'), input: { s: 'rat', t: 'car' } },
+    { label: exampleTitle(1), input: { s: 'anagram', t: 'nagaram' } },
+    { label: exampleTitle(2), input: { s: 'rat', t: 'car' } },
     { label: t('Same letters, different order', 'စာလုံးတူ၊ အစီအစဉ် မတူ'), input: { s: 'listen', t: 'silent' } },
     { label: t('Full mismatch', 'လုံးဝ မတူ'), input: { s: 'hello', t: 'world' } },
   ],
   examples: [
-    { title: t('Example 1', 'ဥပမာ ၁'),
+    { title: exampleTitle(1),
       inputHtml: '<code>s = "anagram"</code>, <code>t = "nagaram"</code>', output: 'true',
       why: [t('<code>s</code> rearranged is exactly <code>t</code> — each letter appears the same number of times.',
               '<code>s</code> ကို ပြန်စီလိုက်လျှင် <code>t</code> အတိုင်း ဖြစ်သည် — စာလုံးတိုင်း၏ အရေအတွက် တူညီသည်။')],
       load: { s: 'anagram', t: 'nagaram' } },
-    { title: t('Example 2', 'ဥပမာ ၂'),
+    { title: exampleTitle(2),
       inputHtml: '<code>s = "rat"</code>, <code>t = "car"</code>', output: 'false',
       why: [t('<code>r</code> appears in both, but <code>a</code> and <code>t</code> are in <code>s</code> while <code>c</code> is in <code>t</code> — the counts do not match.',
               '<code>r</code> သည် နှစ်ခုလုံးတွင် ပါသော်လည်း <code>a</code> နှင့် <code>t</code> က <code>s</code> ထဲတွင် ရှိပြီး <code>c</code> က <code>t</code> ထဲတွင် ရှိသည် — အရေအတွက်များ မကိုက်ညီပါ။')],
@@ -659,10 +646,7 @@ mountLesson({
               'ဇယားတစ်ခုတည်း — s တွင် တိုး၊ t တွင် နုတ်။ သုညအောက် ရောက်သည်နှင့် false ပြန်လိုက်သည်။'),
       cost: 'O(n) time · O(1) space', build: buildCount },
   ],
-  languages: [
-    { id: 'ruby', name: 'Ruby' }, { id: 'python', name: 'Python' },
-    { id: 'javascript', name: 'JavaScript' }, { id: 'go', name: 'Go' }, { id: 'rust', name: 'Rust' },
-  ],
+  languages: LANGUAGES,
   code: CODE,
   solutions: {
     sort: { desc: t('Sort a copy of each string, then compare. Three lines, hard to get wrong, and the only approach that handles Unicode without an edit.',
@@ -681,6 +665,7 @@ mountLesson({
     rust: 'ran here · 20,009 cases · rustc 1.98',
   },
   strip: stripCard,
+  stripLabel: t('The two strings', 'String နှစ်ခု'),
   draw,
   answer,
   vars,

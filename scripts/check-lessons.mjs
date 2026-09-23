@@ -10,7 +10,7 @@
  *
  * Exits non-zero if anything fails, so it can gate a commit.
  */
-import { readdirSync, existsSync, readFileSync } from 'node:fs';
+import { readdirSync, existsSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 
@@ -129,16 +129,19 @@ for (const slug of slugs) {
     if (!/^(ran here|written here)/.test(s || '')) fail(slug, `${lang} badge "${s}" — say "ran here · …" or "written here · not compiled"`);
   }
 
-  const page = resolve(`src/pages/leetcode/${slug}.astro`);
-  if (existsSync(page)) {
-    const src = readFileSync(page, 'utf8');
-    if (!/\blinks=\{/.test(src)) fail(slug, 'page still uses the pre-x-sum props (no links=) — it renders in legacy fallback');
-    for (const prop of ['lede', 'part1Sub', 'widgetTitle', 'part2Sub', 'part3Sub', 'footer', 'notes'])
-      if (!new RegExp(`\\b${prop}=\\{`).test(src)) fail(slug, `page has no ${prop}= prop`);
+  // The page's prose lives beside the lesson, in page.js; the route renders it.
+  const pagePath = resolve(LESSONS, slug, 'page.js');
+  if (!existsSync(pagePath)) fail(slug, 'no page.js — the prose the route renders');
+  else {
+    const page = (await import(pathToFileURL(pagePath).href)).default ?? {};
+    if (!Array.isArray(page.links) || !page.links.length) fail(slug, 'page.js has no links');
+    for (const prop of ['title', 'summary', 'eyebrow', 'lede', 'constraints', 'part1Sub', 'widgetTitle', 'traps',
+                        'part2Sub', 'notes', 'cost', 'part3Sub', 'footer'])
+      if (page[prop] == null) fail(slug, `page.js has no ${prop}`);
+    if ('statement' in page) fail(slug, 'page.js sets statement — that comes from statement.html');
   }
 
   if (!existsSync(resolve(LESSONS, slug, 'statement.html'))) fail(slug, 'no statement.html');
-  if (!existsSync(resolve(`src/pages/leetcode/${slug}.astro`))) fail(slug, `no page at src/pages/leetcode/${slug}.astro`);
 
   const mine = failures - before;
   console.log(`${mine ? 'FAIL' : '  ok'}  ${slug.padEnd(34)} ${mine ? `${mine} problem(s)` : notes.join(' · ')}`);

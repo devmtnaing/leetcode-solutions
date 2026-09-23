@@ -5,13 +5,11 @@
  * passes and the other writes down nothing at all. Watching the visited set
  * grow next to two pointers that never grow is the whole lesson.
  */
+import { t, plural, exampleTitle, LANGUAGES, k, c, verdictAnswer, stageGap } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, chain, kv, readout, stagePanel } from '../../lib/stage.js';
 
-/* Every reader-facing sentence is a pair; `pick()` chooses the side. */
-const t = (en, my) => ({ en, my });
-const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 
 /* ---------------- the list, as indices ---------------- */
 
@@ -191,7 +189,7 @@ function strip(s, { values }) {
 }
 
 function shape(s, { values, pos }) {
-  if (!values.length) return '<p class="note mono" style="margin:6px 0">head = null</p>';
+  if (!values.length) return '<p class="note mono stage-empty">head = null</p>';
   const tone = {};
   const marks = {};
   if (Array.isArray(s.seen)) {
@@ -213,7 +211,7 @@ function draw(s, input) {
     for (const i of s.seen) table[i] = values[i];
     return stagePanel(pick(t('seen — every node walked past', 'seen — ဖြတ်ခဲ့သမျှ node')),
       pick(t(`${s.seen.length} held`, `${s.seen.length} ခု ကိုင်ထား`)),
-      shape(s, input) + '<div style="height:16px"></div>' + kv(table, {
+      shape(s, input) + stageGap + kv(table, {
         at: s.repeat != null ? String(s.repeat) : null,
         tone: s.repeat != null ? { [s.repeat]: 'up' } : s.added != null ? { [s.added]: 'warn' } : {},
         keyName: 'node (index)', valName: 'value',
@@ -222,17 +220,15 @@ function draw(s, input) {
   const at = (i) => (i == null ? 'null' : `index ${i}`);
   return stagePanel(pick(t('slow and fast — two references, nothing else', 'slow နှင့် fast — reference နှစ်ခု၊ အခြား ဘာမျှ မရှိ')),
     pick(t('O(1) memory', 'O(1) memory')),
-    shape(s, input) + '<div style="height:16px"></div>' + readout({ slow: at(s.slow), fast: at(s.fast), ...(s.gap != null ? { 'gap to close': s.gap } : {}) }));
+    shape(s, input) + stageGap + readout({ slow: at(s.slow), fast: at(s.fast), ...(s.gap != null ? { 'gap to close': s.gap } : {}) }));
 }
 
 function answer(s) {
-  if (s.verdict == null) return { html: '', note: t('true or false', 'true သို့မဟုတ် false') };
-  return {
-    html: s.verdict
-      ? '<strong style="color:var(--up);font-size:18px">true</strong>'
-      : '<strong style="color:var(--down);font-size:18px">false</strong>',
-    note: s.verdict ? t('has a cycle', 'cycle ရှိသည်') : t('no cycle', 'cycle မရှိ'),
-  };
+  return verdictAnswer(s.verdict, {
+    yes: t('has a cycle', 'cycle ရှိသည်'),
+    no: t('no cycle', 'cycle မရှိ'),
+    pending: t('true or false', 'true သို့မဟုတ် false'),
+  });
 }
 
 function vars(s) {
@@ -244,8 +240,6 @@ function vars(s) {
 
 /* ---------------- the code, one key per line ---------------- */
 
-const c = (t) => `<span class="c">${t}</span>`;
-const k = (t) => `<span class="k">${t}</span>`;
 
 const CODE = {
   seen: {
@@ -520,8 +514,6 @@ function mountHiddenPosWidget(host) {
  * Last in the file on purpose: mountLesson runs the widget immediately, so
  * every const the widget reads must already be initialised. */
 
-const ex = (n) => t(`Example ${n}`, `ဥပမာ ${n}`);
-
 mountLesson({
   input: { values: [3, 2, 0, -4], pos: 1 },
   controls: [
@@ -543,22 +535,22 @@ mountLesson({
       } },
   ],
   presets: [
-    { label: ex(1), input: { values: [3, 2, 0, -4], pos: 1 } },
-    { label: ex(2), input: { values: [1, 2], pos: 0 } },
-    { label: ex(3), input: { values: [1], pos: -1 } },
+    { label: exampleTitle(1), input: { values: [3, 2, 0, -4], pos: 1 } },
+    { label: exampleTitle(2), input: { values: [1, 2], pos: 0 } },
+    { label: exampleTitle(3), input: { values: [1], pos: -1 } },
     { label: t('Long tail, small loop', 'tail ရှည်၊ loop သေး'), input: { values: [5, 8, 1, 9, 4, 7, 6], pos: 5 } },
     { label: t('Same values, no loop', 'value တူ၊ loop မရှိ'), input: { values: [1, 1, 1, 1], pos: -1 } },
   ],
   examples: [
-    { title: ex(1), inputHtml: '<code>head = [3,2,0,-4]</code>, <code>pos = 1</code>', output: 'true',
+    { title: exampleTitle(1), inputHtml: '<code>head = [3,2,0,-4]</code>, <code>pos = 1</code>', output: 'true',
       why: [t('There is a cycle in the linked list, where the tail connects to the 1st node (0-indexed).',
               'linked list တွင် cycle ရှိပြီး tail သည် 1 ခုမြောက် node (0 မှ ရေတွက်) သို့ ချိတ်ထားသည်။')],
       load: { values: [3, 2, 0, -4], pos: 1 } },
-    { title: ex(2), inputHtml: '<code>head = [1,2]</code>, <code>pos = 0</code>', output: 'true',
+    { title: exampleTitle(2), inputHtml: '<code>head = [1,2]</code>, <code>pos = 0</code>', output: 'true',
       why: [t('There is a cycle in the linked list, where the tail connects to the 0th node.',
               'linked list တွင် cycle ရှိပြီး tail သည် 0 ခုမြောက် node သို့ ချိတ်ထားသည်။')],
       load: { values: [1, 2], pos: 0 } },
-    { title: ex(3), inputHtml: '<code>head = [1]</code>, <code>pos = -1</code>', output: 'false',
+    { title: exampleTitle(3), inputHtml: '<code>head = [1]</code>, <code>pos = -1</code>', output: 'false',
       why: [t('There is no cycle in the linked list.', 'linked list တွင် cycle မရှိပါ။')],
       load: { values: [1], pos: -1 } },
   ],
@@ -570,10 +562,7 @@ mountLesson({
       desc: t('One step against two. In a loop, fast catches slow.', 'တစ်လှမ်းနှင့် နှစ်လှမ်း။ loop ထဲတွင် fast က slow ကို မီသည်။'),
       cost: 'O(n) time · O(1) space', build: buildFloyd },
   ],
-  languages: [
-    { id: 'ruby', name: 'Ruby' }, { id: 'python', name: 'Python' },
-    { id: 'javascript', name: 'JavaScript' }, { id: 'go', name: 'Go' }, { id: 'rust', name: 'Rust' },
-  ],
+  languages: LANGUAGES,
   code: CODE,
   solutions: {
     seen: { desc: t('Obvious and correct: a set of node references, not values. It holds up to n references, which is what the follow-up asks you to give up.',

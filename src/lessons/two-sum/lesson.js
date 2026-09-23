@@ -5,12 +5,11 @@
  * complete this one?" once per element. Same answer, and the second question
  * can be answered without looking at anything else.
  */
+import { t, exampleTitle, LANGUAGES, k, c } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, kv, readout, slots, stagePanel } from '../../lib/stage.js';
 
-/* Every reader-facing sentence is a pair; `pick()` chooses the side. */
-const t = (en, my) => ({ en, my });
 
 /* ---------------- step generators ---------------- */
 
@@ -141,8 +140,6 @@ function vars(s, input) {
 
 /* ---------------- the code, one key per line ---------------- */
 
-const c = (t) => `<span class="c">${t}</span>`;
-const k = (t) => `<span class="k">${t}</span>`;
 
 const CODE = {
   brute: {
@@ -330,8 +327,8 @@ function mountComplementWidget(host) {
 
     q('[data-arr]').innerHTML = a.map((v, i) => {
       const has = partnerOf(i) >= 0;
-      return `<div class="cell ${has ? 'kept' : 'cut'}" role="button" tabindex="0" aria-pressed="${i === sel}"
-                   data-i="${i}"${i === sel ? ' style="outline:2px solid var(--accent);outline-offset:2px"' : ''}>
+      return `<div class="cell ${has ? 'kept' : 'cut'}${i === sel ? ' picked' : ''}" role="button" tabindex="0" aria-pressed="${i === sel}"
+                   data-i="${i}">
         <span>${v}</span></div>`;
     }).join('');
 
@@ -394,23 +391,23 @@ mountLesson({
     { key: 'target', label: 'target', type: 'number', value: 9, parse: Number },
   ],
   presets: [
-    { label: t('Example 1', 'ဥပမာ ၁'), input: { nums: [2, 7, 11, 15], target: 9 } },
-    { label: t('Example 2', 'ဥပမာ ၂'), input: { nums: [3, 2, 4], target: 6 } },
-    { label: t('Example 3', 'ဥပမာ ၃'), input: { nums: [3, 3], target: 6 } },
+    { label: exampleTitle(1), input: { nums: [2, 7, 11, 15], target: 9 } },
+    { label: exampleTitle(2), input: { nums: [3, 2, 4], target: 6 } },
+    { label: exampleTitle(3), input: { nums: [3, 3], target: 6 } },
     { label: t('Pair at the end', 'နောက်ဆုံးမှ အတွဲ'), input: { nums: [1, 5, 8, 3, 9, 4], target: 13 } },
   ],
   examples: [
-    { title: t('Example 1', 'ဥပမာ ၁'),
+    { title: exampleTitle(1),
       inputHtml: '<code>nums = [2,7,11,15]</code>, <code>target = 9</code>', output: '[0,1]',
       why: [t('<code>nums[0] + nums[1] = 2 + 7 = 9</code> — the first pair tried is already the answer.',
               '<code>nums[0] + nums[1] = 2 + 7 = 9</code> — ပထမဆုံး စမ်းသည့် အတွဲကပင် အဖြေ ဖြစ်နေသည်။')],
       load: { nums: [2, 7, 11, 15], target: 9 } },
-    { title: t('Example 2', 'ဥပမာ ၂'),
+    { title: exampleTitle(2),
       inputHtml: '<code>nums = [3,2,4]</code>, <code>target = 6</code>', output: '[1,2]',
       why: [t('<code>3 + 3</code> would be 6, but there is only one 3 — an element cannot pair with itself. <code>2 + 4</code> is the answer.',
               '<code>3 + 3</code> ဆိုလျှင် 6 ရမည်၊ သို့သော် 3 တစ်လုံးတည်းသာ ရှိသည် — element တစ်ခုသည် သူ့ကိုယ်သူ အတွဲ မဖြစ်နိုင်ပါ။ <code>2 + 4</code> သည် အဖြေ ဖြစ်သည်။')],
       load: { nums: [3, 2, 4], target: 6 } },
-    { title: t('Example 3', 'ဥပမာ ၃'),
+    { title: exampleTitle(3),
       inputHtml: '<code>nums = [3,3]</code>, <code>target = 6</code>', output: '[0,1]',
       why: [t('Two <em>different</em> elements that hold the same value. Allowed — the rule is about positions, not values.',
               'တန်ဖိုးတူသော်လည်း <em>ကွဲပြားသော</em> element နှစ်ခု ဖြစ်သည်။ ခွင့်ပြုသည် — စည်းမျဉ်းမှာ နေရာ (index) အတွက်ဖြစ်ပြီး တန်ဖိုးအတွက် မဟုတ်ပါ။')],
@@ -424,10 +421,7 @@ mountLesson({
       desc: t('One pass. Remember every value you walked past.', 'တစ်ခေါက်တည်း ဖြတ်သည်။ ဖြတ်ခဲ့သမျှ တန်ဖိုးကို မှတ်ထားသည်။'),
       cost: 'O(n) time · O(n) space', build: buildHash },
   ],
-  languages: [
-    { id: 'ruby', name: 'Ruby' }, { id: 'python', name: 'Python' },
-    { id: 'javascript', name: 'JavaScript' }, { id: 'go', name: 'Go' }, { id: 'rust', name: 'Rust' },
-  ],
+  languages: LANGUAGES,
   code: CODE,
   solutions: {
     brute: { desc: t('Two nested loops, <code>j</code> starting after <code>i</code> so no element pairs with itself. Correct, and quadratic.',

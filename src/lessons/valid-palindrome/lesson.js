@@ -5,12 +5,11 @@
  * same question by *skipping* the characters the filter would have removed —
  * same O(n) time, but the only state that survives a step is two integers.
  */
+import { t, plural, exampleTitle, LANGUAGES, k, c, verdictAnswer, stageRow } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, readout, stagePanel } from '../../lib/stage.js';
 
-/* Every reader-facing sentence is a pair; `pick()` chooses the side. */
-const t = (en, my) => ({ en, my });
 
 /* ---------------- shared helpers ---------------- */
 
@@ -24,7 +23,6 @@ const show = (ch) => (ch === ' ' ? '␣' : ch);
 const e = (x) => String(x).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 
 const named = (ch) => (ch === ' ' ? t('a space', 'space တစ်ခု') : t(`<b>'${e(ch)}'</b>`, `<b>'${e(ch)}'</b>`));
-const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 
 /* ---------------- step generators ---------------- */
 
@@ -222,10 +220,6 @@ function buildTwoPointer({ s }) {
  * point at — deliberately small, because that smallness is the lesson.
  */
 
-const row = (html, empty) => (html
-  ? (html.startsWith('<div class="strip') ? html : `<div class="strip" style="flex-wrap:wrap;overflow:visible">${html}</div>`)
-  : `<p class="note mono" style="margin:6px 0">${empty}</p>`);
-
 function strip(st, input) {
   const chars = [...input.s];
   const tone = {};
@@ -260,10 +254,10 @@ function draw(st, input) {
     const held = st.cleaned.length + (st.reversed ? st.reversed.length : 0);
     const empty = pick(t('empty', 'ဗလာ'));
     return stagePanel(pick(t('cleaned', 'cleaned')), pick(t(`${held} chars held`, `စာလုံး ${held} လုံး ထားရှိ`)),
-      row(cells(st.cleaned.map(show), { tone: cleanTone }), empty))
+      stageRow(cells(st.cleaned.map(show), { tone: cleanTone }), empty))
       + (st.reversed
         ? stagePanel(pick(t('reversed — a second copy', 'reversed — ဒုတိယ copy')), '',
-          row(cells(st.reversed.map(show), { tone: revTone }), empty))
+          stageRow(cells(st.reversed.map(show), { tone: revTone }), empty))
         : '');
   }
   const chars = [...input.s];
@@ -279,13 +273,11 @@ function draw(st, input) {
 }
 
 function answer(st) {
-  if (st.verdict == null) return { html: '', note: t('true or false', 'true သို့မဟုတ် false') };
-  return {
-    html: st.verdict
-      ? '<strong style="color:var(--up);font-size:18px">true</strong>'
-      : '<strong style="color:var(--down);font-size:18px">false</strong>',
-    note: st.verdict ? t('a palindrome', 'palindrome ဖြစ်သည်') : t('not a palindrome', 'palindrome မဟုတ်'),
-  };
+  return verdictAnswer(st.verdict, {
+    yes: t('a palindrome', 'palindrome ဖြစ်သည်'),
+    no: t('not a palindrome', 'palindrome မဟုတ်'),
+    pending: t('true or false', 'true သို့မဟုတ် false'),
+  });
 }
 
 function vars(st, input) {
@@ -304,8 +296,6 @@ function vars(st, input) {
 
 /* ---------------- the code, one key per line ---------------- */
 
-const c = (t) => `<span class="c">${t}</span>`;
-const k = (t) => `<span class="k">${t}</span>`;
 
 const CODE = {
   clean: {
@@ -539,7 +529,7 @@ function mountFilterWidget(host) {
 
     q('[data-arr]').innerHTML = s.map((ch, i) => {
       const on = pairs && (i === a || i === b);
-      return `<div class="cell ${isAlnum(ch) ? 'kept' : 'cut'}"${on ? ' style="outline:2px solid var(--amber);outline-offset:2px"' : ''}><span>${e(show(ch))}</span><span class="idx">${i}</span></div>`;
+      return `<div class="cell ${isAlnum(ch) ? 'kept' : 'cut'}${on ? ' picked amber' : ''}"><span>${e(show(ch))}</span><span class="idx">${i}</span></div>`;
     }).join('');
 
     const label = document.getElementById('q-label');
@@ -588,8 +578,6 @@ function mountFilterWidget(host) {
  * Last in the file on purpose: mountLesson runs the widget immediately, so
  * every const the widget reads must already be initialised. */
 
-const ex = (n) => t(`Example ${n}`, `ဥပမာ ${n}`);
-
 mountLesson({
   input: { s: 'A man, a plan, a canal: Panama' },
   controls: [
@@ -601,25 +589,25 @@ mountLesson({
       } },
   ],
   presets: [
-    { label: ex(1), input: { s: 'A man, a plan, a canal: Panama' } },
-    { label: ex(2), input: { s: 'race a car' } },
-    { label: ex(3), input: { s: ' ' } },
+    { label: exampleTitle(1), input: { s: 'A man, a plan, a canal: Panama' } },
+    { label: exampleTitle(2), input: { s: 'race a car' } },
+    { label: exampleTitle(3), input: { s: ' ' } },
     { label: t('Digit vs letter', 'ဂဏန်းနှင့် စာလုံး'), input: { s: '0P' } },
     { label: t('Pointers meet', 'pointer ဆုံ'), input: { s: 'ab_a' } },
   ],
   examples: [
-    { title: ex(1), inputHtml: '<code>s = "A man, a plan, a canal: Panama"</code>', output: 'true',
+    { title: exampleTitle(1), inputHtml: '<code>s = "A man, a plan, a canal: Panama"</code>', output: 'true',
       why: [t('<code>"amanaplanacanalpanama"</code> is a palindrome.',
               '<code>"amanaplanacanalpanama"</code> သည် palindrome ဖြစ်သည်။'),
             t('The spaces, commas and colon are dropped and <code>A</code> / <code>P</code> are lowercased <em>before</em> the comparison — they never get a vote.',
               'space များ၊ comma များနှင့် colon ကို ဖယ်ပြီး <code>A</code> / <code>P</code> ကို နှိုင်းယှဉ်ခြင်း<em>မပြုမီ</em> အသေးပြောင်းသည် — ၎င်းတို့ အဖြေကို မထိခိုက်ပါ။')],
       load: { s: 'A man, a plan, a canal: Panama' } },
-    { title: ex(2), inputHtml: '<code>s = "race a car"</code>', output: 'false',
+    { title: exampleTitle(2), inputHtml: '<code>s = "race a car"</code>', output: 'false',
       why: [t('<code>"raceacar"</code> is not a palindrome.', '<code>"raceacar"</code> သည် palindrome မဟုတ်ပါ။'),
             t('The first pair to disagree is <code>e</code> against <code>a</code>, the fourth pair in from each end — the middle two letters.',
               'ပထမဆုံး မကိုက်သော အတွဲမှာ အစွန်းတစ်ဖက်စီမှ စတုတ္ထ အတွဲ — အလယ်ရှိ စာလုံးနှစ်လုံး — ဖြစ်သော <code>e</code> နှင့် <code>a</code> ဖြစ်သည်။')],
       load: { s: 'race a car' } },
-    { title: ex(3), inputHtml: '<code>s = " "</code>', output: 'true',
+    { title: exampleTitle(3), inputHtml: '<code>s = " "</code>', output: 'true',
       why: [t('<code>s</code> is an empty string <code>""</code> after removing non-alphanumeric characters. Since an empty string reads the same forward and backward, it is a palindrome.',
               'alphanumeric မဟုတ်သော စာလုံးများကို ဖယ်ပြီးနောက် <code>s</code> သည် string ဗလာ <code>""</code> ဖြစ်သွားသည်။ string ဗလာသည် ရှေ့နောက် အတူတူ ဖတ်ရသဖြင့် palindrome ဖြစ်သည်။')],
       load: { s: ' ' } },
@@ -632,10 +620,7 @@ mountLesson({
       desc: t('Walk in from both ends, skipping what does not count.', 'အစွန်းနှစ်ဖက်မှ အတွင်းသို့ လျှောက်ပြီး အရေးမပါသည်ကို ကျော်သည်။'),
       cost: 'O(n) time · O(1) space', build: buildTwoPointer },
   ],
-  languages: [
-    { id: 'ruby', name: 'Ruby' }, { id: 'python', name: 'Python' },
-    { id: 'javascript', name: 'JavaScript' }, { id: 'go', name: 'Go' }, { id: 'rust', name: 'Rust' },
-  ],
+  languages: LANGUAGES,
   code: CODE,
   hover: { python: { reversed_: 'reversed' }, go: { c: 'ch' } },
   solutions: {

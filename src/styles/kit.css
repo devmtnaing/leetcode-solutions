@@ -133,3 +133,33 @@
 .strip-card .strip:has(.ptr),.strip.has-ptr{padding-bottom:24px}
 .cell.done{opacity:.45}
 .strip .strip.has-ptr{display:contents}
+
+/* ---------- shared lesson pieces (the helpers in src/lib/kit.js) ----------
+   Lessons used to carry these as inline style strings; one class each now. */
+
+/* A yes/no answer card: verdictAnswer(). */
+.verdict{font-size:18px}
+.verdict.sm{font-size:15px}
+.verdict.yes{color:var(--up)}
+.verdict.no{color:var(--down)}
+/* A numeric answer card. */
+.answer-num{font-size:16px;font-weight:600}
+.answer-num.muted{color:var(--ink-2)}
+
+/* Inside the stage a row of cells wraps rather than scrolls: stageRow(). */
+.strip.wraps{flex-wrap:wrap;overflow:visible}
+.stage-empty{margin:6px 0}
+.stage-gap{height:16px}
+.faint{opacity:.5}
+
+/* Two or more labelled input rows in the strip card: labelledRows(). */
+.rows{display:flex;flex-direction:column;gap:22px}
+.rows .row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.row-label{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);min-width:42px}
+/* The same, as rows of the part 1 widget. */
+.q-row-label{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);align-self:center;min-width:38px}
+.q-empty{font-family:"IBM Plex Mono",monospace;align-self:center;color:var(--ink-3)}
+
+/* The widget cell the reader has picked. */
+.q-arr .cell.picked{outline:2px solid var(--accent);outline-offset:2px}
+.q-arr .cell.picked.amber{outline-color:var(--amber)}

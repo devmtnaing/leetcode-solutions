@@ -6,13 +6,11 @@
  * pointer hanging off a dummy node. The recursion holds it in the call stack,
  * and does not link anything until the calls start returning.
  */
+import { t, plural, exampleTitle, LANGUAGES, k, labelledRows } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, chain, stack, panels, slots, stagePanel } from '../../lib/stage.js';
 
-/* Every reader-facing sentence is a pair; `pick()` chooses the side. */
-const t = (en, my) => ({ en, my });
-const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 
 /* The problem guarantees sorted inputs, and an unsorted one would produce a
  * merge that is quietly wrong rather than obviously wrong. Refuse it instead. */
@@ -205,15 +203,12 @@ function row(name, xs, used, s, which) {
     if (tone[used] == null) tone[used] = s.cmp ? 'inwin' : undefined;
     marks[used] = name;
   }
-  const body = xs.length ? cells(xs, { tone, marks }) : '<span class="note mono">[]</span>';
-  return `<div style="display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap">
-    <span class="mono" style="font-size:12px;color:var(--ink-3);min-width:42px;padding-top:12px">${name}</span>${body}</div>`;
+  return [name, xs.length ? cells(xs, { tone, marks }) : '<span class="note mono">[]</span>'];
 }
 
 function strip(s, { list1, list2 }) {
   // A node that was just taken is one step behind the front counter.
-  return `<div style="display:flex;flex-direction:column;gap:22px">
-    ${row('list1', list1, s.ai, s, 1)}${row('list2', list2, s.bi, s, 2)}</div>`;
+  return labelledRows([row('list1', list1, s.ai, s, 1), row('list2', list2, s.bi, s, 2)]);
 }
 
 function draw(s) {
@@ -231,7 +226,7 @@ function draw(s) {
   const hot = s.hot != null ? s.hot : s.at;
   const merged = nodes.length
     ? chain(nodes, { at: hot != null ? hot + off : null, marks, tone })
-    : `<p class="note mono" style="margin:6px 0">null</p>`;
+    : '<p class="note mono stage-empty">null</p>';
 
   if (s.dummy) {
     return stagePanel(pick(t('merged — the dummy in front', 'merged — ရှေ့တွင် dummy')),
@@ -273,7 +268,6 @@ function vars(s, input) {
 
 /* ---------------- the code, one key per line ---------------- */
 
-const k = (t) => `<span class="k">${t}</span>`;
 
 const CODE = {
   iterative: {
@@ -519,11 +513,11 @@ function mountFrontsWidget(host) {
 
     // cut = already spliced into the answer · kept = a front, one of the only
     // two candidates · plain = behind a front, never looked at yet
-    const rowHtml = (name, xs, used) => `<span class="mono" style="font-size:11px;color:var(--ink-3);align-self:center;min-width:38px">${name}</span>`
+    const rowHtml = (name, xs, used) => `<span class="q-row-label">${name}</span>`
       + (xs.length ? xs.map((v, n) => {
         const cls = n < used ? 'cut' : n === used ? 'kept' : '';
         return `<div class="cell ${cls}"><span>${v}</span><span class="idx">${n === used ? 'front' : n}</span></div>`;
-      }).join('') : '<span class="mono" style="align-self:center;color:var(--ink-3)">[]</span>');
+      }).join('') : '<span class="q-empty">[]</span>');
     q('[data-a]').innerHTML = rowHtml('list1', a, i);
     q('[data-b]').innerHTML = rowHtml('list2', b, j);
 
@@ -584,8 +578,6 @@ const parseList = (name) => (v) => {
   return xs;
 };
 
-const ex = (n) => t(`Example ${n}`, `ဥပမာ ${n}`);
-
 mountLesson({
   input: { list1: [1, 2, 4], list2: [1, 3, 4] },
   controls: [
@@ -593,21 +585,21 @@ mountLesson({
     { key: 'list2', label: 'list2', value: '1, 3, 4', parse: parseList('list2') },
   ],
   presets: [
-    { label: ex(1), input: { list1: [1, 2, 4], list2: [1, 3, 4] } },
-    { label: ex(2), input: { list1: [], list2: [] } },
-    { label: ex(3), input: { list1: [], list2: [0] } },
+    { label: exampleTitle(1), input: { list1: [1, 2, 4], list2: [1, 3, 4] } },
+    { label: exampleTitle(2), input: { list1: [], list2: [] } },
+    { label: exampleTitle(3), input: { list1: [], list2: [0] } },
     { label: t('One runs out', 'တစ်ခု အရင်ကုန်'), input: { list1: [1, 2, 3], list2: [7, 8, 9] } },
   ],
   examples: [
-    { title: ex(1), inputHtml: '<code>list1 = [1,2,4]</code>, <code>list2 = [1,3,4]</code>', output: '[1,1,2,3,4,4]',
+    { title: exampleTitle(1), inputHtml: '<code>list1 = [1,2,4]</code>, <code>list2 = [1,3,4]</code>', output: '[1,1,2,3,4,4]',
       why: [t('Each step takes the smaller of the two fronts. On the ties (<code>1</code> and <code>4</code>) list1 goes first, which keeps the merge stable.',
               'အဆင့်တိုင်းတွင် ရှေ့ဆုံး နှစ်ခုအနက် ငယ်သည့်တစ်ခုကို ယူသည်။ တူနေသည့်အခါ (<code>1</code> နှင့် <code>4</code>) list1 ကို အရင်ယူခြင်းက merge ကို stable ဖြစ်စေသည်။')],
       load: { list1: [1, 2, 4], list2: [1, 3, 4] } },
-    { title: ex(2), inputHtml: '<code>list1 = []</code>, <code>list2 = []</code>', output: '[]',
+    { title: exampleTitle(2), inputHtml: '<code>list1 = []</code>, <code>list2 = []</code>', output: '[]',
       why: [t('Nothing to merge. The answer is <code>null</code> — which is what <code>dummy.next</code> already holds.',
               'ပေါင်းစရာ မရှိပါ။ အဖြေမှာ <code>null</code> — <code>dummy.next</code> ထဲ ရှိပြီးသားအရာပင်။')],
       load: { list1: [], list2: [] } },
-    { title: ex(3), inputHtml: '<code>list1 = []</code>, <code>list2 = [0]</code>', output: '[0]',
+    { title: exampleTitle(3), inputHtml: '<code>list1 = []</code>, <code>list2 = [0]</code>', output: '[0]',
       why: [t('One list is empty from the start, so the loop never compares anything — the other list is the answer as it stands.',
               'list တစ်ခုသည် အစကတည်းက ဗလာ ဖြစ်သဖြင့် loop သည် ဘာကိုမျှ မနှိုင်းယှဉ်ပါ — ကျန် list သည် ရှိသည့်အတိုင်း အဖြေ ဖြစ်သည်။')],
       load: { list1: [], list2: [0] } },
@@ -620,10 +612,7 @@ mountLesson({
       desc: t('Pick the smaller head, recurse for the rest.', 'ငယ်သည့် head ကို ရွေးပြီး ကျန်တာကို recurse လုပ်သည်။'),
       cost: 'O(n+m) time · O(n+m) stack', build: buildRecursive },
   ],
-  languages: [
-    { id: 'ruby', name: 'Ruby' }, { id: 'python', name: 'Python' },
-    { id: 'javascript', name: 'JavaScript' }, { id: 'go', name: 'Go' }, { id: 'rust', name: 'Rust' },
-  ],
+  languages: LANGUAGES,
   code: CODE,
   solutions: {
     iterative: { desc: t('The submission worth writing. The dummy removes the first-node special case, and no node is ever created — every node in the answer was already in an input.',

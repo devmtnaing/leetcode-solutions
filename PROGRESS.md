@@ -68,25 +68,9 @@ iterative), which is the real teaching contrast there.
 ## The kit
 
 Lessons after x-sum are built on a shared framework, so a new one is a step
-generator and a draw function rather than another 4,000-line page.
-
-| File | What it holds |
-| --- | --- |
-| `src/lib/stepper.js` | transport, scrubber, keyboard, approach + language tabs, code panel, narration, variable row |
-| `src/lib/stage.js` | `strip` `kv` `stack` `chain` `tree` `bars` `readout` `panels` |
-| `src/styles/kit.css` | all of the above, in tokens |
-| `caveats` in the config | a per-language note beside the code, for when one language cannot express the approach the narration describes |
-| `src/layouts/Walkthrough.astro` | question / walkthrough / takeaway |
-
-A lesson is three files and touches nothing shared:
-
-```
-src/lessons/<slug>/statement.html    the problem, quoted from LeetCode
-src/lessons/<slug>/lesson.js         approaches, step generators, draw, CODE, mountLesson
-src/pages/leetcode/<slug>.astro      wires them together, carries the takeaway
-```
-
-`src/lessons/two-sum/` is the worked example to copy from.
+generator and a draw function rather than another 4,000-line page. The layout,
+the shared files and how to add a lesson are in the README, under "Adding an
+interactive lesson". `src/lessons/two-sum/` is the worked example to copy from.
 
 ## Verification
 

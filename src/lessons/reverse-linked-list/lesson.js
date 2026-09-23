@@ -12,15 +12,13 @@
  * suffix, and the suffix is reachable only through the variable saved one line
  * earlier. Drawing it as one tidy list would hide the entire problem.
  */
+import { t, plural, exampleTitle, LANGUAGES, k, c } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, chain, stack, panels, slots, stagePanel } from '../../lib/stage.js';
 
-/* Every reader-facing sentence is a pair; `pick()` chooses the side. */
-const t = (en, my) => ({ en, my });
 
 const show = (v) => (v == null ? 'null' : String(v));
-const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 
 /* ---------------- step generators ---------------- */
 
@@ -369,8 +367,6 @@ function vars(s) {
 
 /* ---------------- the code, one key per line ---------------- */
 
-const c = (t) => `<span class="c">${t}</span>`;
-const k = (t) => `<span class="k">${t}</span>`;
 
 const CODE = {
   iterative: {
@@ -620,8 +616,6 @@ function mountRewireWidget(host) {
  * Last in the file on purpose: mountLesson runs the widget immediately, so
  * every const the widget reads must already be initialised. */
 
-const ex = (n) => t(`Example ${n}`, `ဥပမာ ${n}`);
-
 mountLesson({
   input: { nums: [1, 2, 3, 4, 5] },
   controls: [
@@ -638,21 +632,21 @@ mountLesson({
       } },
   ],
   presets: [
-    { label: ex(1), input: { nums: [1, 2, 3, 4, 5] } },
-    { label: ex(2), input: { nums: [1, 2] } },
-    { label: ex(3), input: { nums: [] } },
+    { label: exampleTitle(1), input: { nums: [1, 2, 3, 4, 5] } },
+    { label: exampleTitle(2), input: { nums: [1, 2] } },
+    { label: exampleTitle(3), input: { nums: [] } },
     { label: t('One node', 'node တစ်ခု'), input: { nums: [7] } },
   ],
   examples: [
-    { title: ex(1), inputHtml: '<code>head = [1,2,3,4,5]</code>', output: '[5,4,3,2,1]',
+    { title: exampleTitle(1), inputHtml: '<code>head = [1,2,3,4,5]</code>', output: '[5,4,3,2,1]',
       why: [t('Every one of the four links flips direction, and node 1 — the old head — ends up pointing at <code>null</code>.',
               'link လေးခုလုံး ဦးတည်ရာ ပြောင်းပြီး မူလ head ဖြစ်သော node 1 သည် နောက်ဆုံးတွင် <code>null</code> ကို ညွှန်သွားသည်။')],
       load: { nums: [1, 2, 3, 4, 5] } },
-    { title: ex(2), inputHtml: '<code>head = [1,2]</code>', output: '[2,1]',
+    { title: exampleTitle(2), inputHtml: '<code>head = [1,2]</code>', output: '[2,1]',
       why: [t('One link to flip. The recursive version shows its brief two-node loop most clearly here.',
               'ပြောင်းရန် link တစ်ခု။ recursive ပုံစံ၏ ခဏတာ node နှစ်ခု loop ကို ဤနေရာတွင် အရှင်းဆုံး မြင်ရသည်။')],
       load: { nums: [1, 2] } },
-    { title: ex(3), inputHtml: '<code>head = []</code>', output: '[]',
+    { title: exampleTitle(3), inputHtml: '<code>head = []</code>', output: '[]',
       why: [t('No nodes. Both versions must return <code>null</code> without dereferencing it — the loop never runs, the recursion hits its guard.',
               'node မရှိပါ။ နှစ်မျိုးစလုံး null ကို မဖတ်ဘဲ <code>null</code> ပြန်ပေးရမည် — loop မပတ်ပါ၊ recursion က guard တွင် ရပ်သည်။')],
       load: { nums: [] } },
@@ -665,10 +659,7 @@ mountLesson({
       desc: t('Descend to the tail, rewire on the way back up.', 'tail အထိ ဆင်းပြီး ပြန်တက်လာရင်း ပြန်ချိတ်သည်။'),
       cost: 'O(n) time · O(n) stack', build: buildRecursive },
   ],
-  languages: [
-    { id: 'ruby', name: 'Ruby' }, { id: 'python', name: 'Python' },
-    { id: 'javascript', name: 'JavaScript' }, { id: 'go', name: 'Go' }, { id: 'rust', name: 'Rust' },
-  ],
+  languages: LANGUAGES,
   code: CODE,
   hover: {
     ruby: { nxt: 'next' }, python: { nxt: 'next' },

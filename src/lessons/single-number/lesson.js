@@ -8,12 +8,11 @@
  * 1-bits flip those columns of the accumulator, and the second copy of that
  * value flips them straight back.
  */
+import { t, exampleTitle, LANGUAGES, k, c } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, kv, strip as bitRow, slots, stagePanel } from '../../lib/stage.js';
 
-/* Every reader-facing sentence is a pair; `pick()` chooses the side. */
-const t = (en, my) => ({ en, my });
 
 /* Eight columns is enough to see a pattern and small enough to read, so the
  * input control holds values to 0..255. The solutions below are not limited
@@ -232,8 +231,6 @@ function vars(s, input) {
 
 /* ---------------- the code, one key per line ---------------- */
 
-const c = (t) => `<span class="c">${t}</span>`;
-const k = (t) => `<span class="k">${t}</span>`;
 
 const CODE = {
   count: {
@@ -462,8 +459,6 @@ function mountFoldWidget(host) {
  * Last in the file on purpose: mountLesson runs the widget immediately, so
  * every const the widget reads must already be initialised. */
 
-const ex = (n) => t(`Example ${n}`, `ဥပမာ ${n}`);
-
 mountLesson({
   input: { nums: [4, 1, 2, 1, 2] },
   controls: [
@@ -480,21 +475,21 @@ mountLesson({
       } },
   ],
   presets: [
-    { label: ex(1), input: { nums: [2, 2, 1] } },
-    { label: ex(2), input: { nums: [4, 1, 2, 1, 2] } },
-    { label: ex(3), input: { nums: [1] } },
+    { label: exampleTitle(1), input: { nums: [2, 2, 1] } },
+    { label: exampleTitle(2), input: { nums: [4, 1, 2, 1, 2] } },
+    { label: exampleTitle(3), input: { nums: [1] } },
     { label: t('Loner last', 'နောက်ဆုံးမှ တစ်ခုတည်း'), input: { nums: [7, 12, 7, 200, 12, 200, 9] } },
   ],
   examples: [
-    { title: ex(1), inputHtml: '<code>nums = [2,2,1]</code>', output: '1',
+    { title: exampleTitle(1), inputHtml: '<code>nums = [2,2,1]</code>', output: '1',
       why: [t('<code>2</code> appears twice, <code>1</code> once. As XOR: <code>2 ^ 2 ^ 1 = 0 ^ 1 = 1</code>.',
               '<code>2</code> နှစ်ကြိမ်၊ <code>1</code> တစ်ကြိမ် ပါသည်။ XOR ဖြင့် — <code>2 ^ 2 ^ 1 = 0 ^ 1 = 1</code>။')],
       load: { nums: [2, 2, 1] } },
-    { title: ex(2), inputHtml: '<code>nums = [4,1,2,1,2]</code>', output: '4',
+    { title: exampleTitle(2), inputHtml: '<code>nums = [4,1,2,1,2]</code>', output: '4',
       why: [t('The pairs are not next to each other, and it does not matter: XOR is order-free, so <code>4 ^ 1 ^ 2 ^ 1 ^ 2 = 4 ^ (1 ^ 1) ^ (2 ^ 2) = 4</code>.',
               'အတွဲများ ဘေးချင်းကပ် မဟုတ်ပါ၊ သို့သော် အရေးမကြီးပါ — XOR သည် အစီအစဉ်ပေါ် မမူတည်သဖြင့် <code>4 ^ 1 ^ 2 ^ 1 ^ 2 = 4 ^ (1 ^ 1) ^ (2 ^ 2) = 4</code>။')],
       load: { nums: [4, 1, 2, 1, 2] } },
-    { title: ex(3), inputHtml: '<code>nums = [1]</code>', output: '1',
+    { title: exampleTitle(3), inputHtml: '<code>nums = [1]</code>', output: '1',
       why: [t('No pairs at all. The only value is the single one — and <code>0 ^ 1 = 1</code>, so a fold starting at 0 returns it unchanged.',
               'အတွဲ လုံးဝ မရှိပါ။ တစ်ခုတည်းသော value ပင် အဖြေ ဖြစ်သည် — <code>0 ^ 1 = 1</code> ဖြစ်သဖြင့် 0 မှ စသော fold က ၎င်းကို မပြောင်းဘဲ ပြန်ပေးသည်။')],
       load: { nums: [1] } },
@@ -507,10 +502,7 @@ mountLesson({
       desc: t('Pairs cancel; the single one is what is left.', 'အတွဲများ ချေဖျက်သွားပြီး တစ်ခုတည်းသော value ကျန်ရစ်သည်။'),
       cost: 'O(n) time · O(1) space', build: buildXor },
   ],
-  languages: [
-    { id: 'ruby', name: 'Ruby' }, { id: 'python', name: 'Python' },
-    { id: 'javascript', name: 'JavaScript' }, { id: 'go', name: 'Go' }, { id: 'rust', name: 'Rust' },
-  ],
+  languages: LANGUAGES,
   code: CODE,
   solutions: {
     count: { desc: t('What to write first: obvious, hard to get wrong, and it survives a change to the premise. It fails only the constant-space clause — the table grows to about <code>n/2</code> rows.',
