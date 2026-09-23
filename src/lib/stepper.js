@@ -22,7 +22,7 @@
  *     vars(step, input),     [[name, value], ...] — also drives hover-to-inspect
  *     hover?,                { [lang]: { identifier: varName } } extra aliases
  *     solutions?,            { [mode]: { desc, tag? } } part 3 captions
- *     verification,          { [lang]: how it was checked } → part 3 badges
+ *     verification,          { [lang]: how it was checked, or { [mode]: … } } → part 3 badges
  *     caveats?,              { [mode]: { [lang]: note } } → under the code
  *     widget?(host),         part 1's interactive, mounted into #q-widget
  *   })
@@ -473,10 +473,13 @@ function renderSolutions(cfg, activeLang) {
   if (!host) return;
   const langs = cfg.languages;
 
-  const badge = (lang) => {
-    const how = pick((cfg.verification || {})[lang]);
+  // verification[lang] is one badge for every approach, or { [mode]: badge }
+  // when one approach in that language behaves differently from the other.
+  const badge = (lang, mode) => {
+    const v = (cfg.verification || {})[lang];
+    const how = pick(v && typeof v === 'object' && mode in v ? v[mode] : v);
     if (!how) return '';
-    const unrun = /not compiled|not run|unverified/i.test(how);
+    const unrun = /not compiled|not run|unverified|overflows/i.test(how);
     return `<span class="verify ${unrun ? 'warn' : 'ok'}">${esc(how)}</span>`;
   };
 
@@ -493,7 +496,7 @@ function renderSolutions(cfg, activeLang) {
           <div class="src">
             <div class="src-head">
               <h2>${esc(pick(m.name))}${m.sub ? ` <span class="sub-name">&middot; ${esc(pick(m.sub))}</span>` : ''}${meta.tag ? `<span class="tagpill">${esc(meta.tag)}</span>` : ''}</h2>
-              ${badge(l.id)}
+              ${badge(l.id, m.id)}
               <button class="btn copy" data-copy>${esc(pick(UI.copy))}</button>
               ${meta.desc ? `<p class="sub">${pick(meta.desc)}</p>` : `<p class="sub mono">${esc(pick(m.cost))}</p>`}
             </div>

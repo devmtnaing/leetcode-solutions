@@ -125,8 +125,12 @@ for (const slug of slugs) {
   if (cfg.strip == null && !cfg.noStrip) fail(slug, 'no strip card — set cfg.strip, or cfg.noStrip: true when the input is not a row');
   if (!cfg.answer) fail(slug, 'no answer card (cfg.answer)');
   for (const [lang, how] of Object.entries(cfg.verification || {})) {
-    const s = typeof how === 'string' ? how : how?.en;
-    if (!/^(ran here|written here)/.test(s || '')) fail(slug, `${lang} badge "${s}" — say "ran here · …" or "written here · not compiled"`);
+    // one badge for the language, or one per approach
+    const perMode = how && typeof how === 'object' && cfg.modes.some((m) => m.id in how);
+    for (const [where, text] of perMode ? Object.entries(how).map(([m, v]) => [`${lang}/${m}`, v]) : [[lang, how]]) {
+      const s = typeof text === 'string' ? text : text?.en;
+      if (!/^(ran here|written here)/.test(s || '')) fail(slug, `${where} badge "${s}" — say "ran here · …" or "written here · not compiled"`);
+    }
   }
 
   // The page's prose lives beside the lesson, in page.js; the route renders it.

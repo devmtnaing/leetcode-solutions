@@ -21,7 +21,7 @@ passes all ten.
 | Phase | What | Status |
 | --- | --- | --- |
 | 1 | Shared lesson kit + Two Sum as the proof | **done** |
-| 2 | Remaining 14 lessons, 3 at a time | in progress — 11 of 15 done |
+| 2 | Remaining 14 lessons, 3 at a time | in progress — 12 of 15 done |
 | 2b | Retrofit the 10 built lessons to full spec | in progress — 3 of 10 |
 | 3 | Cross-check pass: every page at 3 widths, both themes, both languages | not started |
 
@@ -41,7 +41,7 @@ ships, per `~/.claude/skills/leetcode-solution-page`.
 | 5 | 141 | Linked List Cycle | seen-set O(n) space | Floyd's two pointers O(1) | chain + 2 pointers | **done** |
 | 6 | 206 | Reverse Linked List | build new list | three-pointer in place / recursive | chain rewiring | **done** |
 | 7 | 226 | Invert Binary Tree | — | recursive DFS / iterative BFS | tree + call stack / queue | **done** |
-| 8 | 104 | Maximum Depth of Binary Tree | — | recursive DFS / BFS levels | tree + counter | not started |
+| 8 | 104 | Maximum Depth of Binary Tree | — | recursive DFS / BFS levels | tree + call stack / level | **done** |
 | 9 | 136 | Single Number | count map | XOR fold | strip + bit view | **done** |
 | 10 | 242 | Valid Anagram | sort both O(n log n) | count array O(n) | two strips + counts | **done** |
 | 11 | 70 | Climbing Stairs | naive recursion O(2ⁿ) | memo → iterative O(1) space | recursion tree → DP row | not started |

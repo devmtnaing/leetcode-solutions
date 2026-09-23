@@ -66,7 +66,12 @@ The shared pieces:
 | `src/lib/stepper.js` | `mountLesson` — transport, narration, code panel, example cards, part 3 |
 | `src/lib/stage.js` | stage shapes: `cells` `slots` `kv` `stack` `chain` `tree` `bars` `readout` `panels` |
 | `src/lib/kit.js` | helpers every lesson uses: `t` `plural` `exampleTitle` `LANGUAGES` `k` `c` `verdictAnswer` `stageRow` `stageGap` `labelledRows` |
+| `src/lib/tree.js` | LeetCode binary trees: parse level order, build, serialize, draw with `stage.tree()` |
 | `src/lib/i18n.js` | English / မြန်မာ switching |
+
+A part 3 badge is one string per language, or `{ [mode]: badge }` when one
+approach behaves differently in that language — recursive Ruby overflowing
+where its BFS does not, say.
 
 `node scripts/check-lessons.mjs` checks every lesson's structure.
 

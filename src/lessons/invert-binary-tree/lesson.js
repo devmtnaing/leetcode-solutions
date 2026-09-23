@@ -10,79 +10,12 @@ import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, tree, treeNodes, stack, panels, slots, stagePanel } from '../../lib/stage.js';
 import { t, plural, exampleTitle, LANGUAGES, k, c, stageRow, stageGap } from '../../lib/kit.js';
+import { buildTree, levelOrder, asNested, preorderKeys, treeDepth, copyKids as copy, nameOf, treeInput, formatLevelOrder } from '../../lib/tree.js';
 
-/* ---------------- the tree, as data ----------------
- *
- * A tree is { root, val, kids }: every node has a key (its position among the
- * non-null values of the input), `val` maps key → value, and `kids` maps
- * key → [left, right] keys. Snapshots copy `kids`, never share it, or every
- * frame would draw the finished tree. */
+/* The tree helpers — parsing LeetCode's level order, drawing, serializing —
+ * live in lib/tree.js, shared with every tree lesson. */
 
 const MAX_NODES = 15;
-
-function parseLevelOrder(text) {
-  const s = text.trim().replace(/^\[|\]$/g, '').trim();
-  if (!s) return [];
-  return s.split(',').map((x) => {
-    const v = x.trim();
-    if (v === 'null') return null;
-    const n = Number(v);
-    if (v === '' || !Number.isInteger(n)) throw new Error('integers or null, separated by commas');
-    return n;
-  });
-}
-
-/* LeetCode's level order: a node's children follow it, left then right; a
- * null has no children of its own. */
-function buildTree(level) {
-  const val = {};
-  const kids = {};
-  if (!level.length || level[0] == null) return { root: null, val, kids };
-  let key = 0;
-  const make = (v) => { const id = key++; val[id] = v; kids[id] = [null, null]; return id; };
-  const root = make(level[0]);
-  const q = [root];
-  let i = 1;
-  while (q.length && i < level.length) {
-    const p = q.shift();
-    for (const side of [0, 1]) {
-      if (i >= level.length) break;
-      const v = level[i++];
-      if (v != null) { const ch = make(v); kids[p][side] = ch; q.push(ch); }
-    }
-  }
-  return { root, val, kids };
-}
-
-/* The current tree back in LeetCode's format, trailing nulls trimmed — what
- * the judge prints for the answer. Each slot keeps its key for highlighting. */
-function levelOrder({ root, val }, kids) {
-  const out = [];
-  const q = [root];
-  while (q.length) {
-    const key = q.shift();
-    if (key == null) { out.push({ key: null, v: null }); continue; }
-    out.push({ key, v: val[key] });
-    q.push(kids[key][0], kids[key][1]);
-  }
-  while (out.length && out[out.length - 1].key == null) out.pop();
-  return out;
-}
-
-const asNested = (key, val, kids) => (key == null ? null
-  : { key, value: val[key], left: asNested(kids[key][0], val, kids), right: asNested(kids[key][1], val, kids) });
-
-/* stage.tree() numbers nodes in pre-order; map our keys onto those ids. */
-function preorderKeys(key, kids, out = []) {
-  if (key == null) return out;
-  out.push(key);
-  preorderKeys(kids[key][0], kids, out);
-  preorderKeys(kids[key][1], kids, out);
-  return out;
-}
-
-const copy = (kids) => Object.fromEntries(Object.entries(kids).map(([k2, v]) => [k2, [...v]]));
-const nameOf = (key, val) => (key == null ? 'null' : String(val[key]));
 
 /* ---------------- step generators ---------------- */
 
@@ -445,10 +378,6 @@ const QW_SETS = [
   { label: t('deeper', 'ပိုနက်'), level: [8, 4, 12, 2, 6, 10, 14, 1, 3, 5, 7] },
 ];
 
-function depthOf(key, kids) {
-  return key == null ? 0 : 1 + Math.max(depthOf(kids[key][0], kids), depthOf(kids[key][1], kids));
-}
-
 function mountMirrorWidget(host) {
   const state = { set: 0, k: 0 };
 
@@ -471,7 +400,7 @@ function mountMirrorWidget(host) {
 
   function render() {
     const T = buildTree(QW_SETS[state.set].level);
-    const levels = depthOf(T.root, T.kids);
+    const levels = treeDepth(T.root, T.kids);
     const k = Math.min(state.k, levels);
 
     // swap the children of every node shallower than k
@@ -551,19 +480,10 @@ function mountMirrorWidget(host) {
  * Last in the file on purpose: mountLesson runs the widget immediately, so
  * every const the widget reads must already be initialised. */
 
-const parseRoot = (text) => {
-  const level = parseLevelOrder(text);
-  const n = level.filter((v) => v != null).length;
-  if (n > MAX_NODES) throw new Error(`at most ${MAX_NODES} nodes, so the tree fits the stage`);
-  if (level.length && level[0] == null && n) throw new Error('a tree cannot start with null');
-  return level;
-};
-const show = (level) => level.map((v) => (v == null ? 'null' : v)).join(', ');
-
 mountLesson({
   input: { level: [4, 2, 7, 1, 3, 6, 9] },
   controls: [
-    { key: 'level', label: 'root', value: '4, 2, 7, 1, 3, 6, 9', parse: parseRoot, format: show },
+    { key: 'level', label: 'root', value: '4, 2, 7, 1, 3, 6, 9', parse: treeInput(MAX_NODES), format: formatLevelOrder },
   ],
   presets: [
     { label: exampleTitle(1), input: { level: [4, 2, 7, 1, 3, 6, 9] } },
