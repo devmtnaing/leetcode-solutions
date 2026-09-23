@@ -1,42 +1,43 @@
 ---
 import Walkthrough from '../../layouts/Walkthrough.astro';
 import statement from '../../lessons/valid-parentheses/statement.html?raw';
-
-const takeaway = `
-<p>Stripping works, and it is worth seeing work. <code>()</code>, <code>[]</code> and
-<code>{}</code> are closed pairs wherever they appear, cutting one out cannot change
-the answer, and whatever was outside it becomes adjacent in turn. Delete until nothing
-changes; the string is valid exactly when nothing is left.</p>
-
-<p>What it costs is the restart. Every deletion makes two characters adjacent that were
-not adjacent before, including characters to the left of the cut, so the scan has to
-begin again at position 0. That is a pass per deletion — <code>O(n²)</code>.</p>
-
-<p>The stack removes the rescan by keeping the one fact the scan was rediscovering:
-<strong>which opener is still waiting</strong>. When a closer arrives, the only opener it
-is allowed to close is the most recent one nobody has closed yet, and the top of a stack
-is that element by construction. So each character is read once, the check is a single
-comparison, and the whole thing is <code>O(n)</code>.</p>
-
-<p>That is the shape to recognise, not the bracket table. Whenever the thing you have to
-match is <em>the most recent unmatched thing</em>, a stack is the structure that has it in
-hand: <strong>Min Stack</strong> keeps the smallest value of the most recent unpopped
-prefix, <strong>Daily Temperatures</strong> resolves each day against the most recent
-warmer-than-nothing day still waiting, and evaluating an expression closes each operator
-against the most recent operands pushed. Same question, same answer.</p>
-
-<p>Two edges the examples hide. A closer arriving at an empty stack is a failure, not a
-no-op — pop before comparing and an empty pop has to count as a mismatch. And a stack that
-still holds openers at the end is also a failure: the string ran out before they did.</p>`;
 ---
 <Walkthrough
   title="Valid Parentheses"
   summary="Delete closed pairs until the string stops changing, or keep the unclosed openers on a stack. The stack already knows what the rescan was looking for."
-  leetcodeId={20}
-  leetcodeSlug="valid-parentheses"
-  difficulty="Easy"
+  eyebrow="LeetCode 20 &nbsp;·&nbsp; Easy"
+  lede={{ en: "Decide whether every bracket is closed by the right partner in the right order. One solution keeps cutting out closed pairs; the other keeps the openers still waiting on a stack, and the top of it is the only one a closer may close.", my: "ကွင်းတိုင်းကို မှန်ကန်သော အဖော်ဖြင့် မှန်ကန်သော အစီအစဉ်အတိုင်း ပိတ်ထားသလား ဆုံးဖြတ်ပါ။ ဖြေရှင်းနည်းတစ်ခုက ပိတ်ပြီးသား အတွဲများကို ဆက်တိုက် ဖြတ်ထုတ်သည်။ နောက်တစ်ခုကမူ စောင့်နေဆဲ ဖွင့်ကွင်းများကို stack ပေါ်တွင် ထားပြီး ပိတ်ကွင်းတစ်ခု ပိတ်ခွင့်ရှိသည်မှာ ၎င်း၏ top တစ်ခုတည်းသာ ဖြစ်သည်။" }}
+  links={[{ id: 20, title: 'Valid Parentheses', slug: 'valid-parentheses', difficulty: 'Easy' }]}
   statement={statement}
-  takeaway={takeaway}
+  constraints={{ en: "<span><b>n</b> 1 &le; s.length &le; 10&#8308;</span><span><code>s</code> consists of parentheses only <code>'()[]{}'</code></span>", my: "<span><b>n</b> 1 &le; s.length &le; 10&#8308;</span><span><code>s</code> တွင် <code>'()[]{}'</code> ကွင်းများသာ ပါဝင်သည်</span>" }}
+  part1Sub={{ en: "Read the statement, then drag through a string and watch which openers are still waiting.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် string တစ်ခုကို ဆွဲဖတ်ကြည့်ပြီး ဘယ်ဖွင့်ကွင်းများ စောင့်နေဆဲလဲ ကြည့်ပါ။" }}
+  widgetTitle={{ en: "Drag through s, watch what is still open", my: "s ကို ဆွဲဖတ်ပါ — ဘာတွေ ဖွင့်ထားဆဲလဲ" }}
+  traps={{
+    summary: { en: "Four ways the statement bites &mdash; worth reading before you code", my: "မေးခွန်းစာသားထဲက ချော်လွယ်သည့်နေရာ လေးခု — code မရေးမီ ဖတ်ထားသင့်သည်" },
+    items: [
+      { en: "<strong>Counting is not enough.</strong> <code>([)]</code> has one of each bracket, every closer has an opener of its type, and it is still invalid. Rule 2 — <em>in the correct order</em> — is about which opener a closer meets, not how many there are.", my: "<strong>ရေတွက်ရုံဖြင့် မလုံလောက်ပါ။</strong> <code>([)]</code> တွင် ကွင်းတစ်မျိုးစီ တစ်ခုစီ ရှိပြီး ပိတ်ကွင်းတိုင်းတွင် အမျိုးအစားတူ ဖွင့်ကွင်း ရှိသော်လည်း invalid ဖြစ်နေဆဲ။ စည်းမျဉ်း ၂ — <em>မှန်ကန်သော အစီအစဉ်အတိုင်း</em> — သည် အရေအတွက်အကြောင်း မဟုတ်ဘဲ ပိတ်ကွင်းတစ်ခု မည်သည့် ဖွင့်ကွင်းနှင့် တွေ့သလဲ ဆိုသည့်အကြောင်း ဖြစ်သည်။" },
+      { en: "<strong>A closer can arrive with nothing open.</strong> <code>]()</code> fails on its first character. Popping an empty stack throws in some languages and returns <code>nil</code> in others — decide what it means (a mismatch) before the judge decides for you.", my: "<strong>ဖွင့်ထားခြင်း မရှိဘဲ ပိတ်ကွင်း ရောက်လာနိုင်သည်။</strong> <code>]()</code> သည် ပထမ စာလုံးတွင်ပင် ကျရှုံးသည်။ stack ဗလာကို pop လုပ်လျှင် ဘာသာစကားအချို့တွင် error တက်ပြီး အချို့တွင် <code>nil</code> ပြန်ပေးသည် — ၎င်း၏ အဓိပ္ပာယ် (မကိုက်ခြင်း) ကို ကြိုတင် ဆုံးဖြတ်ထားပါ။" },
+      { en: "<strong>Running out is not the same as succeeding.</strong> <code>(()</code> never hits a mismatch, but one opener is still waiting when the string ends. Check the stack is empty at the end, not just that the loop finished.", my: "<strong>string ကုန်သွားခြင်းသည် အောင်မြင်ခြင်း မဟုတ်ပါ။</strong> <code>(()</code> တွင် မကိုက်ခြင်း တစ်ကြိမ်မျှ မကြုံရသော်လည်း string ပြီးချိန်တွင် ဖွင့်ကွင်း တစ်ခု စောင့်နေဆဲ။ loop ပြီးသွားရုံ မဟုတ်ဘဲ နောက်ဆုံးတွင် stack ဗလာ ဖြစ်မဖြစ် စစ်ပါ။" },
+      { en: "An odd length can never be valid — every bracket needs a partner. It is a cheap early exit, but not a solution: <code>([)]</code> has even length.", my: "အရှည် မကိန်းဖြစ်လျှင် valid ဘယ်တော့မှ မဖြစ်နိုင်ပါ — ကွင်းတိုင်း အဖော်လိုသောကြောင့်။ စောစော ထွက်ရန် လွယ်ကူသော စစ်ဆေးချက် ဖြစ်သော်လည်း အဖြေ မဟုတ်ပါ — <code>([)]</code> ၏ အရှည်မှာ စုံကိန်း ဖြစ်သည်။" },
+    ],
+  }}
+  part2Sub={{ en: "Two approaches over the same string. The stage shows the state each one carries; the panel shows the line running.", my: "String တစ်ခုတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" }}
+  notes={{
+    eyebrow: { en: "If you are implementing it", my: "ကိုယ်တိုင် ရေးမည်ဆိုလျှင်" },
+    title: { en: "Three questions the stack raises", my: "Stack နှင့်ပတ်သက်၍ မေးစရာ သုံးခု" },
+    items: [
+      { q: { en: "Why does stripping have to start over after every cut?", my: "ဖြတ်ပြီးတိုင်း stripping က ဘာကြောင့် အစကနေ ပြန်စရသလဲ။" }, a: { en: "Deleting a pair makes two characters adjacent that were not adjacent before — including characters to the <em>left</em> of the cut. In <code>{[()]}</code>, cutting <code>()</code> is what makes <code>[]</code> a pair. So the scan has to begin again at position 0, and with up to <code>n/2</code> cuts that is <code>O(n²)</code>.", my: "အတွဲ တစ်တွဲ ဖျက်လိုက်လျှင် ယခင်က ဘေးချင်း မကပ်ခဲ့သော စာလုံးနှစ်လုံး ကပ်သွားသည် — ဖြတ်သည့်နေရာ၏ <em>ဘယ်ဘက်</em>ရှိ စာလုံးများပါ အပါအဝင်။ <code>{[()]}</code> တွင် <code>()</code> ကို ဖြတ်လိုက်မှ <code>[]</code> သည် အတွဲ ဖြစ်လာသည်။ ထို့ကြောင့် နေရာ 0 မှ ပြန်စရှာရပြီး ဖြတ်ခြင်း <code>n/2</code> ကြိမ်အထိ ရှိနိုင်သဖြင့် <code>O(n²)</code> ဖြစ်သည်။" } },
+      { q: { en: "Why pop <em>before</em> comparing, rather than peeking?", my: "Peek မလုပ်ဘဲ နှိုင်းယှဉ်ခြင်း<em>မပြုမီ</em> ဘာကြောင့် pop လုပ်သလဲ။" }, a: { en: "Either way works, but popping first gives one comparison that covers both failures: an empty stack pops as <code>nil</code> / <code>undefined</code> / <code>None</code>, which never equals an opener, so a closer with nothing open and a closer that meets the wrong opener take the same <code>return false</code>. If they matched, the pop was the right thing to do anyway.", my: "နှစ်မျိုးစလုံး အလုပ်ဖြစ်သည်၊ သို့သော် အရင် pop လုပ်ခြင်းဖြင့် ကျရှုံးမှု နှစ်မျိုးလုံးကို နှိုင်းယှဉ်မှု တစ်ခုတည်းဖြင့် ဖုံးနိုင်သည် — stack ဗလာကို pop လုပ်လျှင် <code>nil</code> / <code>undefined</code> / <code>None</code> ရပြီး ၎င်းသည် မည်သည့် ဖွင့်ကွင်းနှင့်မျှ မညီပါ။ ထို့ကြောင့် ဖွင့်ထားခြင်းမရှိဘဲ ရောက်လာသော ပိတ်ကွင်းနှင့် မှားသော ဖွင့်ကွင်းနှင့် တွေ့သော ပိတ်ကွင်းတို့သည် <code>return false</code> တစ်ခုတည်းသို့ ရောက်သည်။ ကိုက်ခဲ့လျှင်လည်း pop လုပ်ခြင်းက မှန်ပြီးသား ဖြစ်သည်။" } },
+      { q: { en: "Where else does this shape show up?", my: "ဤပုံစံကို နောက်ထပ် ဘယ်မှာ တွေ့ရမလဲ။" }, a: { en: "Whenever the thing you have to match is <em>the most recent unmatched thing</em>, a stack is the structure that has it in hand. <strong>Min Stack</strong>, <strong>Daily Temperatures</strong> (each day resolves the most recent colder days still waiting) and evaluating an expression all ask the same question. Recognise the question, not the bracket table.", my: "တိုက်စစ်ရမည့်အရာသည် <em>မကိုက်ရသေးသော နောက်ဆုံးအရာ</em> ဖြစ်တိုင်း stack သည် ၎င်းကို လက်ထဲတွင် ကိုင်ထားသော ဖွဲ့စည်းပုံ ဖြစ်သည်။ <strong>Min Stack</strong>၊ <strong>Daily Temperatures</strong> (နေ့တစ်နေ့က စောင့်နေဆဲ ပိုအေးသော နောက်ဆုံးနေ့များကို ဖြေရှင်းပေးသည်) နှင့် expression တွက်ခြင်းတို့ အားလုံး မေးခွန်းတစ်ခုတည်းကို မေးသည်။ ကွင်းဇယားကို မဟုတ်ဘဲ ထိုမေးခွန်းကို မှတ်မိအောင် လုပ်ပါ။" } },
+    ],
+  }}
+  cost={{
+    eyebrow: { en: "Why bother", my: "ဘာကြောင့် ဂရုစိုက်ရသလဲ" },
+    title: { en: "The same answer, a different price", my: "အဖြေတူ၊ ကုန်ကျစရိတ် မတူ" },
+    html: { en: "<table>\n  <thead><tr><th>Approach</th><th>Time</th><th>Extra space</th><th>At n = 10⁴ (the constraint)</th></tr></thead>\n  <tbody>\n    <tr><td><b>Strip pairs</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">rescan after every cut</span></td>\n        <td class=\"mono\">O(n²)</td><td class=\"mono\">O(n)</td><td class=\"cross\">≈ 1.25 × 10⁷ character reads</td></tr>\n    <tr><td><b>Stack</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">one pass</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(n)</td><td class=\"tick\">10⁴ reads, one comparison each</td></tr>\n  </tbody>\n</table>\n<figcaption>Counts are computed from the constraint, not measured: the worst case for stripping is a deeply nested string like <code>((((…))))</code>, where each of the n/2 passes walks to the middle before finding the pair. Both keep a copy of the string or the openers, so the space is the same — the stack wins on time alone.</figcaption>", my: "<table>\n  <thead><tr><th>နည်းလမ်း</th><th>အချိန်</th><th>အပို memory</th><th>n = 10⁴ (ကန့်သတ်ချက်) တွင်</th></tr></thead>\n  <tbody>\n    <tr><td><b>Strip pairs</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">ဖြတ်တိုင်း ပြန်ရှာ</span></td>\n        <td class=\"mono\">O(n²)</td><td class=\"mono\">O(n)</td><td class=\"cross\">စာလုံးဖတ်ခြင်း ≈ 1.25 × 10⁷ ကြိမ်</td></tr>\n    <tr><td><b>Stack</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">တစ်ခေါက်တည်း</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(n)</td><td class=\"tick\">ဖတ်ခြင်း 10⁴ ကြိမ်၊ တစ်ကြိမ်လျှင် နှိုင်းယှဉ်မှု တစ်ခု</td></tr>\n  </tbody>\n</table>\n<figcaption>ဤအရေအတွက်များကို ကန့်သတ်ချက်မှ တွက်ထားခြင်းဖြစ်ပြီး တိုင်းတာထားခြင်း မဟုတ်ပါ — stripping ၏ အဆိုးဆုံး case မှာ <code>((((…))))</code> ကဲ့သို့ အထပ်များသော string ဖြစ်ပြီး pass n/2 ခု တစ်ခုစီက အတွဲကို မတွေ့မီ အလယ်အထိ လျှောက်ရသည်။ နှစ်ခုစလုံး string သို့မဟုတ် ဖွင့်ကွင်းများ၏ မိတ္တူကို ထားရသဖြင့် memory တူသည် — stack က အချိန်တစ်ခုတည်းတွင် သာသည်။</figcaption>" },
+  }}
+  part3Sub={{ en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 20,020 cases.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို case 20,020 ခု တူတူဖြင့် run ထားသည်။" }}
+  footer={{ en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>s</code> above and both walkthroughs rebuild against your input.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>s</code> ကို ပြင်လိုက်လျှင် walkthrough နှစ်ခုစလုံး သင့် input ဖြင့် ပြန်တည်ဆောက်မည်။" }}
 />
 
 <script>

@@ -12,9 +12,11 @@ the three "retrofitted" ones only added a widget and Burmese to that wrong
 layout. The kit now renders x-sum's own markup with x-sum's stylesheet, and the
 checker fails any lesson that is missing an x-sum component.
 
-**In x-sum format: Two Sum (1 of 10).** It is the worked example — every other
-lesson converts by copying its shape. The other nine build through a legacy
-fallback in the layout and each fails `check-lessons.mjs` until converted.
+**In x-sum format: all 10 built lessons.** Two Sum was the worked example;
+Valid Parentheses, Valid Palindrome, Single Number, Reverse Linked List, Merge
+Two Sorted Lists and Linked List Cycle were converted on 2026-09-23, and Best
+Time, Move Zeroes and Valid Anagram in a parallel session. `check-lessons.mjs`
+passes all ten.
 
 | Phase | What | Status |
 | --- | --- | --- |
@@ -88,14 +90,18 @@ src/pages/leetcode/<slug>.astro      wires them together, carries the takeaway
 
 ## Verification debt
 
-Ruby, Python and JavaScript are verified by running, per lesson, against the
-worked examples plus randomised cases.
+OrbStack is installed; `open -a OrbStack` brings Docker up, and Go (golang:1.23-alpine)
+and Rust (rust:1-slim, rustc 1.98) then run fine.
 
-**Go and Rust are written but not yet compiled** — neither toolchain is
-installed locally and Docker is not running. Start OrbStack and this clears in
-one sweep using `scripts/verify_solution.py` from the skill. Until then the
-site's claim that every solution was compiled and run is true of three
-languages out of five, and should not be repeated about the other two.
+**All five languages ran** for Valid Parentheses, Valid Palindrome, Single Number,
+Reverse Linked List, Merge Two Sorted Lists and Linked List Cycle — ~20,000 cases
+each against an independent reference, including cases at the full constraint.
+Two listings changed as a result: recursive Python for Reverse Linked List now
+raises the recursion limit (it raised RecursionError at 5,000 nodes), and the
+Linked List Cycle Rust listings gained the `use` lines they needed to compile.
+
+**Go and Rust are still "written here · not compiled"** on Two Sum, Best Time,
+Move Zeroes and Valid Anagram. With Docker up this clears in one sweep.
 
 ## Rules this build follows
 

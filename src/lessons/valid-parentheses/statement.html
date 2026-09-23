@@ -1,37 +1,9 @@
-<p>Given a string <code>s</code> containing just the characters <code>'('</code>,
-<code>')'</code>, <code>'{'</code>, <code>'}'</code>, <code>'['</code> and <code>']'</code>,
-determine if the input string is <em>valid</em>.</p>
+<p data-i18n="<code>'('</code>၊ <code>')'</code>၊ <code>'{'</code>၊ <code>'}'</code>၊ <code>'['</code> နှင့် <code>']'</code> စာလုံးများသာ ပါသော string <code>s</code> တစ်ခု ပေးထားသည်။ ထို input string သည် valid ဖြစ်မဖြစ် ဆုံးဖြတ်ပါ။">Given a string <code>s</code> containing just the characters <code>'('</code>, <code>')'</code>, <code>'{'</code>, <code>'}'</code>, <code>'['</code> and <code>']'</code>, determine if the input string is valid.</p>
 
-<p>An input string is valid if:</p>
+<p data-i18n="input string တစ်ခု valid ဖြစ်ရန် —">An input string is valid if:</p>
 
 <ol>
-  <li>Open brackets must be closed by the same type of brackets.</li>
-  <li>Open brackets must be closed in the correct order.</li>
-  <li>Every close bracket has a corresponding open bracket of the same type.</li>
+  <li data-i18n="ဖွင့်ကွင်းကို အမျိုးအစားတူ ပိတ်ကွင်းဖြင့် ပိတ်ရမည်။">Open brackets must be closed by the same type of brackets.</li>
+  <li data-i18n="ဖွင့်ကွင်းများကို မှန်ကန်သော အစီအစဉ်အတိုင်း ပိတ်ရမည်။">Open brackets must be closed in the correct order.</li>
+  <li data-i18n="ပိတ်ကွင်းတိုင်းတွင် ၎င်းနှင့် အမျိုးအစားတူ ဖွင့်ကွင်း တစ်ခု ရှိရမည်။">Every close bracket has a corresponding open bracket of the same type.</li>
 </ol>
-
-<h3>Example 1</h3>
-<pre>Input:  s = "()"
-Output: true</pre>
-
-<h3>Example 2</h3>
-<pre>Input:  s = "()[]{}"
-Output: true</pre>
-
-<h3>Example 3</h3>
-<pre>Input:  s = "(]"
-Output: false</pre>
-
-<h3>Example 4</h3>
-<pre>Input:  s = "([])"
-Output: true</pre>
-
-<h3>Example 5</h3>
-<pre>Input:  s = "([)]"
-Output: false</pre>
-
-<h3>Constraints</h3>
-<ul class="constraints">
-  <li>1 &lt;= s.length &lt;= 10<sup>4</sup></li>
-  <li><code>s</code> consists of parentheses only <code>'()[]{}'</code>.</li>
-</ul>

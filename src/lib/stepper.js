@@ -454,7 +454,7 @@ function renderExamples(cfg, loadInput) {
       <h3>${esc(pick(ex.title))}</h3>
       <p class="io"><b>${esc(pick(UI.input))}</b> ${pick(ex.inputHtml)}</p>
       <p class="io"><b>${esc(pick(UI.output))}</b> <code class="out">${esc(ex.output)}</code></p>
-      ${ex.why ? `<ul class="why">${[].concat(pick(ex.why)).map((w) => `<li>${w}</li>`).join('')}</ul>` : ''}
+      ${ex.why ? `<ul class="why">${[].concat(ex.why).map((w) => `<li>${pick(w)}</li>`).join('')}</ul>` : ''}
       ${ex.load ? `<button class="btn ex-load" data-ex="${i}">${esc(pick(UI.load))}</button>` : ''}
     </div>`).join('');
   host.onclick = (e) => {

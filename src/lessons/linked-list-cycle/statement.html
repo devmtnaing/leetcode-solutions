@@ -1,35 +1,7 @@
-<p>Given <code>head</code>, the head of a linked list, determine if the linked list has a
-<em>cycle</em> in it.</p>
+<p data-i18n="linked list တစ်ခု၏ head ဖြစ်သော <code>head</code> ကို ပေးထားသည်။ ထို linked list တွင် cycle ရှိမရှိ ဆုံးဖြတ်ပါ။">Given <code>head</code>, the head of a linked list, determine if the linked list has a cycle in it.</p>
 
-<p>There is a cycle in a linked list if there is some node in the list that can be reached
-again by continuously following the <code>next</code> pointer. Internally, <code>pos</code>
-is used to denote the index of the node that tail's <code>next</code> pointer is connected
-to. <strong>Note that <code>pos</code> is not passed as a parameter</strong>.</p>
+<p data-i18n="<code>next</code> pointer ကို ဆက်တိုက် လိုက်သွားခြင်းဖြင့် node တစ်ခုကို ထပ်မံ ရောက်နိုင်လျှင် linked list တွင် cycle ရှိသည်။ အတွင်းပိုင်း၌ tail ၏ <code>next</code> pointer ချိတ်ထားသည့် node ၏ index ကို ဖော်ပြရန် <code>pos</code> ကို သုံးသည်။ <strong><code>pos</code> ကို parameter အဖြစ် ပေးမည် မဟုတ်ကြောင်း သတိပြုပါ</strong>။">There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the <code>next</code> pointer. Internally, <code>pos</code> is used to denote the index of the node that tail's <code>next</code> pointer is connected to. <strong>Note that <code>pos</code> is not passed as a parameter</strong>.</p>
 
-<p>Return <code>true</code> <em>if there is a cycle in the linked list</em>. Otherwise,
-return <code>false</code>.</p>
+<p data-i18n="linked list တွင် cycle ရှိလျှင် <code>true</code><em> ကို ပြန်ပေးပါ</em>။ မရှိလျှင် <code>false</code> ကို ပြန်ပေးပါ။">Return <code>true</code><em> if there is a cycle in the linked list</em>. Otherwise, return <code>false</code>.</p>
 
-<h3>Example 1</h3>
-<pre>Input:  head = [3,2,0,-4], pos = 1
-Output: true
-There is a cycle in the linked list, where the tail connects to the 1st node (0-indexed).</pre>
-
-<h3>Example 2</h3>
-<pre>Input:  head = [1,2], pos = 0
-Output: true
-There is a cycle in the linked list, where the tail connects to the 0th node.</pre>
-
-<h3>Example 3</h3>
-<pre>Input:  head = [1], pos = -1
-Output: false
-There is no cycle in the linked list.</pre>
-
-<h3>Constraints</h3>
-<ul class="constraints">
-  <li>The number of the nodes in the list is in the range [0, 10<sup>4</sup>].</li>
-  <li>-10<sup>5</sup> &lt;= Node.val &lt;= 10<sup>5</sup></li>
-  <li><code>pos</code> is <code>-1</code> or a <strong>valid index</strong> in the linked list.</li>
-</ul>
-
-<p><strong>Follow-up:</strong> can you solve it using <code>O(1)</code> (i.e. constant)
-memory?</p>
+<p data-i18n="<strong>နောက်ဆက်တွဲ မေးခွန်း —</strong> <code>O(1)</code> (ဆိုလိုသည်မှာ constant) memory ဖြင့် ဖြေရှင်းနိုင်ပါသလား။"><strong>Follow up:</strong> Can you solve it using <code>O(1)</code> (i.e. constant) memory?</p>

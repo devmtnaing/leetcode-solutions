@@ -1,49 +1,43 @@
 ---
 import Walkthrough from '../../layouts/Walkthrough.astro';
 import statement from '../../lessons/reverse-linked-list/statement.html?raw';
-
-const takeaway = `
-<p>Reversing a link is destructive. The moment you write <code>curr.next = prev</code>
-the rest of the list stops being reachable from anywhere, so the line before it has to
-be <code>next = curr.next</code>. That ordering is not a style choice — swap the two
-lines and everything past the second node is garbage.</p>
-
-<p>So the three pointers are not three arbitrary variables. They are the minimum state
-needed to survive destroying a link: <strong>where you came from</strong>
-(<code>prev</code>, the thing the new link has to point at), <strong>where you are</strong>
-(<code>curr</code>, the node being rewired), and <strong>where you were going</strong>
-(<code>next</code>, the only remaining handle on the rest of the list). Drop any one of
-them and the step cannot be completed.</p>
-
-<p>The recursion does not avoid that state, it relocates it. Each frame still holds the
-node it was called with, so on the way back up <code>head</code> is the "where you came
-from" and <code>head.next</code> is the tail of the run that was just reversed. The
-back-pointer comes free from the call stack — which is exactly what the
-<code>O(n)</code> stack is paying for. Between <code>head.next.next = head</code> and
-<code>head.next = null</code> the list contains a real two-node loop; the second line is
-not tidying up, it is the only thing that makes the result walkable.</p>
-
-<p>This shape recurs. <strong>Reverse Nodes in k-Group</strong> is this loop run k times
-with the group's boundary nodes stitched back on, and <strong>Swap Nodes in Pairs</strong>
-is the same thing with k fixed at 2. Both are easier to write once you stop thinking of
-<code>prev</code>/<code>curr</code>/<code>next</code> as loop scaffolding and start
-thinking of them as the three things you must be holding before you are allowed to cut
-a link.</p>
-
-<p>One note on the Rust panel: safe Rust owns each node through its predecessor's
-<code>Box</code>, so a frame cannot keep a usable back-pointer into a list it has already
-handed to the recursive call. The Rust recursion therefore carries <code>prev</code> down
-as an argument rather than relinking on the way up. Same three pieces of state, spelled
-as parameters instead of as a stack frame.</p>`;
 ---
 <Walkthrough
   title="Reverse Linked List"
-  summary="Three pointers, or a call stack that holds the third one for you. Either way, something has to remember the way forward before you destroy it."
-  leetcodeId={206}
-  leetcodeSlug="reverse-linked-list"
-  difficulty="Easy"
+  summary="Three pointers and a loop, or a recursion that rewires on the way back up. Same n link rewrites; the difference is where the back-pointer lives."
+  eyebrow="LeetCode 206 &nbsp;·&nbsp; Easy"
+  lede={{ en: "Point every link the other way. Both solutions rewrite exactly n links; what differs is where they keep the way back — in a variable called <code>prev</code>, or in the call stack.", my: "link တိုင်းကို ဆန့်ကျင်ဘက်သို့ ညွှန်စေပါ။ ဖြေရှင်းနည်း နှစ်ခုစလုံး link n ခုကို အတိအကျ ပြန်ရေးသည် — ကွာခြားသည်မှာ နောက်ပြန်လမ်းကို <code>prev</code> ဟူသော variable ထဲတွင် ထားသလား၊ call stack ထဲတွင် ထားသလား ဆိုသည်ပင်။" }}
+  links={[{ id: 206, title: 'Reverse Linked List', slug: 'reverse-linked-list', difficulty: 'Easy' }]}
   statement={statement}
-  takeaway={takeaway}
+  constraints={{ en: "<span><b>n</b> the number of nodes in the list is the range [0, 5000]</span><span>&minus;5000 &le; Node.val &le; 5000</span>", my: "<span><b>n</b> list ထဲရှိ node အရေအတွက်သည် [0, 5000] အတွင်း</span><span>&minus;5000 &le; Node.val &le; 5000</span>" }}
+  part1Sub={{ en: "Read the statement, then reverse a list one link at a time — and once without saving <code>next</code>.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် list ကို link တစ်ခုချင်း ပြောင်းပြန်လှန်ကြည့်ပါ — <code>next</code> ကို မသိမ်းဘဲ တစ်ကြိမ်လည်း။" }}
+  widgetTitle={{ en: "Drag to rewire, watch what stays reachable", my: "ဆွဲ၍ ပြန်ချိတ်ပါ — ဘာတွေ ရောက်နိုင်ဆဲလဲ ကြည့်ပါ" }}
+  traps={{
+    summary: { en: "Four ways the statement bites &mdash; worth reading before you code", my: "မေးခွန်းစာသားထဲက ချော်လွယ်သည့်နေရာ လေးခု — code မရေးမီ ဖတ်ထားသင့်သည်" },
+    items: [
+      { en: "<strong>The list can be empty.</strong> Example 3 is <code>[]</code>. Any solution that reads <code>head.next</code> before checking <code>head</code> crashes on it.", my: "<strong>list ဗလာ ဖြစ်နိုင်သည်။</strong> ဥပမာ ၃ မှာ <code>[]</code> ဖြစ်သည်။ <code>head</code> ကို မစစ်မီ <code>head.next</code> ကို ဖတ်သော ဖြေရှင်းနည်းတိုင်း ပျက်မည်။" },
+      { en: "<strong>Return the new head, not the old one.</strong> After the loop, <code>curr</code> is <code>null</code> and the original <code>head</code> is now the tail. The answer is <code>prev</code>.", my: "<strong>head အဟောင်း မဟုတ်ဘဲ head အသစ်ကို ပြန်ပေးပါ။</strong> loop ပြီးနောက် <code>curr</code> သည် <code>null</code> ဖြစ်ပြီး မူလ <code>head</code> သည် tail ဖြစ်သွားပြီ။ အဖြေမှာ <code>prev</code> ဖြစ်သည်။" },
+      { en: "<strong>\"Reverse the list\" means relink it, not copy it.</strong> Reading the values into an array and building new nodes produces the right output and uses <code>O(n)</code> extra memory for nothing; the follow-up asks for the two in-place forms.", my: "<strong>\"list ကို ပြောင်းပြန်လှန်ပါ\" ဆိုသည်မှာ ကူးယူရန် မဟုတ်ဘဲ ပြန်ချိတ်ရန် ဖြစ်သည်။</strong> value များကို array ထဲ ဖတ်ပြီး node အသစ်များ တည်ဆောက်လျှင် output မှန်သော်လည်း <code>O(n)</code> အပို memory ကို အလကား သုံးသည်။ follow-up က နေရာ၌ပင် လုပ်သော ပုံစံ နှစ်မျိုးကို တောင်းသည်။" },
+      { en: "5,000 nodes means 5,000 frames for the recursive form. That is fine in most languages, but Python's default recursion limit is 1,000 — the recursive Python listing here raises it, and without that line it fails at the constraint.", my: "node 5,000 ဆိုသည်မှာ recursive ပုံစံအတွက် frame 5,000 ဖြစ်သည်။ ဘာသာစကား အများစုတွင် ပြဿနာမရှိသော်လည်း Python ၏ default recursion limit မှာ 1,000 ဖြစ်သည် — ဤနေရာရှိ recursive Python listing က ၎င်းကို မြှင့်ထားပြီး ထိုစာကြောင်း မပါလျှင် ကန့်သတ်ချက်အရွယ်တွင် ကျရှုံးသည်။" },
+    ],
+  }}
+  part2Sub={{ en: "Two approaches over the same list. The stage shows the state each one carries; the panel shows the line running.", my: "List တစ်ခုတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" }}
+  notes={{
+    eyebrow: { en: "If you are implementing it", my: "ကိုယ်တိုင် ရေးမည်ဆိုလျှင်" },
+    title: { en: "Three questions the pointers raise", my: "pointer များနှင့်ပတ်သက်၍ မေးစရာ သုံးခု" },
+    items: [
+      { q: { en: "Why three pointers, and why in that order?", my: "pointer ဘာကြောင့် သုံးခု၊ ဘာကြောင့် ထိုအစီအစဉ်အတိုင်း ဖြစ်ရသလဲ။" }, a: { en: "They are the minimum state needed to survive destroying a link: <strong>where you came from</strong> (<code>prev</code>, what the new link points at), <strong>where you are</strong> (<code>curr</code>, the node being rewired), and <strong>where you were going</strong> (<code>next</code>, the only remaining handle on the rest of the list). The moment you write <code>curr.next = prev</code> the rest of the list is unreachable, so <code>next = curr.next</code> has to come first. Swap the two lines and everything past the second node is gone.", my: "၎င်းတို့သည် link တစ်ခုကို ဖျက်ပြီးနောက် ဆက်ရှင်သန်ရန် လိုအပ်သော အနည်းဆုံး state ဖြစ်သည် — <strong>ဘယ်ကလာသလဲ</strong> (<code>prev</code>၊ link အသစ် ညွှန်ရမည့်နေရာ)၊ <strong>ဘယ်မှာရှိသလဲ</strong> (<code>curr</code>၊ ပြန်ချိတ်နေသော node)၊ <strong>ဘယ်ကိုသွားမလဲ</strong> (<code>next</code>၊ ကျန် list ကို ကိုင်ထားသော တစ်ခုတည်းသော လက်ကိုင်)။ <code>curr.next = prev</code> ဟု ရေးလိုက်သည်နှင့် ကျန် list ကို မရောက်နိုင်တော့သဖြင့် <code>next = curr.next</code> အရင်လာရမည်။ စာကြောင်းနှစ်ကြောင်း လဲလိုက်လျှင် ဒုတိယ node နောက်ရှိ အားလုံး ပျောက်သွားမည်။" } },
+      { q: { en: "What is the recursion actually storing?", my: "recursion က အမှန်တကယ် ဘာကို သိမ်းထားသလဲ။" }, a: { en: "The same state, relocated. Each frame still holds the node it was called with, so on the way back up <code>head</code> is \"where you came from\" and <code>head.next</code> is the tail of the run just reversed. The back-pointer comes free from the call stack — which is exactly what the <code>O(n)</code> stack is paying for. Between <code>head.next.next = head</code> and <code>head.next = null</code> the list holds a real two-node loop; the second line is not tidying up, it is what makes the result walkable.", my: "state အတူတူပင်၊ နေရာပြောင်းထားခြင်းသာ။ frame တစ်ခုစီသည် ၎င်းကို call လုပ်ခဲ့သော node ကို ကိုင်ထားဆဲဖြစ်သဖြင့် ပြန်တက်လာချိန်တွင် <code>head</code> သည် \"ဘယ်ကလာသလဲ\" ဖြစ်ပြီး <code>head.next</code> သည် ပြောင်းပြန်လှန်ပြီးခါစ run ၏ tail ဖြစ်သည်။ နောက်ပြန် pointer ကို call stack က အလကား ပေးသည် — <code>O(n)</code> stack က ပေးဆပ်နေသည်မှာ ထိုအရာပင်။ <code>head.next.next = head</code> နှင့် <code>head.next = null</code> ကြားတွင် list ၌ node နှစ်ခု loop အစစ် ရှိနေသည် — ဒုတိယစာကြောင်းသည် သပ်ရပ်အောင် လုပ်ခြင်း မဟုတ်ဘဲ ရလဒ်ကို လျှောက်နိုင်အောင် လုပ်ပေးသည့်အရာ ဖြစ်သည်။" } },
+      { q: { en: "Where does this shape show up again?", my: "ဤပုံစံကို နောက်ထပ် ဘယ်မှာ တွေ့ရမလဲ။" }, a: { en: "<strong>Reverse Nodes in k-Group</strong> is this loop run k times with the group's boundary nodes stitched back on, and <strong>Swap Nodes in Pairs</strong> is the same thing with k fixed at 2. Both are easier once you stop thinking of <code>prev</code> / <code>curr</code> / <code>next</code> as loop scaffolding and start thinking of them as the three things you must be holding before you are allowed to cut a link.", my: "<strong>Reverse Nodes in k-Group</strong> သည် ဤ loop ကို k ကြိမ် run ပြီး အုပ်စု၏ နယ်စပ် node များကို ပြန်ဆက်ခြင်း ဖြစ်ပြီး <strong>Swap Nodes in Pairs</strong> သည် k ကို 2 ဟု သတ်မှတ်ထားသည့် အတူတူပင် ဖြစ်သည်။ <code>prev</code> / <code>curr</code> / <code>next</code> ကို loop အထောက်အကူအဖြစ် မဟုတ်ဘဲ link တစ်ခု ဖြတ်ခွင့်မရမီ ကိုင်ထားရမည့် အရာသုံးခုအဖြစ် တွေးလိုက်သည်နှင့် နှစ်ခုစလုံး ပိုလွယ်သွားသည်။" } },
+    ],
+  }}
+  cost={{
+    eyebrow: { en: "Why bother", my: "ဘာကြောင့် ဂရုစိုက်ရသလဲ" },
+    title: { en: "The same rewrites, a different memory bill", my: "ပြန်ရေးခြင်း အတူတူ၊ memory ကုန်ကျမှု မတူ" },
+    html: { en: "<table>\n  <thead><tr><th>Approach</th><th>Time</th><th>Extra space</th><th>At n = 5000 (the constraint)</th></tr></thead>\n  <tbody>\n    <tr><td><b>Iterative</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">three pointers</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(1)</td><td class=\"tick\">3 variables</td></tr>\n    <tr><td><b>Recursive</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">the call stack</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(n) stack</td><td class=\"cross\">5,000 frames — past Python's default limit of 1,000</td></tr>\n  </tbody>\n</table>\n<figcaption>Frame counts are computed from the constraint; the Python limit was hit here, running the recursive listing at n = 5,000 before the limit was raised. Both do exactly n link rewrites.</figcaption>", my: "<table>\n  <thead><tr><th>နည်းလမ်း</th><th>အချိန်</th><th>အပို memory</th><th>n = 5000 (ကန့်သတ်ချက်) တွင်</th></tr></thead>\n  <tbody>\n    <tr><td><b>Iterative</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">pointer သုံးခု</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(1)</td><td class=\"tick\">variable 3 ခု</td></tr>\n    <tr><td><b>Recursive</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">call stack</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(n) stack</td><td class=\"cross\">frame 5,000 — Python ၏ default limit 1,000 ကို ကျော်သည်</td></tr>\n  </tbody>\n</table>\n<figcaption>frame အရေအတွက်ကို ကန့်သတ်ချက်မှ တွက်ထားသည်။ Python limit ကိုမူ limit မမြှင့်မီ recursive listing ကို n = 5,000 ဖြင့် ဤနေရာတွင် run ရာ တကယ် ကြုံခဲ့သည်။ နှစ်ခုစလုံး link n ခုကို အတိအကျ ပြန်ရေးသည်။</figcaption>" },
+  }}
+  part3Sub={{ en: "Two approaches in five languages. Every block is a complete submission, and every one was run against the same 19,998 cases, up to the 5,000-node constraint.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး အားလုံးကို node 5,000 ကန့်သတ်ချက်အထိ case 19,998 ခု တူတူဖြင့် run ထားသည်။" }}
+  footer={{ en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>head</code> above and both walkthroughs rebuild against your list.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>head</code> ကို ပြင်လိုက်လျှင် walkthrough နှစ်ခုစလုံး သင့် list ဖြင့် ပြန်တည်ဆောက်မည်။" }}
 />
 
 <script>

@@ -6,7 +6,11 @@
  * same O(n) time, but the only state that survives a step is two integers.
  */
 import { mountLesson } from '../../lib/stepper.js';
-import { strip, panels } from '../../lib/stage.js';
+import { pick, onLangChange } from '../../lib/i18n.js';
+import { cells, readout, stagePanel } from '../../lib/stage.js';
+
+/* Every reader-facing sentence is a pair; `pick()` chooses the side. */
+const t = (en, my) => ({ en, my });
 
 /* ---------------- shared helpers ---------------- */
 
@@ -17,9 +21,10 @@ const isAlnum = (ch) => /[a-z0-9]/i.test(ch);
 const show = (ch) => (ch === ' ' ? '␣' : ch);
 
 /* Narration is HTML, and `s` comes from a text box the reader controls. */
-const e = (t) => String(t).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+const e = (x) => String(x).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 
-const named = (ch) => (ch === ' ' ? 'a space' : `<b>'${e(ch)}'</b>`);
+const named = (ch) => (ch === ' ' ? t('a space', 'space တစ်ခု') : t(`<b>'${e(ch)}'</b>`, `<b>'${e(ch)}'</b>`));
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 
 /* ---------------- step generators ---------------- */
 
@@ -33,37 +38,45 @@ function buildClean({ s }) {
   const cleaned = [];
 
   steps.push({ line: 'init', i: null, cleaned: [],
-    note: `An empty buffer to accumulate into. Everything that survives the filter is appended here, so by the end it holds one character per letter or digit in <code>s</code> — that is the <b>O(n)</b> of extra space this approach spends.` });
+    note: t('An empty buffer to accumulate into. Everything that survives the filter is appended here, so by the end it holds one character per letter or digit in <code>s</code> — that is the <b>O(n)</b> of extra space this approach spends.',
+            'စုဆောင်းရန် buffer အလွတ် တစ်ခု။ filter ကို ဖြတ်ကျော်နိုင်သမျှ ဤနေရာသို့ ထည့်သွားသဖြင့် နောက်ဆုံးတွင် <code>s</code> ထဲရှိ စာလုံး သို့မဟုတ် ဂဏန်း တစ်ခုစီအတွက် စာလုံးတစ်လုံးစီ ရှိလာမည် — ဤနည်းက သုံးစွဲသော အပို <b>O(n)</b> memory ပင် ဖြစ်သည်။') });
 
   for (let i = 0; i < n; i++) {
     const ch = chars[i];
 
     if (i === 0) {
-      steps.push({ line: 'loop', i: 0, cleaned: [], tag: 'pass',
-        note: `One left-to-right pass over all ${n} characters, deciding for each one whether it belongs in <b>cleaned</b>.` });
+      steps.push({ line: 'loop', i: 0, cleaned: [], tag: t('pass', 'pass'),
+        note: t(`One left-to-right pass over all ${n} characters, deciding for each one whether it belongs in <b>cleaned</b>.`,
+                `စာလုံး ${n} လုံးလုံးကို ဘယ်မှညာ တစ်ခေါက် ဖြတ်ပြီး တစ်လုံးချင်းစီ <b>cleaned</b> ထဲ ပါသင့်မသင့် ဆုံးဖြတ်သည်။`) });
     }
 
     if (!isAlnum(ch)) {
-      steps.push({ line: 'skip', i, cleaned: cleaned.slice(), tag: 'drop',
-        note: `<b>s[${i}]</b> is ${named(ch)} — neither a letter nor a digit, so nothing is appended and <b>cleaned</b> stays ${cleaned.length} long.` });
+      const nm = named(ch);
+      steps.push({ line: 'skip', i, cleaned: cleaned.slice(), tag: t('drop', 'ဖယ်'),
+        note: t(`<b>s[${i}]</b> is ${nm.en} — neither a letter nor a digit, so nothing is appended and <b>cleaned</b> stays ${cleaned.length} long.`,
+                `<b>s[${i}]</b> သည် ${nm.my} ဖြစ်သည် — စာလုံးလည်း မဟုတ်၊ ဂဏန်းလည်း မဟုတ်သဖြင့် ဘာမျှ မထည့်ဘဲ <b>cleaned</b> ၏ အရှည် ${cleaned.length} အတိုင်း ရှိနေသည်။`) });
       continue;
     }
 
     cleaned.push(ch.toLowerCase());
     const pos = cleaned.length - 1;
-    steps.push({ line: 'keep', i, cleaned: cleaned.slice(), keepAt: pos, tag: 'keep',
+    steps.push({ line: 'keep', i, cleaned: cleaned.slice(), keepAt: pos, tag: t('keep', 'ထည့်'),
       note: pos === 0
-        ? `<b>s[${i}] = '${e(ch)}'</b> is alphanumeric, so it is lowercased to <b>'${e(ch.toLowerCase())}'</b> and appended. Lowercasing here is what lets the comparison at the end be a plain equality.`
-        : `<b>s[${i}] = '${e(ch)}'</b> survives, lowercased to <b>'${e(ch.toLowerCase())}'</b> at position ${pos} of <b>cleaned</b>.` });
+        ? t(`<b>s[${i}] = '${e(ch)}'</b> is alphanumeric, so it is lowercased to <b>'${e(ch.toLowerCase())}'</b> and appended. Lowercasing here is what lets the comparison at the end be a plain equality.`,
+            `<b>s[${i}] = '${e(ch)}'</b> သည် alphanumeric ဖြစ်သဖြင့် <b>'${e(ch.toLowerCase())}'</b> အဖြစ် အသေးပြောင်းပြီး ထည့်သည်။ ဤနေရာတွင် အသေးပြောင်းထားခြင်းကြောင့် နောက်ဆုံး နှိုင်းယှဉ်မှုကို ရိုးရိုး ညီမျှခြင်းဖြင့် လုပ်နိုင်သည်။`)
+        : t(`<b>s[${i}] = '${e(ch)}'</b> survives, lowercased to <b>'${e(ch.toLowerCase())}'</b> at position ${pos} of <b>cleaned</b>.`,
+            `<b>s[${i}] = '${e(ch)}'</b> ကျန်ရစ်သည် — <b>'${e(ch.toLowerCase())}'</b> အဖြစ် အသေးပြောင်းပြီး <b>cleaned</b> ၏ နေရာ ${pos} တွင် ထားသည်။`) });
   }
 
   const reversed = cleaned.slice().reverse();
   const len = cleaned.length;
 
-  steps.push({ line: 'rev', i: null, cleaned: cleaned.slice(), reversed: reversed.slice(), tag: 'copy',
+  steps.push({ line: 'rev', i: null, cleaned: cleaned.slice(), reversed: reversed.slice(), tag: t('copy', 'copy'),
     note: len === 0
-      ? `Nothing survived the filter, so <b>reversed</b> is empty too. Two empty strings now exist where two integers would have done.`
-      : `<b>reversed</b> is a second copy of the same ${len} characters in the opposite order. Two full strings are now in memory to settle a question whose answer is one bit.` });
+      ? t('Nothing survived the filter, so <b>reversed</b> is empty too. Two empty strings now exist where two integers would have done.',
+          'filter ကို ဘာမျှ မကျော်နိုင်သဖြင့် <b>reversed</b> လည်း ဗလာ ဖြစ်သည်။ integer နှစ်ခုဖြင့် လုံလောက်မည့်နေရာတွင် string ဗလာ နှစ်ခု ရှိနေပြီ။')
+      : t(`<b>reversed</b> is a second copy of the same ${len} characters in the opposite order. Two full strings are now in memory to settle a question whose answer is one bit.`,
+          `<b>reversed</b> သည် တူညီသော စာလုံး ${len} လုံးကို ပြောင်းပြန် အစီအစဉ်ဖြင့် ကူးထားသော ဒုတိယ copy ဖြစ်သည်။ အဖြေမှာ bit တစ်ခုသာ ဖြစ်သော မေးခွန်းအတွက် string အပြည့် နှစ်ခု memory ထဲ ရှိနေပြီ။`) });
 
   let diff = -1;
   for (let k = 0; k < len; k++) {
@@ -71,12 +84,15 @@ function buildClean({ s }) {
   }
 
   steps.push({ line: 'cmp', i: null, cleaned: cleaned.slice(), reversed: reversed.slice(), diff,
-    verdict: diff === -1, done: true, tag: diff === -1 ? 'true' : 'false',
+    verdict: diff === -1, done: true, tag: diff === -1 ? t('true', 'true') : t('false', 'false'),
     note: diff === -1
       ? (len === 0
-        ? `An empty string reads the same in either direction, so the answer is <b>true</b>.`
-        : `Every position agrees, so the answer is <b>true</b>. Cost: ${n} characters read and ${2 * len} characters of scratch allocated.`)
-      : `Position ${diff} differs — <b>'${e(cleaned[diff])}'</b> against <b>'${e(reversed[diff])}'</b> — so the answer is <b>false</b>. Both copies were built in full before a single comparison happened.` });
+        ? t('An empty string reads the same in either direction, so the answer is <b>true</b>.',
+            'string ဗလာကို မည်သည့်ဘက်မှ ဖတ်ဖတ် အတူတူ ဖြစ်သဖြင့် အဖြေမှာ <b>true</b>။')
+        : t(`Every position agrees, so the answer is <b>true</b>. Cost: ${n} characters read and ${2 * len} characters of scratch allocated.`,
+            `နေရာတိုင်း ကိုက်ညီသဖြင့် အဖြေမှာ <b>true</b>။ ကုန်ကျမှု — စာလုံး ${n} လုံး ဖတ်ပြီး ယာယီ စာလုံး ${2 * len} လုံးစာ memory ယူခဲ့သည်။`))
+      : t(`Position ${diff} differs — <b>'${e(cleaned[diff])}'</b> against <b>'${e(reversed[diff])}'</b> — so the answer is <b>false</b>. Both copies were built in full before a single comparison happened.`,
+          `နေရာ ${diff} တွင် မတူပါ — <b>'${e(cleaned[diff])}'</b> နှင့် <b>'${e(reversed[diff])}'</b> — ထို့ကြောင့် အဖြေမှာ <b>false</b>။ နှိုင်းယှဉ်မှု တစ်ခုမျှ မလုပ်ရသေးမီ copy နှစ်ခုလုံးကို အပြည့် တည်ဆောက်ခဲ့ရသည်။`) });
 
   return steps;
 }
@@ -98,15 +114,15 @@ function buildTwoPointer({ s }) {
   let skipsR = 0;
   const anyAlnum = chars.some(isAlnum);
 
-  const snap = (extra) => ({ left, right, cleared: cleared.slice(), skipped: skipped.slice(), ...extra });
+  const snap = (extra) => ({ left, right, cleared: cleared.slice(), skipped: skipped.slice(), compares, ...extra });
 
   steps.push(snap({ line: 'init',
-    note: n === 0
-      ? `<b>left</b> at 0 and <b>right</b> at -1: the string is empty, so the pointers have already crossed.`
-      : `<b>left</b> at 0, <b>right</b> at ${n - 1}. No buffer and no copy — every answer this approach gives comes out of the original ${n} characters.` }));
+    note: t(`<b>left</b> at 0, <b>right</b> at ${n - 1}. No buffer and no copy — every answer this approach gives comes out of the original ${n} characters.`,
+            `<b>left</b> ကို 0 တွင်၊ <b>right</b> ကို ${n - 1} တွင် ထားသည်။ buffer မရှိ၊ copy မရှိ — ဤနည်း၏ အဖြေတိုင်းသည် မူလ စာလုံး ${n} လုံးထဲမှသာ လာသည်။`) }));
 
-  steps.push(snap({ line: 'loop', tag: 'loop',
-    note: `The loop runs while <b>left</b> is still short of <b>right</b>. Each turn either steps over a character that cannot matter or settles one pair.` }));
+  steps.push(snap({ line: 'loop', tag: t('loop', 'loop'),
+    note: t('The loop runs while <b>left</b> is still short of <b>right</b>. Each turn either steps over a character that cannot matter or settles one pair.',
+            '<b>left</b> သည် <b>right</b> ထက် ငယ်နေသရွေ့ loop ဆက်ပတ်သည်။ တစ်ကြိမ်စီတွင် အရေးမပါသော စာလုံးကို ကျော်သည်၊ သို့မဟုတ် အတွဲ တစ်တွဲကို ဖြေရှင်းသည်။') }));
 
   while (left < right) {
     while (left < right && !isAlnum(chars[left])) {
@@ -114,10 +130,13 @@ function buildTwoPointer({ s }) {
       skipped.push(from);
       left += 1;
       skipsL += 1;
-      steps.push(snap({ line: 'skipl', tag: 'skip', skipAt: from,
+      const nm = named(chars[from]);
+      steps.push(snap({ line: 'skipl', tag: t('skip', 'ကျော်'), skipAt: from,
         note: skipsL === 1
-          ? `<b>s[${from}]</b> is ${named(chars[from])}. The filter would have declined to copy it; here <b>left</b> just moves to ${left} and the character is behind us. Nothing was written anywhere.`
-          : `<b>s[${from}]</b> is ${named(chars[from])}. <b>left</b> moves to ${left}.` }));
+          ? t(`<b>s[${from}]</b> is ${nm.en}. The filter would have declined to copy it; here <b>left</b> just moves to ${left} and the character is behind us. Nothing was written anywhere.`,
+              `<b>s[${from}]</b> သည် ${nm.my} ဖြစ်သည်။ filter ဆိုလျှင် ၎င်းကို ကူးမည် မဟုတ်ပါ — ဤနေရာတွင်မူ <b>left</b> ကို ${left} သို့ ရွှေ့လိုက်ရုံဖြင့် ထိုစာလုံး နောက်ရောက်သွားသည်။ မည်သည့်နေရာတွင်မျှ ဘာမျှ မရေးခဲ့ပါ။`)
+          : t(`<b>s[${from}]</b> is ${nm.en}. <b>left</b> moves to ${left}.`,
+              `<b>s[${from}]</b> သည် ${nm.my}။ <b>left</b> ကို ${left} သို့ ရွှေ့သည်။`) }));
     }
 
     while (left < right && !isAlnum(chars[right])) {
@@ -125,10 +144,13 @@ function buildTwoPointer({ s }) {
       skipped.push(from);
       right -= 1;
       skipsR += 1;
-      steps.push(snap({ line: 'skipr', tag: 'skip', skipAt: from,
+      const nm = named(chars[from]);
+      steps.push(snap({ line: 'skipr', tag: t('skip', 'ကျော်'), skipAt: from,
         note: skipsR === 1
-          ? `<b>s[${from}]</b> is ${named(chars[from])}, so <b>right</b> retreats to ${right}. The second skip loop is the first one pointed the other way.`
-          : `<b>s[${from}]</b> is ${named(chars[from])}, so <b>right</b> retreats to ${right}.` }));
+          ? t(`<b>s[${from}]</b> is ${nm.en}, so <b>right</b> retreats to ${right}. The second skip loop is the first one pointed the other way.`,
+              `<b>s[${from}]</b> သည် ${nm.my} ဖြစ်သဖြင့် <b>right</b> ကို ${right} သို့ ဆုတ်သည်။ ဒုတိယ skip loop မှာ ပထမ loop ကို ဆန့်ကျင်ဘက်သို့ လှည့်ထားခြင်းသာ ဖြစ်သည်။`)
+          : t(`<b>s[${from}]</b> is ${nm.en}, so <b>right</b> retreats to ${right}.`,
+              `<b>s[${from}]</b> သည် ${nm.my} ဖြစ်သဖြင့် <b>right</b> ကို ${right} သို့ ဆုတ်သည်။`) }));
     }
 
     const a = chars[left];
@@ -138,17 +160,22 @@ function buildTwoPointer({ s }) {
     const match = la === lb;
     compares += 1;
 
-    steps.push(snap({ line: 'check', tag: 'compare', cmpL: left, cmpR: right, match,
+    steps.push(snap({ line: 'check', tag: t('compare', 'နှိုင်းယှဉ်'), cmpL: left, cmpR: right, match,
       note: left === right
-        ? `Skipping has left <b>left</b> and <b>right</b> on the same character, index ${left}. The code still runs the comparison, and it is trivially true.`
+        ? t(`Skipping has left <b>left</b> and <b>right</b> on the same character, index ${left}. The code still runs the comparison, and it is trivially true.`,
+            `ကျော်လိုက်ရာမှ <b>left</b> နှင့် <b>right</b> တို့ index ${left} ရှိ စာလုံးတစ်လုံးတည်းပေါ် ရောက်နေသည်။ code က နှိုင်းယှဉ်မှုကို လုပ်ဆဲဖြစ်ပြီး မှန်သည်မှာ သေချာသည်။`)
         : match
-          ? `<b>s[${left}] = '${e(a)}'</b> against <b>s[${right}] = '${e(b)}'</b>. Lowercased both read <b>'${e(la)}'</b>, so this pair holds.`
-          : `<b>s[${left}] = '${e(a)}'</b> against <b>s[${right}] = '${e(b)}'</b>. Lowercased that is <b>'${e(la)}'</b> against <b>'${e(lb)}'</b>.` }));
+          ? t(`<b>s[${left}] = '${e(a)}'</b> against <b>s[${right}] = '${e(b)}'</b>. Lowercased both read <b>'${e(la)}'</b>, so this pair holds.`,
+              `<b>s[${left}] = '${e(a)}'</b> နှင့် <b>s[${right}] = '${e(b)}'</b>။ အသေးပြောင်းလိုက်လျှင် နှစ်ခုလုံး <b>'${e(la)}'</b> ဖြစ်သဖြင့် ဤအတွဲ ကိုက်သည်။`)
+          : t(`<b>s[${left}] = '${e(a)}'</b> against <b>s[${right}] = '${e(b)}'</b>. Lowercased that is <b>'${e(la)}'</b> against <b>'${e(lb)}'</b>.`,
+              `<b>s[${left}] = '${e(a)}'</b> နှင့် <b>s[${right}] = '${e(b)}'</b>။ အသေးပြောင်းလိုက်လျှင် <b>'${e(la)}'</b> နှင့် <b>'${e(lb)}'</b> ဖြစ်သည်။`) }));
 
     if (!match) {
-      steps.push(snap({ line: 'no', tag: 'false', cmpL: left, cmpR: right, match: false,
+      const gap = right - left - 1;
+      steps.push(snap({ line: 'no', tag: t('false', 'false'), cmpL: left, cmpR: right, match: false,
         verdict: false, done: true,
-        note: `The pair disagrees, so no amount of further reading can make <code>s</code> a palindrome. Return <b>false</b> after ${compares} comparison${compares === 1 ? '' : 's'}, with the ${right - left - 1} character${right - left - 1 === 1 ? '' : 's'} between the pointers never looked at.` }));
+        note: t(`The pair disagrees, so no amount of further reading can make <code>s</code> a palindrome. Return <b>false</b> after ${plural(compares, 'comparison')}, with the ${plural(gap, 'character')} between the pointers never looked at.`,
+                `အတွဲ မကိုက်သဖြင့် ဆက်ဖတ်၍ <code>s</code> ကို palindrome ဖြစ်အောင် မလုပ်နိုင်တော့ပါ။ နှိုင်းယှဉ်မှု ${compares} ကြိမ်အပြီးတွင် <b>false</b> ပြန်ပေးသည် — pointer နှစ်ခုကြားရှိ စာလုံး ${gap} လုံးကို လုံးဝ မကြည့်ခဲ့ရပါ။`) }));
       return steps;
     }
 
@@ -158,112 +185,121 @@ function buildTwoPointer({ s }) {
     left += 1;
     right -= 1;
 
-    steps.push(snap({ line: 'step', tag: 'cleared',
+    steps.push(snap({ line: 'step', tag: t('cleared', 'ပြီး'),
       note: selfPair
-        ? `<b>left</b> moves to ${left} and <b>right</b> to ${right}, which crosses them and ends the loop.`
+        ? t(`<b>left</b> moves to ${left} and <b>right</b> to ${right}, which crosses them and ends the loop.`,
+            `<b>left</b> ကို ${left} သို့၊ <b>right</b> ကို ${right} သို့ ရွှေ့ရာ နှစ်ခု ဖြတ်ကျော်သွားပြီး loop ပြီးဆုံးသည်။`)
         : compares === 1
-          ? `Pair settled, so both pointers step inward: <b>left</b> to ${left}, <b>right</b> to ${right}. The two characters fade out because nothing will read them again.`
-          : `Pair settled. <b>left</b> to ${left}, <b>right</b> to ${right}.` }));
+          ? t(`Pair settled, so both pointers step inward: <b>left</b> to ${left}, <b>right</b> to ${right}. The two characters fade out because nothing will read them again.`,
+              `အတွဲ ပြီးပြီဖြစ်၍ pointer နှစ်ခုလုံး အတွင်းဘက်သို့ တစ်လှမ်း ရွှေ့သည် — <b>left</b> ကို ${left}၊ <b>right</b> ကို ${right}။ ထိုစာလုံးနှစ်လုံးကို ထပ်မဖတ်တော့သဖြင့် မှိန်သွားသည်။`)
+          : t(`Pair settled. <b>left</b> to ${left}, <b>right</b> to ${right}.`,
+              `အတွဲ ပြီးပြီ။ <b>left</b> ကို ${left}၊ <b>right</b> ကို ${right}။`) }));
   }
 
-  steps.push(snap({ line: 'loop', tag: 'met',
-    note: n === 0
-      ? `The loop condition was false from the start — there was never a pair to check.`
-      : left === right
-        ? `<b>left</b> and <b>right</b> have landed on index ${left} together. An odd-length palindrome has exactly one unpaired character in the middle, and a character is always its own mirror, so there is nothing left to do.`
-        : !anyAlnum
-          ? `<b>left</b> has passed <b>right</b>. Not one character was alphanumeric, so there was never anything to compare — and a string with nothing in it reads the same in both directions.`
-          : `<b>left</b> has passed <b>right</b>: every character that mattered has been paired off.` }));
+  steps.push(snap({ line: 'loop', tag: t('met', 'ဆုံ'),
+    note: left === right
+      ? t(`<b>left</b> and <b>right</b> have landed on index ${left} together. An odd-length palindrome has exactly one unpaired character in the middle, and a character is always its own mirror, so there is nothing left to do.`,
+          `<b>left</b> နှင့် <b>right</b> တို့ index ${left} တွင် အတူ ရောက်နေသည်။ အရှည် မကိန်း palindrome တွင် အလယ်၌ အတွဲမရှိသော စာလုံး တစ်လုံး ရှိပြီး စာလုံးတစ်လုံးသည် သူ့ကိုယ်သူ အမြဲ ပုံရိပ်ဖြစ်သဖြင့် လုပ်စရာ မကျန်တော့ပါ။`)
+      : !anyAlnum
+        ? t('<b>left</b> has passed <b>right</b>. Not one character was alphanumeric, so there was never anything to compare — and a string with nothing in it reads the same in both directions.',
+            '<b>left</b> သည် <b>right</b> ကို ကျော်သွားပြီ။ alphanumeric စာလုံး တစ်လုံးမျှ မရှိသဖြင့် နှိုင်းယှဉ်စရာ ဘယ်တုန်းကမှ မရှိခဲ့ပါ — ဘာမျှမပါသော string သည် နှစ်ဖက်စလုံးမှ အတူတူ ဖတ်ရသည်။')
+        : t('<b>left</b> has passed <b>right</b>: every character that mattered has been paired off.',
+            '<b>left</b> သည် <b>right</b> ကို ကျော်သွားပြီ — အရေးပါသော စာလုံးတိုင်းကို အတွဲလိုက် စစ်ပြီးပြီ။') }));
 
   const skips = skipped.length;
-  steps.push(snap({ line: 'yes', tag: 'true', verdict: true, done: true,
-    note: `Return <b>true</b>. ${compares} comparison${compares === 1 ? '' : 's'} and ${skips} skip${skips === 1 ? '' : 's'} over ${n} characters — and the only state that ever outlived a step was <b>left</b> and <b>right</b>, which is what makes this <b>O(1)</b> space.` }));
+  steps.push(snap({ line: 'yes', tag: t('true', 'true'), verdict: true, done: true,
+    note: t(`Return <b>true</b>. ${plural(compares, 'comparison')} and ${plural(skips, 'skip')} over ${n} characters — and the only state that ever outlived a step was <b>left</b> and <b>right</b>, which is what makes this <b>O(1)</b> space.`,
+            `<b>true</b> ပြန်ပေးသည်။ စာလုံး ${n} လုံးအပေါ် နှိုင်းယှဉ်မှု ${compares} ကြိမ်နှင့် ကျော်ခြင်း ${skips} ကြိမ် — အဆင့်တစ်ခုထက် ကျော်၍ ကျန်ခဲ့သော state မှာ <b>left</b> နှင့် <b>right</b> သာ ဖြစ်ပြီး ထိုအချက်ကြောင့် <b>O(1)</b> space ဖြစ်သည်။`) }));
 
   return steps;
 }
 
-/* ---------------- drawing ---------------- */
+/* ---------------- drawing ----------------
+ *
+ * The strip card always shows s, with each character's fate on it. The stage
+ * holds only what the approach carries between steps: for clean-then-reverse,
+ * the two strings it builds; for two pointers, two integers and the pair they
+ * point at — deliberately small, because that smallness is the lesson.
+ */
+
+const row = (html, empty) => (html
+  ? (html.startsWith('<div class="strip') ? html : `<div class="strip" style="flex-wrap:wrap;overflow:visible">${html}</div>`)
+  : `<p class="note mono" style="margin:6px 0">${empty}</p>`);
+
+function strip(st, input) {
+  const chars = [...input.s];
+  const tone = {};
+  const marks = {};
+  if (st.cleaned !== undefined) {
+    const settled = st.reversed ? chars.length : (st.i ?? 0);
+    for (let i = 0; i < settled; i++) tone[i] = isAlnum(chars[i]) ? 'done' : 'leaving';
+    if (st.i != null) { tone[st.i] = isAlnum(chars[st.i]) ? 'entering' : 'leaving'; marks[st.i] = 'ch'; }
+    return cells(chars.map(show), { tone, marks });
+  }
+  for (const i of st.cleared) tone[i] = 'done';
+  for (const i of st.skipped) tone[i] = 'leaving';
+  if (st.cmpL != null) {
+    tone[st.cmpL] = tone[st.cmpR] = st.match ? 'entering' : 'leaving';
+  }
+  const inRange = (i) => i >= 0 && i < chars.length;
+  if (st.left === st.right && inRange(st.left)) marks[st.left] = 'L R';
+  else {
+    if (inRange(st.left)) { marks[st.left] = 'left'; if (st.cmpL == null && tone[st.left] == null) tone[st.left] = 'inwin'; }
+    if (inRange(st.right)) { marks[st.right] = 'right'; if (st.cmpR == null && tone[st.right] == null) tone[st.right] = 'inwin'; }
+  }
+  return cells(chars.map(show), { tone, marks });
+}
 
 function draw(st, input) {
-  const chars = [...input.s].map(show);
-
-  /* clean mode: the original on top, the buffer it is filling underneath, and
-   * the reversed copy only once it actually exists. */
   if (st.cleaned !== undefined) {
-    // Cells behind the cursor say what happened to them — faded if they were
-    // copied into `cleaned`, amber if they were dropped. The cell under the
-    // cursor is left to the `at` highlight so the two never fight.
-    const orig = [...input.s];
-    const tone = {};
-    const settled = st.reversed ? orig.length : (st.i ?? 0);
-    for (let i = 0; i < settled; i++) tone[i] = isAlnum(orig[i]) ? 'done' : 'warn';
-
     const cleanTone = {};
-    if (st.keepAt != null) cleanTone[st.keepAt] = 'up';
-
     const revTone = {};
-    if (st.diff != null && st.diff >= 0) {
-      cleanTone[st.diff] = 'down';
-      revTone[st.diff] = 'down';
-    } else if (st.diff === -1) {
-      for (let k = 0; k < st.cleaned.length; k++) { cleanTone[k] = 'up'; revTone[k] = 'up'; }
-    }
-
-    return panels(
-      strip(chars, { at: st.i ?? null, tone, label: 's' }),
-      strip(st.cleaned.map(show), { tone: cleanTone, label: 'cleaned' }),
-      st.reversed ? strip(st.reversed.map(show), { tone: revTone, label: 'reversed' }) : '',
-    );
+    if (st.keepAt != null) cleanTone[st.keepAt] = 'entering';
+    if (st.diff != null && st.diff >= 0) { cleanTone[st.diff] = revTone[st.diff] = 'leaving'; }
+    else if (st.diff === -1) st.cleaned.forEach((_, k) => { cleanTone[k] = revTone[k] = 'entering'; });
+    const held = st.cleaned.length + (st.reversed ? st.reversed.length : 0);
+    const empty = pick(t('empty', 'ဗလာ'));
+    return stagePanel(pick(t('cleaned', 'cleaned')), pick(t(`${held} chars held`, `စာလုံး ${held} လုံး ထားရှိ`)),
+      row(cells(st.cleaned.map(show), { tone: cleanTone }), empty))
+      + (st.reversed
+        ? stagePanel(pick(t('reversed — a second copy', 'reversed — ဒုတိယ copy')), '',
+          row(cells(st.reversed.map(show), { tone: revTone }), empty))
+        : '');
   }
+  const chars = [...input.s];
+  const at = (i) => (i >= 0 && i < chars.length ? `'${show(chars[i])}'` : '—');
+  return stagePanel(
+    pick(t('Two integers — all this approach keeps', 'integer နှစ်ခု — ဤနည်း သိမ်းထားသမျှ')),
+    pick(t(`${st.compares} compared`, `${st.compares} ကြိမ် နှိုင်းယှဉ်ပြီး`)),
+    readout({ left: st.left, right: st.right })
+      + readout(st.cmpL != null
+        ? { 's[left]': at(st.cmpL), 's[right]': at(st.cmpR), lowercased: st.match ? '=' : '≠' }
+        : { 's[left]': at(st.left), 's[right]': at(st.right) }),
+  );
+}
 
-  /* two-pointer mode: one strip, and the whole story told in its decorations. */
-  const marks = {};
-  const tone = {};
-
-  for (const i of st.cleared) tone[i] = 'done';
-  for (const i of st.skipped) tone[i] = 'warn';
-
-  if (st.cmpL != null) {
-    tone[st.cmpL] = st.match ? 'up' : 'down';
-    tone[st.cmpR] = st.match ? 'up' : 'down';
-  }
-
-  const inRange = (i) => i >= 0 && i < chars.length;
-  if (st.left === st.right && inRange(st.left)) marks[st.left] = 'left right';
-  else {
-    if (inRange(st.left)) marks[st.left] = 'left';
-    if (inRange(st.right)) marks[st.right] = 'right';
-  }
-
-  return strip(chars, { at: st.skipAt ?? null, marks, tone, label: 's' });
+function answer(st) {
+  if (st.verdict == null) return { html: '', note: t('true or false', 'true သို့မဟုတ် false') };
+  return {
+    html: st.verdict
+      ? '<strong style="color:var(--up);font-size:18px">true</strong>'
+      : '<strong style="color:var(--down);font-size:18px">false</strong>',
+    note: st.verdict ? t('a palindrome', 'palindrome ဖြစ်သည်') : t('not a palindrome', 'palindrome မဟုတ်'),
+  };
 }
 
 function vars(st, input) {
   const chars = [...input.s];
-  const verdict = st.verdict === undefined ? '—' : String(st.verdict);
-
+  const q = (x) => `"${x.join('')}"`;
   if (st.cleaned !== undefined) {
     return [
       ['i', st.i ?? '—'],
-      ['char', st.i != null && chars[st.i] != null ? show(chars[st.i]) : '—'],
-      ['cleaned.length', st.cleaned.length],
-      ['extra space', (() => {
-        const held = st.cleaned.length + (st.reversed ? st.reversed.length : 0);
-        return `${held} char${held === 1 ? '' : 's'}`;
-      })()],
-      ['answer', verdict],
+      ['ch', st.i != null ? `'${chars[st.i]}'` : '—'],
+      ['cleaned', q(st.cleaned)],
+      ['reversed', st.reversed ? q(st.reversed) : '—'],
     ];
   }
-
-  const cell = (i) => (i >= 0 && i < chars.length ? show(chars[i]) : '—');
-  return [
-    ['left', st.left],
-    ['right', st.right],
-    ['s[left]', cell(st.left)],
-    ['s[right]', cell(st.right)],
-    ['extra space', '2 ints'],
-    ['answer', verdict],
-  ];
+  return [['left', st.left], ['right', st.right]];
 }
 
 /* ---------------- the code, one key per line ---------------- */
@@ -442,20 +478,158 @@ const CODE = {
   },
 };
 
-/* ---------------- mount ---------------- */
+/* ---------------- part 1: the "what counts" widget ----------------
+ *
+ * The statement hinges on one sentence: the palindrome test runs on the string
+ * *after* lowercasing and dropping everything that is not a letter or digit.
+ * The widget shows that filtered string living inside the original — kept
+ * cells lit, dropped cells dashed — and lets the reader drag through the
+ * mirrored pairs of what is left.
+ *
+ * Built from x-sum's widget vocabulary: .q-arr cells (kept / cut), the
+ * .q-slider, the amber .q-tie line and the .ledger.
+ */
+
+const QW_SETS = [
+  { label: t('example 1', 'ဥပမာ ၁'), s: 'A man, a plan, a canal: Panama' },
+  { label: t('example 2', 'ဥပမာ ၂'), s: 'race a car' },
+  { label: t('example 3', 'ဥပမာ ၃'), s: ' ' },
+  { label: t('digits count', 'ဂဏန်းလည်း ပါ'), s: '0P' },
+  { label: t('case only', 'အကြီးအသေးသာ'), s: 'No lemon, no melon' },
+];
+
+function mountFilterWidget(host) {
+  const state = { set: 0, pair: 1 };
+  const str = () => [...QW_SETS[state.set].s];
+
+  host.innerHTML = `
+    <div class="q-arr" data-arr></div>
+    <div class="q-slider">
+      <label for="qw-pair" data-lbl></label>
+      <input type="range" id="qw-pair" min="1" max="1" value="1">
+      <output data-out>1</output>
+      <span class="q-presets" data-presets></span>
+    </div>
+    <p class="q-tie" data-line></p>
+    <div class="ledger">
+      <span class="expr" data-expr></span>
+      <span class="total" data-total></span>
+    </div>`;
+
+  const q = (sel) => host.querySelector(sel);
+
+  function render() {
+    const s = str();
+    const kept = s.map((ch, i) => i).filter((i) => isAlnum(s[i]));
+    const m = kept.length;
+    const pairs = Math.floor(m / 2);
+    const k = Math.min(Math.max(state.pair, 1), Math.max(pairs, 1));
+    const a = kept[k - 1];
+    const b = kept[m - k];
+    const good = kept.slice(0, pairs).filter((i, j) => s[i].toLowerCase() === s[kept[m - 1 - j]].toLowerCase()).length;
+
+    q('[data-lbl]').textContent = pick(t('pair', 'အတွဲ'));
+    const slider = q('#qw-pair');
+    slider.max = String(Math.max(pairs, 1));
+    slider.value = String(k);
+    slider.disabled = pairs === 0;
+    q('[data-out]').textContent = pairs ? String(k) : '—';
+    q('[data-presets]').innerHTML = QW_SETS.map((x, i) =>
+      `<button class="chip" data-set="${i}"${i === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+
+    q('[data-arr]').innerHTML = s.map((ch, i) => {
+      const on = pairs && (i === a || i === b);
+      return `<div class="cell ${isAlnum(ch) ? 'kept' : 'cut'}"${on ? ' style="outline:2px solid var(--amber);outline-offset:2px"' : ''}><span>${e(show(ch))}</span><span class="idx">${i}</span></div>`;
+    }).join('');
+
+    const label = document.getElementById('q-label');
+    if (label) label.textContent = pick(t(`${s.length} characters, ${m} count`, `စာလုံး ${s.length} လုံး၊ ${m} လုံး အရေးပါ`));
+
+    let line;
+    if (m === 0) {
+      line = t('Nothing here is a letter or a digit, so the filtered string is empty — and an empty string reads the same both ways. true.',
+               'ဤနေရာတွင် စာလုံး သို့မဟုတ် ဂဏန်း တစ်ခုမျှ မရှိသဖြင့် filter လုပ်ပြီးသော string ဗလာ ဖြစ်သည် — string ဗလာသည် နှစ်ဖက်စလုံးမှ အတူတူ ဖတ်ရသည်။ true။');
+    } else if (pairs === 0) {
+      line = t('One character survives the filter, and one character is always its own mirror. true.',
+               'filter ကို စာလုံး တစ်လုံးသာ ကျော်နိုင်ပြီး စာလုံး တစ်လုံးသည် သူ့ကိုယ်သူ အမြဲ ပုံရိပ် ဖြစ်သည်။ true။');
+    } else {
+      const x = s[a], y = s[b], eq = x.toLowerCase() === y.toLowerCase();
+      line = eq
+        ? t(`Pair ${k}: s[${a}] = '${e(x)}' and s[${b}] = '${e(y)}'. ${x === y ? 'Equal.' : 'Equal once both are lowercased.'} Everything between them that is not lit was never part of the question.`,
+            `အတွဲ ${k} — s[${a}] = '${e(x)}' နှင့် s[${b}] = '${e(y)}'။ ${x === y ? 'တူသည်။' : 'နှစ်ခုလုံး အသေးပြောင်းလိုက်လျှင် တူသည်။'} ကြားရှိ မလင်းသော စာလုံးများသည် မေးခွန်း၏ အစိတ်အပိုင်း မဟုတ်ခဲ့ပါ။`)
+        : t(`Pair ${k}: s[${a}] = '${e(x)}' against s[${b}] = '${e(y)}'. Different even after lowercasing — that one pair makes the answer false.`,
+            `အတွဲ ${k} — s[${a}] = '${e(x)}' နှင့် s[${b}] = '${e(y)}'။ အသေးပြောင်းပြီးသည့်တိုင် မတူပါ — ထိုအတွဲ တစ်ခုတည်းကြောင့် အဖြေ false ဖြစ်သည်။`);
+    }
+    q('[data-line]').innerHTML = pick(line);
+
+    // the ledger is a formula, as on x-sum: the string the question is really about
+    const filtered = kept.map((i) => s[i].toLowerCase()).join('');
+    q('[data-expr]').innerHTML = `"${e(filtered)}" ${filtered === [...filtered].reverse().join('') ? '=' : '≠'} "${e([...filtered].reverse().join(''))}"`;
+    q('[data-total]').innerHTML = `${good}/${pairs}<small>${pick(t('pairs match', 'အတွဲ ကိုက်'))}</small>`;
+  }
+
+  host.addEventListener('input', (ev) => {
+    if (ev.target.id !== 'qw-pair') return;
+    state.pair = Number(ev.target.value); render();
+  });
+  host.addEventListener('click', (ev) => {
+    const chip = ev.target.closest('[data-set]');
+    if (!chip) return;
+    state.set = Number(chip.dataset.set);
+    state.pair = 1;
+    render();
+  });
+  onLangChange(render);
+  render();
+}
+
+/* ---------------- mount ----------------
+ *
+ * Last in the file on purpose: mountLesson runs the widget immediately, so
+ * every const the widget reads must already be initialised. */
+
+const ex = (n) => t(`Example ${n}`, `ဥပမာ ${n}`);
 
 mountLesson({
-  root: document.getElementById('lesson'),
   input: { s: 'A man, a plan, a canal: Panama' },
   controls: [
-    { key: 's', label: 's', size: 34, value: 'A man, a plan, a canal: Panama',
+    { key: 's', label: 's', value: 'A man, a plan, a canal: Panama',
       // Capped only so the strip stays readable; the algorithms have no such limit.
-      parse: (v) => v.slice(0, 48) },
+      parse: (v) => {
+        if (!v.length) throw new Error('needs at least one character');
+        return v.slice(0, 48);
+      } },
+  ],
+  presets: [
+    { label: ex(1), input: { s: 'A man, a plan, a canal: Panama' } },
+    { label: ex(2), input: { s: 'race a car' } },
+    { label: ex(3), input: { s: ' ' } },
+    { label: t('Digit vs letter', 'ဂဏန်းနှင့် စာလုံး'), input: { s: '0P' } },
+    { label: t('Pointers meet', 'pointer ဆုံ'), input: { s: 'ab_a' } },
+  ],
+  examples: [
+    { title: ex(1), inputHtml: '<code>s = "A man, a plan, a canal: Panama"</code>', output: 'true',
+      why: [t('<code>"amanaplanacanalpanama"</code> is a palindrome.',
+              '<code>"amanaplanacanalpanama"</code> သည် palindrome ဖြစ်သည်။'),
+            t('The spaces, commas and colon are dropped and <code>A</code> / <code>P</code> are lowercased <em>before</em> the comparison — they never get a vote.',
+              'space များ၊ comma များနှင့် colon ကို ဖယ်ပြီး <code>A</code> / <code>P</code> ကို နှိုင်းယှဉ်ခြင်း<em>မပြုမီ</em> အသေးပြောင်းသည် — ၎င်းတို့ အဖြေကို မထိခိုက်ပါ။')],
+      load: { s: 'A man, a plan, a canal: Panama' } },
+    { title: ex(2), inputHtml: '<code>s = "race a car"</code>', output: 'false',
+      why: [t('<code>"raceacar"</code> is not a palindrome.', '<code>"raceacar"</code> သည် palindrome မဟုတ်ပါ။'),
+            t('The first pair to disagree is <code>e</code> against <code>a</code>, the fourth pair in from each end — the middle two letters.',
+              'ပထမဆုံး မကိုက်သော အတွဲမှာ အစွန်းတစ်ဖက်စီမှ စတုတ္ထ အတွဲ — အလယ်ရှိ စာလုံးနှစ်လုံး — ဖြစ်သော <code>e</code> နှင့် <code>a</code> ဖြစ်သည်။')],
+      load: { s: 'race a car' } },
+    { title: ex(3), inputHtml: '<code>s = " "</code>', output: 'true',
+      why: [t('<code>s</code> is an empty string <code>""</code> after removing non-alphanumeric characters. Since an empty string reads the same forward and backward, it is a palindrome.',
+              'alphanumeric မဟုတ်သော စာလုံးများကို ဖယ်ပြီးနောက် <code>s</code> သည် string ဗလာ <code>""</code> ဖြစ်သွားသည်။ string ဗလာသည် ရှေ့နောက် အတူတူ ဖတ်ရသဖြင့် palindrome ဖြစ်သည်။')],
+      load: { s: ' ' } },
   ],
   modes: [
-    { id: 'clean', name: 'Clean, then reverse', blurb: 'Filter to a new string and compare',
+    { id: 'clean', name: 'Clean, then reverse',
+      desc: t('Build the filtered string, copy it reversed, compare.', 'filter လုပ်ထားသော string ကို တည်ဆောက်၊ ပြောင်းပြန် ကူးပြီး နှိုင်းယှဉ်သည်။'),
       cost: 'O(n) time · O(n) space', build: buildClean },
-    { id: 'twopointer', name: 'Two pointers', blurb: 'Converge from both ends, skipping in place',
+    { id: 'twopointer', name: 'Two pointers',
+      desc: t('Walk in from both ends, skipping what does not count.', 'အစွန်းနှစ်ဖက်မှ အတွင်းသို့ လျှောက်ပြီး အရေးမပါသည်ကို ကျော်သည်။'),
       cost: 'O(n) time · O(1) space', build: buildTwoPointer },
   ],
   languages: [
@@ -463,15 +637,30 @@ mountLesson({
     { id: 'javascript', name: 'JavaScript' }, { id: 'go', name: 'Go' }, { id: 'rust', name: 'Rust' },
   ],
   code: CODE,
-  // How each language was actually checked. Printed as a badge on every
-  // listing in part 3, so a language nothing ran says so on the page.
-  verification: {
-    ruby: 'run here · 17 edge cases + 20,000 random, identical digest',
-    python: 'run here · 17 edge cases + 20,000 random, identical digest',
-    javascript: 'run here · 17 edge cases + 20,000 random, identical digest',
-    go: 'not compiled — no Go/Rust toolchain, Docker down',
-    rust: 'not compiled — no Go/Rust toolchain, Docker down',
+  hover: { python: { reversed_: 'reversed' }, go: { c: 'ch' } },
+  solutions: {
+    clean: { desc: t('The statement, transcribed: filter, lowercase, compare with the reverse. Correct and linear — it just allocates two copies of the input to produce one bit.',
+                     'မေးခွန်းကို တိုက်ရိုက် ကူးရေးထားခြင်း — filter လုပ်၊ အသေးပြောင်း၊ ပြောင်းပြန်နှင့် နှိုင်းယှဉ်။ မှန်ပြီး linear ဖြစ်သည် — bit တစ်ခု ထုတ်ရန် input ၏ copy နှစ်ခု ယူရုံသာ။') },
+    twopointer: { desc: t('The submission worth writing. Skip instead of filter, and give each skip loop its own <code>left &lt; right</code> guard so a string of pure punctuation cannot run a pointer off the end.',
+                          'ရေးသင့်သည့် submission ဖြစ်သည်။ filter မလုပ်ဘဲ ကျော်ပါ၊ သင်္ကေတချည်းသာ ပါသော string တွင် pointer အပြင်ထွက်မသွားစေရန် skip loop တစ်ခုစီတွင် <code>left &lt; right</code> စစ်ချက် ထည့်ပါ။') },
   },
+  // How each language was actually checked. Printed as a badge on every
+  // listing in part 3. The corpus: the 3 examples, 10 hand-picked edges,
+  // 12,000 short strings over "aAbB01 .,:!_`", 6,000 noisy palindromes (half
+  // perturbed), 2,000 random printable-ASCII strings, and three at 2 × 10⁵ —
+  // checked against a separate pointer-peeling reference. Go and Rust ran in
+  // Docker (golang:1.23-alpine, rust:1-slim).
+  verification: {
+    ruby: 'ran here · 20,016 cases vs a reference',
+    python: 'ran here · 20,016 cases vs a reference',
+    javascript: 'ran here · 20,016 cases vs a reference',
+    go: 'ran here · 20,016 cases · Go 1.23',
+    rust: 'ran here · 20,016 cases · rustc 1.98',
+  },
+  strip,
+  stripLabel: t('The string s', 'String s'),
   draw,
+  answer,
   vars,
+  widget: mountFilterWidget,
 });
