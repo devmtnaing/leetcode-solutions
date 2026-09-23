@@ -88,20 +88,27 @@ src/pages/leetcode/<slug>.astro      wires them together, carries the takeaway
 
 `src/lessons/two-sum/` is the worked example to copy from.
 
-## Verification debt
+## Verification
 
-OrbStack is installed; `open -a OrbStack` brings Docker up, and Go (golang:1.23-alpine)
-and Rust (rust:1-slim, rustc 1.98) then run fine.
+All ten lessons: **every listing ran in all five languages** — about 20,000
+cases per lesson against an independent reference, with cases at the full
+constraint. Go and Rust run in Docker: `open -a OrbStack`, then golang:1.23-alpine
+and rust:1-slim (rustc 1.98). The rendered part 3 code was hashed and matches
+the files that ran, byte for byte.
 
-**All five languages ran** for Valid Parentheses, Valid Palindrome, Single Number,
-Reverse Linked List, Merge Two Sorted Lists and Linked List Cycle — ~20,000 cases
-each against an independent reference, including cases at the full constraint.
-Two listings changed as a result: recursive Python for Reverse Linked List now
-raises the recursion limit (it raised RecursionError at 5,000 nodes), and the
-Linked List Cycle Rust listings gained the `use` lines they needed to compile.
+Running them caught three real bugs in shipped code: recursive Python for
+Reverse Linked List hit RecursionError at 5,000 nodes (now raises the limit);
+the Linked List Cycle Rust listings lacked the `use` lines to compile; Valid
+Anagram's Go sort listing used `sort` without importing it.
 
-**Go and Rust are still "written here · not compiled"** on Two Sum, Best Time,
-Move Zeroes and Valid Anagram. With Docker up this clears in one sweep.
+## Translation review — needs a native reader
+
+Burmese coverage is complete (a scan of every page in မြန်မာ mode finds no
+untranslated prose — only problem titles and notation, which stay English by
+design) and the known calques in the skill's bilingual notes are absent. What no
+check can establish is whether the prose reads naturally. A native reader should
+look first at step narration, which was translated in bulk, and at any idiom
+carried over from English.
 
 ## Rules this build follows
 

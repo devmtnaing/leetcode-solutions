@@ -31,7 +31,7 @@ function buildCopy({ nums }) {
     steps.push({ line: 'loop', arr: arr.slice(), kept: kept.slice(), fast, tag: t('read', 'ဖတ်သည်'),
       note: fast === 0
         ? t(`Reading <b>nums[0] = ${value}</b>. Note that <code>nums</code> stays untouched through this whole pass — the answer is being assembled elsewhere.`,
-            `<b>nums[0] = ${value}</b> ကို ဖတ်နေသည်။ ဤအကျော့တစ်ခုလုံးတွင် <code>nums</code> ကို လုံးဝ မထိရသေးကြောင်း သတိပြုပါ — အဖြေကို တခြားနေရာတွင် တည်ဆောက်နေခြင်း ဖြစ်သည်。`)
+            `<b>nums[0] = ${value}</b> ကို ဖတ်နေသည်။ ဤအကျော့တစ်ခုလုံးတွင် <code>nums</code> ကို လုံးဝ မထိရသေးကြောင်း သတိပြုပါ — အဖြေကို တခြားနေရာတွင် တည်ဆောက်နေခြင်း ဖြစ်သည်။`)
         : t(`Reading <b>nums[${fast}] = ${value}</b>.`,
             `<b>nums[${fast}] = ${value}</b> ကို ဖတ်နေသည်။`),
     });
@@ -41,15 +41,15 @@ function buildCopy({ nums }) {
       steps.push({ line: 'keep', arr: arr.slice(), kept: kept.slice(), fast, keepAt: kept.length - 1, tag: t('keep', 'သိမ်း'),
         note: kept.length === 1
           ? t(`Non-zero, so it is appended to <b>kept</b>. Appending in scan order is the only thing keeping the relative order intact.`,
-              `သုည မဟုတ်သဖြင့် <b>kept</b> ထဲသို့ ထည့်လိုက်သည်။ ဖတ်သည့် အစီအစဉ်အတိုင်း ထည့်ခြင်းကသာ relative order ကို ထိန်းသိမ်းထားနိုင်သည်。`)
+              `သုည မဟုတ်သဖြင့် <b>kept</b> ထဲသို့ ထည့်လိုက်သည်။ ဖတ်သည့် အစီအစဉ်အတိုင်း ထည့်ခြင်းကသာ relative order ကို ထိန်းသိမ်းထားနိုင်သည်။`)
           : t(`Non-zero: <b>${value}</b> takes position ${kept.length - 1} in <b>kept</b>, behind everything found before it.`,
-              `သုည မဟုတ် — <b>${value}</b> သည် <b>kept</b> ထဲတွင် နေရာ ${kept.length - 1} ကို ယူသည်။ ၎င်းမတိုင်မီ တွေ့ခဲ့သော အားလုံး၏ နောက်မှ ဖြစ်သည်。`),
+              `သုည မဟုတ် — <b>${value}</b> သည် <b>kept</b> ထဲတွင် နေရာ ${kept.length - 1} ကို ယူသည်။ ၎င်းမတိုင်မီ တွေ့ခဲ့သော အားလုံး၏ နောက်မှ ဖြစ်သည်။`),
       });
     } else {
       steps.push({ line: 'keep', arr: arr.slice(), kept: kept.slice(), fast, skip: true, tag: t('drop', 'ကျော်'),
         note: t(
           `A zero, so nothing is recorded. Zeroes are interchangeable, so there is no order to preserve among them — only a count, and the length of <b>kept</b> already implies it.`,
-          `သုညဖြစ်သဖြင့် ဘာမှ မှတ်မထားပါ။ သုညများသည် တစ်ခုနှင့်တစ်ခု အပြန်အလှန် လဲနိုင်သဖြင့် ၎င်းတို့ကြားတွင် ထိန်းသိမ်းရမည့် အစီအစဉ် မရှိပါ — အရေအတွက်သာ လိုအပ်ပီး <b>kept</b> ၏ အရှည်က ထိုအချက်ကို သွယ်ဝိုက်၍ ဖော်ပြနေပြီးသား ဖြစ်သည်。`),
+          `သုညဖြစ်သဖြင့် ဘာမှ မှတ်မထားပါ။ သုညများသည် တစ်ခုနှင့်တစ်ခု အပြန်အလှန် လဲနိုင်သဖြင့် ၎င်းတို့ကြားတွင် ထိန်းသိမ်းရမည့် အစီအစဉ် မရှိပါ — အရေအတွက်သာ လိုအပ်ပီး <b>kept</b> ၏ အရှည်က ထိုအချက်ကို သွယ်ဝိုက်၍ ဖော်ပြနေပြီးသား ဖြစ်သည်။`),
       });
     }
   }
@@ -68,7 +68,7 @@ function buildCopy({ nums }) {
     steps.push({ line: 'write', arr: arr.slice(), kept: kept.slice(), write: i, tag: t('write', 'ပြန်ရေး'),
       note: i === 0
         ? t(`<b>nums[0] = ${kept[0]}</b>. Writing back over the original is the only reason this counts as mutating the caller's array rather than handing back a new one.`,
-            `<b>nums[0] = ${kept[0]}</b>။ မူရင်း array ပေါ်တွင် ပြန်ရေးခြင်းကြောင့်သာ array အသစ် ပြန်ပေးသည်ဟု မဆိုဘဲ caller ၏ array ကို mutate လုပ်သည်ဟု ဆိုနိုင်ခြင်း ဖြစ်သည်。`)
+            `<b>nums[0] = ${kept[0]}</b>။ မူရင်း array ပေါ်တွင် ပြန်ရေးခြင်းကြောင့်သာ array အသစ် ပြန်ပေးသည်ဟု မဆိုဘဲ caller ၏ array ကို mutate လုပ်သည်ဟု ဆိုနိုင်ခြင်း ဖြစ်သည်။`)
         : t(`<b>nums[${i}] = ${kept[i]}</b>.`,
             `<b>nums[${i}] = ${kept[i]}</b>။`),
     });
@@ -100,7 +100,7 @@ function buildTwoPointer({ nums }) {
     steps.push({ line: 'loop', arr: arr.slice(), slow, fast, swaps, tag: t('read', 'ဖတ်သည်'),
       note: fast === 0
         ? t(`<b>fast = 0</b>, value ${value}. <b>fast</b> is the scan: it visits every cell exactly once and never goes back.`,
-            `<b>fast = 0</b>၊ တန်ဖိုး ${value}။ <b>fast</b> သည် scan လုပ်သည့် pointer ဖြစ်သည် — cell တိုင်းကို တစ်ကြိမ်တည်း လည်ပတ်ပြီး ဘယ်တော့မှ နောက်ပြန် မသွားပါ。`)
+            `<b>fast = 0</b>၊ တန်ဖိုး ${value}။ <b>fast</b> သည် scan လုပ်သည့် pointer ဖြစ်သည် — cell တိုင်းကို တစ်ကြိမ်တည်း လည်ပတ်ပြီး ဘယ်တော့မှ နောက်ပြန် မသွားပါ။`)
         : t(`<b>fast = ${fast}</b>, value ${value}.`,
             `<b>fast = ${fast}</b>၊ တန်ဖိုး ${value}။`),
     });
@@ -109,9 +109,9 @@ function buildTwoPointer({ nums }) {
       steps.push({ line: 'test', arr: arr.slice(), slow, fast, skip: true, swaps, tag: t('zero', 'သုည'),
         note: slow === fast
           ? t(`A zero, so the boundary stays at ${slow}. <b>fast</b> moves on alone, and from here the two pointers are apart — the gap between them is the zeroes seen so far.`,
-              `သုညဖြစ်သဖြင့် boundary သည် ${slow} တွင် ဆက်ရှိနေသည်။ <b>fast</b> သည် တစ်ကိုယ်တည်း ရှေ့ဆက်သွားပြီး၊ ယခုမှစ၍ pointer နှစ်ခု ကွာသွားသည် — ၎င်းတို့ကြားက ကွာဟချက်သည် ယခုအထိ တွေ့ခဲ့သော သုညများ ဖြစ်သည်。`)
+              `သုညဖြစ်သဖြင့် boundary သည် ${slow} တွင် ဆက်ရှိနေသည်။ <b>fast</b> သည် တစ်ကိုယ်တည်း ရှေ့ဆက်သွားပြီး၊ ယခုမှစ၍ pointer နှစ်ခု ကွာသွားသည် — ၎င်းတို့ကြားက ကွာဟချက်သည် ယခုအထိ တွေ့ခဲ့သော သုညများ ဖြစ်သည်။`)
           : t(`A zero, so the boundary stays at ${slow} and the gap widens to ${fast - slow + 1} cells. Those cells are all zeroes, parked where the next non-zero can swap one away.`,
-              `သုညဖြစ်သဖြင့် boundary သည် ${slow} တွင် ဆက်ရှိနေပြီး ကွာဟချက်မှာ ${fast - slow + 1} cells အထိ ကျယ်သွားသည်။ ထို cell များ အားလုံးသည် သုညများဖြစ်ပြီး၊ နောက် non-zero တစ်ခုက swap လုပ်၍ တစ်လုံးကို ဖယ်ရှားနိုင်မည့် နေရာတွင် ရပ်ထားခြင်း ဖြစ်သည်。`),
+              `သုညဖြစ်သဖြင့် boundary သည် ${slow} တွင် ဆက်ရှိနေပြီး ကွာဟချက်မှာ ${fast - slow + 1} cells အထိ ကျယ်သွားသည်။ ထို cell များ အားလုံးသည် သုညများဖြစ်ပြီး၊ နောက် non-zero တစ်ခုက swap လုပ်၍ တစ်လုံးကို ဖယ်ရှားနိုင်မည့် နေရာတွင် ရပ်ထားခြင်း ဖြစ်သည်။`),
       });
       continue;
     }
@@ -139,7 +139,7 @@ function buildTwoPointer({ nums }) {
   steps.push({ line: 'done', arr: arr.slice(), slow, fast: n - 1, done: true, swaps,
     note: t(
       `<b>fast</b> ran off the end, so the settled prefix is the whole set of non-zero values and everything after <b>slow</b> is a zero. <b>${swaps}</b> swap${swaps === 1 ? '' : 's'}, no extra array.`,
-      `<b>fast</b> သည် အဆုံးထိ ရောက်သွားပြီ၊ ထို့ကြောင့် နေရာချပြီးသော ရှေ့ပိုင်းသည် non-zero တန်ဖိုးများ အားလုံးဖြစ်ပြီး <b>slow</b> ၏ နောက်မှ အားလုံးသည် သုညများ ဖြစ်သည်။ <b>${swaps}</b> ကြိမ် လဲလှယ်ခဲ့ပြီး extra array မရှိပါ。`),
+      `<b>fast</b> သည် အဆုံးထိ ရောက်သွားပြီ၊ ထို့ကြောင့် နေရာချပြီးသော ရှေ့ပိုင်းသည် non-zero တန်ဖိုးများ အားလုံးဖြစ်ပြီး <b>slow</b> ၏ နောက်မှ အားလုံးသည် သုညများ ဖြစ်သည်။ <b>${swaps}</b> ကြိမ် လဲလှယ်ခဲ့ပြီး extra array မရှိပါ။`),
   });
   return steps;
 }
@@ -466,9 +466,9 @@ function mountWidget(host) {
 
     qw('[data-line]').innerHTML = pick(v !== 0
       ? t(`nums[${p}] = ${v} — a non-zero. It keeps its place among the ${kept.length} values that survive, in the exact order they first appeared.`,
-          `nums[${p}] = ${v} — သုည မဟုတ်။ ၎င်းသည် ${kept.length} လုံးသော ကျန်ရစ်သည့် တန်ဖိုးများကြားတွင် ၎င်းတို့ ပေါ်လာခဲ့သည့် အစီအစဉ်အတိုင်း နေရာယူသည်。`)
+          `nums[${p}] = ${v} — သုည မဟုတ်။ ၎င်းသည် ${kept.length} လုံးသော ကျန်ရစ်သည့် တန်ဖိုးများကြားတွင် ၎င်းတို့ ပေါ်လာခဲ့သည့် အစီအစဉ်အတိုင်း နေရာယူသည်။`)
       : t(`nums[${p}] = 0 — a zero. It is interchangeable with every other zero, so there is no order to preserve. These ${zeroCount} zero${zeroCount === 1 ? '' : 's'} will park at the end.`,
-          `nums[${p}] = 0 — သုည။ အခြားသော သုညများနှင့် ဘယ်လိုမဆို လဲလှယ်နိုင်သဖြင့် ထိန်းသိမ်းရမည့် အစီအစဉ် မရှိပါ。 ဤသုည ${zeroCount} လုံးသည် အဆုံးတွင် ရပ်ပါလိမ့်မည်။`));
+          `nums[${p}] = 0 — သုည။ အခြားသော သုညများနှင့် ဘယ်လိုမဆို လဲလှယ်နိုင်သဖြင့် ထိန်းသိမ်းရမည့် အစီအစဉ် မရှိပါ။ ဤသုည ${zeroCount} လုံးသည် အဆုံးတွင် ရပ်ပါလိမ့်မည်။`));
 
     qw('[data-expr]').innerHTML = kept.length
       ? kept.join(' &nbsp;·&nbsp; ')
@@ -537,7 +537,7 @@ mountLesson({
       inputHtml: '<code>nums = [0,1,0,3,12]</code>', output: '[1,3,12,0,0]',
       why: [t(
         'All non-zeros — 1, 3, and 12 — keep their relative order in the front. The zeros fill in afterwards, any way they like.',
-        'Non-zero အားလုံး — 1, 3, နှင့် 12 — တို့သည် ၎င်းတို့၏ မူရင်း အစီအစဉ်အတိုင်း ရှေ့တွင် ရှိနေသည်။ သုညများက နောက်မှ လိုက်လာပြီး ၎င်းတို့အချင်းချင်း မည်သည့် အစီအစဉ်ဖြင့်မဆို ရှိနိုင်သည်。')],
+        'Non-zero အားလုံး — 1, 3, နှင့် 12 — တို့သည် ၎င်းတို့၏ မူရင်း အစီအစဉ်အတိုင်း ရှေ့တွင် ရှိနေသည်။ သုညများက နောက်မှ လိုက်လာပြီး ၎င်းတို့အချင်းချင်း မည်သည့် အစီအစဉ်ဖြင့်မဆို ရှိနိုင်သည်။')],
       load: { nums: [0, 1, 0, 3, 12] } },
     { title: t('Example 2', 'ဥပမာ ၂'),
       inputHtml: '<code>nums = [0]</code>', output: '[0]',
@@ -569,14 +569,17 @@ mountLesson({
       'Non-zero တန်ဖိုးတိုင်းကို ဒုတိယ array တစ်ခုထဲ စုဆောင်း၊ သုညများ ဖြည့်၊ ပြီးမှ ပြန်ရေးသည်။ အဖြေ မှန်သော်လည်း မေးခွန်းက မသုံးရန် တောင်းဆိုထားသည့် <code>O(n)</code> memory ကို သုံးထားသည်။') },
     twopointer: { desc: t(
       'The submission worth writing. <code>slow</code> is a boundary, not an index — everything to its left is correct and never touched again. Swap a non-zero value down to <code>slow</code> and advance both pointers.',
-      'ရေးသင့်သည့် submission ဖြစ်သည်။ <code>slow</code> သည် index မဟုတ်ဘဲ boundary ဖြစ်သည် — ၎င်း၏ ဘယ်ဘက်ရှိ အားလုံးသည် မှန်ကန်ပြီး နောက်ထပ် ထိတော့မည် မဟုတ်。 Non-zero တစ်လုံးကို <code>slow</code> သို့ swap ချပြီး pointer နှစ်ခုလုံး ရှေ့သို့ တိုးသည်။') },
+      'ရေးသင့်သည့် submission ဖြစ်သည်။ <code>slow</code> သည် index မဟုတ်ဘဲ boundary ဖြစ်သည် — ၎င်း၏ ဘယ်ဘက်ရှိ အားလုံးသည် မှန်ကန်ပြီး နောက်ထပ် ထိတော့မည် မဟုတ်။ Non-zero တစ်လုံးကို <code>slow</code> သို့ swap ချပြီး pointer နှစ်ခုလုံး ရှေ့သို့ တိုးသည်။') },
   },
+  // How each language was actually checked, printed as the part 3 badges.
+  // The corpus: 5 edges, 15,000 short arrays heavy in zeros, 5,000 up to 80 values over the full 32-bit range, two at n = 10⁴ — against filter-and-append.
+  // Go and Rust ran in Docker (golang:1.23-alpine, rust:1-slim).
   verification: {
-    ruby: 'ran here · 5 examples + 10,000 random + 36 degenerate',
-    python: 'ran here · 5 examples + 10,000 random + 36 degenerate',
-    javascript: 'ran here · 5 examples + 10,000 random + 36 degenerate',
-    go: 'written here · not compiled — no Go/Rust toolchain, Docker down',
-    rust: 'written here · not compiled — no Go/Rust toolchain, Docker down',
+    ruby: 'ran here · 20,007 cases',
+    python: 'ran here · 20,007 cases',
+    javascript: 'ran here · 20,007 cases',
+    go: 'ran here · 20,007 cases · Go 1.23',
+    rust: 'ran here · 20,007 cases · rustc 1.98',
   },
   strip,
   draw,

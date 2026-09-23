@@ -230,6 +230,8 @@ const CODE = {
       [null, `};`],
     ],
     go: [
+      [null, `${k('import')} ${c('"sort"')}`],
+      [null, ``],
       [null, `${k('func')} isAnagram(s ${k('string')}, t ${k('string')}) ${k('bool')} {`],
       ['len', `    ${k('if')} len(s) != len(t) {`],
       [null, `        ${k('return')} ${k('false')}`],
@@ -635,12 +637,12 @@ mountLesson({
   ],
   examples: [
     { title: t('Example 1', 'ဥပမာ ၁'),
-      inputHtml: '<code>s = "anagram"</code>, <code>t = "nagaram"</code>', output: '<code>true</code>',
+      inputHtml: '<code>s = "anagram"</code>, <code>t = "nagaram"</code>', output: 'true',
       why: [t('<code>s</code> rearranged is exactly <code>t</code> — each letter appears the same number of times.',
               '<code>s</code> ကို ပြန်စီလိုက်လျှင် <code>t</code> အတိုင်း ဖြစ်သည် — စာလုံးတိုင်း၏ အရေအတွက် တူညီသည်။')],
       load: { s: 'anagram', t: 'nagaram' } },
     { title: t('Example 2', 'ဥပမာ ၂'),
-      inputHtml: '<code>s = "rat"</code>, <code>t = "car"</code>', output: '<code>false</code>',
+      inputHtml: '<code>s = "rat"</code>, <code>t = "car"</code>', output: 'false',
       why: [t('<code>r</code> appears in both, but <code>a</code> and <code>t</code> are in <code>s</code> while <code>c</code> is in <code>t</code> — the counts do not match.',
               '<code>r</code> သည် နှစ်ခုလုံးတွင် ပါသော်လည်း <code>a</code> နှင့် <code>t</code> က <code>s</code> ထဲတွင် ရှိပြီး <code>c</code> က <code>t</code> ထဲတွင် ရှိသည် — အရေအတွက်များ မကိုက်ညီပါ။')],
       load: { s: 'rat', t: 'car' } },
@@ -664,16 +666,19 @@ mountLesson({
   code: CODE,
   solutions: {
     sort: { desc: t('Sort a copy of each string, then compare. Three lines, hard to get wrong, and the only approach that handles Unicode without an edit.',
-                    'စာကြောင်းနှစ်ခုစလုံး၏ မိတ္တူကို sort လုပ်ပြီး နှိုင်းယှဉ်သည်။ သုံးကြောင်းသာ ရှိပြီး မှားရန် ခက်သည်။ Unicode ကို ဘာမှ မပြင်ဘဲ ရင်ဆိုင်နိုင်သည့် တစ်ခုတည်းသော နည်းလည်း ဖြစ်သည်。') },
+                    'စာကြောင်းနှစ်ခုစလုံး၏ မိတ္တူကို sort လုပ်ပြီး နှိုင်းယှဉ်သည်။ သုံးကြောင်းသာ ရှိပြီး မှားရန် ခက်သည်။ Unicode ကို ဘာမှ မပြင်ဘဲ ရင်ဆိုင်နိုင်သည့် တစ်ခုတည်းသော နည်းလည်း ဖြစ်သည်။') },
     count: { desc: t('Walk s and add to a count table, walk t and subtract. The moment a row goes below zero, return false — no recovery possible.',
                     's ကို လျှောက်ပြီး ရေတွက်ဇယားတွင် တိုးသည်၊ t ကို လျှောက်ပြီး နုတ်သည်။ အတန်းတစ်ခု သုညအောက် ရောက်သည်နှင့် false ပြန်လိုက်သည် — ပြန်တက်လာနိုင်မည် မဟုတ်ပါ။') },
   },
+  // How each language was actually checked, printed as the part 3 badges.
+  // The corpus: 6 edges, 15,000 strings over "abc", 5,000 permutations (half with one letter changed), three at 5 × 10⁴ — against a Counter.
+  // Go and Rust ran in Docker (golang:1.23-alpine, rust:1-slim).
   verification: {
-    ruby: 'ran here · 4 examples + 10,000 random cases',
-    python: 'ran here · 4 examples + 10,000 random cases',
-    javascript: 'ran here · 4 examples + 10,000 random cases',
-    go: 'written here · not compiled — no Go toolchain, Docker down',
-    rust: 'written here · not compiled — no Rust toolchain, Docker down',
+    ruby: 'ran here · 20,009 cases',
+    python: 'ran here · 20,009 cases',
+    javascript: 'ran here · 20,009 cases',
+    go: 'ran here · 20,009 cases · Go 1.23',
+    rust: 'ran here · 20,009 cases · rustc 1.98',
   },
   strip: stripCard,
   draw,

@@ -154,7 +154,7 @@ function buildOnePass({ prices }) {
         tag: beats ? L.sell : t('no', 'မရ'),
         note: t(
           `Sell today against the day-${minIdx} low: <b>${price} - ${cheapest} = ${gain}</b>${beats ? '.' : `, which does not beat the ${best} already banked.`}`,
-          `နေ့ ${minIdx} ၏ ဈေးအနိမ့်ဆုံးနှင့် တွဲ၍ ယနေ့ ရောင်းကြည့်ပါ — <b>${price} - ${cheapest} = ${gain}</b>${beats ? '。' : ` — သိမ်းထားပြီးသား ${best} ကို မကျော်ပါ။`}`) });
+          `နေ့ ${minIdx} ၏ ဈေးအနိမ့်ဆုံးနှင့် တွဲ၍ ယနေ့ ရောင်းကြည့်ပါ — <b>${price} - ${cheapest} = ${gain}</b>${beats ? '။' : ` — သိမ်းထားပြီးသား ${best} ကို မကျော်ပါ။`}`) });
       if (beats) {
         best = gain;
         bestPair = [minIdx, day];
@@ -462,12 +462,15 @@ mountLesson({
     { id: 'javascript', name: 'JavaScript' }, { id: 'go', name: 'Go' }, { id: 'rust', name: 'Rust' },
   ],
   code: CODE,
+  // How each language was actually checked, printed as the part 3 badges.
+  // The corpus: 4 examples, 15,000 short price lists over 0..6, 5,000 up to 10⁴, three of 3,000 — against all-pairs search; the one-pass versions also ran four at n = 10⁵.
+  // Go and Rust ran in Docker (golang:1.23-alpine, rust:1-slim).
   verification: {
-    ruby: 'ran here · 10,011-case shared corpus, identical checksum',
-    python: 'ran here · 10,011-case shared corpus, identical checksum',
-    javascript: 'ran here · 10,011-case shared corpus, identical checksum',
-    go: 'written here · not compiled — no Go/Rust toolchain, Docker down',
-    rust: 'written here · not compiled — no Go/Rust toolchain, Docker down',
+    ruby: 'ran here · 20,007 cases',
+    python: 'ran here · 20,007 cases',
+    javascript: 'ran here · 20,007 cases',
+    go: 'ran here · 20,007 cases · Go 1.23',
+    rust: 'ran here · 20,007 cases · rustc 1.98',
   },
   strip,
   draw,

@@ -435,12 +435,15 @@ mountLesson({
     hash: { desc: t('The submission worth writing. Check for the partner first, then store — the order is what keeps <code>[3,3]</code> correct.',
                     'ရေးသင့်သည့် submission ဖြစ်သည်။ Partner ကို အရင်စစ်ပြီးမှ သိမ်းပါ — ထိုအစီအစဉ်ကြောင့် <code>[3,3]</code> မှန်နေသည်။') },
   },
+  // How each language was actually checked, printed as the part 3 badges.
+  // The corpus: 3 examples, 15,000 small arrays with one pair, 5,000 up to ±10⁹, and one at n = 10⁴ — each against all-pairs search.
+  // Go and Rust ran in Docker (golang:1.23-alpine, rust:1-slim).
   verification: {
-    ruby: 'ran here · 3 examples + 20,000 random cases',
-    python: 'ran here · 3 examples + 20,000 random cases',
-    javascript: 'ran here · 3 examples + 20,000 random cases',
-    go: 'written here · not compiled — no Go toolchain, Docker down',
-    rust: 'written here · not compiled — no Rust toolchain, Docker down',
+    ruby: 'ran here · 20,004 cases',
+    python: 'ran here · 20,004 cases',
+    javascript: 'ran here · 20,004 cases',
+    go: 'ran here · 20,004 cases · Go 1.23',
+    rust: 'ran here · 20,004 cases · rustc 1.98',
   },
   strip,
   draw,
