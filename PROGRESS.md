@@ -5,7 +5,9 @@ lesson lands; everything needed to pick this up in a fresh session is here.
 
 ## Where we are
 
-**Phase: 2c — converting every lesson to the x-sum format.**
+**Phase 2 is done: all 15 Easy lessons are built in the x-sum format.** Next is phase 3, the cross-check pass.
+
+_Earlier:_ phase 2c converted every lesson to the x-sum format.
 
 The first ten lessons were built on a kit with its own layout, not x-sum's, and
 the three "retrofitted" ones only added a widget and Burmese to that wrong
@@ -21,7 +23,7 @@ passes all ten.
 | Phase | What | Status |
 | --- | --- | --- |
 | 1 | Shared lesson kit + Two Sum as the proof | **done** |
-| 2 | Remaining 14 lessons, 3 at a time | in progress — 14 of 15 done |
+| 2 | Remaining 14 lessons, 3 at a time | **done** — 15 of 15 |
 | 2b | Retrofit the 10 built lessons to full spec | in progress — 3 of 10 |
 | 3 | Cross-check pass: every page at 3 widths, both themes, both languages | not started |
 
@@ -44,7 +46,7 @@ ships, per `~/.claude/skills/leetcode-solution-page`.
 | 8 | 104 | Maximum Depth of Binary Tree | — | recursive DFS / BFS levels | tree + call stack / level | **done** |
 | 9 | 136 | Single Number | count map | XOR fold | strip + bit view | **done** |
 | 10 | 242 | Valid Anagram | sort both O(n log n) | count array O(n) | two strips + counts | **done** |
-| 11 | 70 | Climbing Stairs | naive recursion O(2ⁿ) | memo → iterative O(1) space | recursion tree → DP row | not started |
+| 11 | 70 | Climbing Stairs | naive recursion O(φⁿ) | memo, then two variables O(1) space | call stack + calls-per-step bars → staircase | **done** |
 | 12 | 169 | Majority Element | count map | Boyer–Moore vote | strip + candidate/count | **done** |
 | 13 | 283 | Move Zeroes | build new array | two pointers in place | strip + 2 pointers | **done** |
 | 14 | 125 | Valid Palindrome | clean + reverse + compare | two pointers in place | strip + converging | **done** |

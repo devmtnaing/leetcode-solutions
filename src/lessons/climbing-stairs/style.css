@@ -1,0 +1,6 @@
+/* The widget lists every climb as a short row of moves; x-sum's .q-arr rows are
+ * spaced for one array, so tighten them when there are up to eight. */
+.climbs { margin-bottom: 14px; }
+.climbs .q-arr { margin-bottom: 6px; }
+.climbs .q-arr .cell { width: 32px; height: 34px; font-size: 14px; }
+.climbs .q-row-label { margin: 10px 0 6px; }
