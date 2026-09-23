@@ -500,11 +500,13 @@ mountLesson({
   // (golang:1.23-alpine, rust:1-slim). Recursive Ruby is correct on all of
   // them with a larger VM stack (RUBY_THREAD_VM_STACK_SIZE=8MB), but on Ruby
   // 3.1's default stack it overflows on the three 10⁴-deep chains; measured,
-  // it survives chains up to 8,734 nodes.
+  // it survives chains up to 8,733 nodes. Recursive JavaScript passed the
+  // corpus only because 20,000 small cases warmed the JIT first: run cold, one
+  // chain per process, Node 24's default stack overflows past 7,774 nodes.
   verification: {
     ruby: { dfs: 'ran here · stack overflows at 10⁴ deep', bfs: 'ran here · 20,010 cases' },
     python: 'ran here · 20,010 cases',
-    javascript: 'ran here · 20,010 cases',
+    javascript: { dfs: 'ran here · stack overflows at 10⁴ deep', bfs: 'ran here · 20,010 cases' },
     go: 'ran here · 20,010 cases · Go 1.23',
     rust: 'ran here · 20,010 cases · rustc 1.98',
   },
@@ -514,6 +516,8 @@ mountLesson({
               'မှန်ကန်သည်၊ သို့သော် Ruby 3.1 ၏ default stack ပေါ်တွင် ဤ recursion သည် အဆင့် 8,700 ခန့်ကျော်လျှင် overflow (<code>SystemStackError</code>) ဖြစ်သည် — ဤနေရာတွင် တိုင်းတာထားသည် — ကန့်သတ်ချက်က node 10⁴ ကွင်းဆက်ကို ခွင့်ပြုသည်။ stack ပိုကြီးလျှင် case 20,010 ခုလုံး အောင်သည် — BFS ပုံစံကမူ stack လုံးဝ မလိုပါ။'),
       python: t('Python stops at 1,000 levels by default, and the constraints allow 10⁴, so the listing raises the limit first. Without that line it raises <code>RecursionError</code> on a deep chain.',
                 'Python သည် default အားဖြင့် အဆင့် 1,000 တွင် ရပ်ပြီး ကန့်သတ်ချက်က 10⁴ ကို ခွင့်ပြုသဖြင့် listing က limit ကို အရင် မြှင့်ထားသည်။ ထိုစာကြောင်း မပါလျှင် နက်သော ကွင်းဆက်တွင် <code>RecursionError</code> ဖြစ်မည်။'),
+      javascript: t('Correct on all 20,010 cases, but only because the small ones ran first and warmed the JIT. Run cold on Node 24\'s default stack it overflows (<code>RangeError</code>) on a chain longer than 7,774 nodes — measured here. Whether LeetCode\'s runner gives more stack is not something this page could check; the BFS version needs none.',
+                    'case 20,010 ခုလုံးတွင် မှန်သည်၊ သို့သော် case ငယ်များက အရင် run ပြီး JIT ကို နွှေးပေးခဲ့သောကြောင့်သာ ဖြစ်သည်။ Node 24 ၏ default stack ပေါ်တွင် cold run လုပ်လျှင် node 7,774 ထက် ရှည်သော ကွင်းဆက်တွင် overflow (<code>RangeError</code>) ဖြစ်သည် — ဤနေရာတွင် တိုင်းတာထားသည်။ LeetCode ၏ runner က stack ပိုပေးမပေး ဤစာမျက်နှာက မစစ်နိုင်ပါ — BFS ပုံစံကမူ stack မလိုပါ။'),
     },
   },
   strip,

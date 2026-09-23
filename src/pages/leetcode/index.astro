@@ -25,6 +25,7 @@ const WORKED: Record<number, string> = {
   206: '/leetcode/reverse-linked-list',
   226: '/leetcode/invert-binary-tree',
   104: '/leetcode/maximum-depth-of-binary-tree',
+  543: '/leetcode/diameter-of-binary-tree',
   3318: '/leetcode/x-sum', 3321: '/leetcode/x-sum',
 };
 
@@ -143,8 +144,14 @@ const worked = Object.keys(WORKED).length;
           <span class="m">104</span>
           <span class="s">Each node is one deeper than its deeper child, or count the levels from the top — and why a 10⁴-node chain can crash the recursion.</span>
         </a>
-        <a class="lesson-row" href="/leetcode/x-sum">
+        <a class="lesson-row" href="/leetcode/diameter-of-binary-tree">
           <span class="n">13</span>
+          <span class="t">Diameter of Binary Tree <span class="badge">interactive</span></span>
+          <span class="m">543</span>
+          <span class="s">The longest path bends at some node, so it is that node's left height plus its right — measured afresh everywhere, or collected in one pass.</span>
+        </a>
+        <a class="lesson-row" href="/leetcode/x-sum">
+          <span class="n">14</span>
           <span class="t">X-Sum, Two Ways <span class="badge">interactive</span></span>
           <span class="m">3318 · 3321</span>
           <span class="s">Brute force against a sliding window, in two containers — sorted arrays, then lazy heaps. The second is what makes the hard version pass.</span>

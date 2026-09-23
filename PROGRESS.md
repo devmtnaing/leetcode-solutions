@@ -21,7 +21,7 @@ passes all ten.
 | Phase | What | Status |
 | --- | --- | --- |
 | 1 | Shared lesson kit + Two Sum as the proof | **done** |
-| 2 | Remaining 14 lessons, 3 at a time | in progress — 12 of 15 done |
+| 2 | Remaining 14 lessons, 3 at a time | in progress — 13 of 15 done |
 | 2b | Retrofit the 10 built lessons to full spec | in progress — 3 of 10 |
 | 3 | Cross-check pass: every page at 3 widths, both themes, both languages | not started |
 
@@ -48,7 +48,7 @@ ships, per `~/.claude/skills/leetcode-solution-page`.
 | 12 | 169 | Majority Element | count map | Boyer–Moore vote | strip + candidate/count | not started |
 | 13 | 283 | Move Zeroes | build new array | two pointers in place | strip + 2 pointers | **done** |
 | 14 | 125 | Valid Palindrome | clean + reverse + compare | two pointers in place | strip + converging | **done** |
-| 15 | 543 | Diameter of Binary Tree | height at every node O(n²) | one DFS returning height O(n) | tree + per-node values | not started |
+| 15 | 543 | Diameter of Binary Tree | height at every node O(n²) | one DFS returning height O(n) | tree + per-node values | **done** |
 
 Where the brute force column says "—", the problem has no meaningful naive
 version; the two columns are two honest approaches instead (recursive vs
@@ -84,6 +84,12 @@ Running them caught three real bugs in shipped code: recursive Python for
 Reverse Linked List hit RecursionError at 5,000 nodes (now raises the limit);
 the Linked List Cycle Rust listings lacked the `use` lines to compile; Valid
 Anagram's Go sort listing used `sort` without importing it.
+
+**Recursion at 10⁴ deep (the tree lessons).** Measure stack limits cold — one
+deep input per process. Recursive JavaScript passed Maximum Depth's corpus only
+because 20,000 small cases warmed the JIT first; run cold, Node 24's default
+stack gives out near 7,800 frames. Those listings carry an amber badge and a
+note, as recursive Ruby does.
 
 ## Translation review — needs a native reader
 
