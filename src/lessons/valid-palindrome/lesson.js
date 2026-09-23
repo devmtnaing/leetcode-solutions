@@ -481,9 +481,9 @@ const CODE = {
  */
 
 const QW_SETS = [
-  { label: t('example 1', 'ဥပမာ ၁'), s: 'A man, a plan, a canal: Panama' },
-  { label: t('example 2', 'ဥပမာ ၂'), s: 'race a car' },
-  { label: t('example 3', 'ဥပမာ ၃'), s: ' ' },
+  { label: t('example 1', 'ဥပမာ 1'), s: 'A man, a plan, a canal: Panama' },
+  { label: t('example 2', 'ဥပမာ 2'), s: 'race a car' },
+  { label: t('example 3', 'ဥပမာ 3'), s: ' ' },
   { label: t('digits count', 'ဂဏန်းလည်း ပါ'), s: '0P' },
   { label: t('case only', 'အကြီးအသေးသာ'), s: 'No lemon, no melon' },
 ];

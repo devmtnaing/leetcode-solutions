@@ -424,9 +424,9 @@ const CODE = {
  */
 
 const QW_SETS = [
-  { label: t('example 1', 'ဥပမာ ၁'), values: [3, 2, 0, -4], pos: 1 },
-  { label: t('example 2', 'ဥပမာ ၂'), values: [1, 2], pos: 0 },
-  { label: t('example 3', 'ဥပမာ ၃'), values: [1], pos: -1 },
+  { label: t('example 1', 'ဥပမာ 1'), values: [3, 2, 0, -4], pos: 1 },
+  { label: t('example 2', 'ဥပမာ 2'), values: [1, 2], pos: 0 },
+  { label: t('example 3', 'ဥပမာ 3'), values: [1], pos: -1 },
   { label: t('long tail, small loop', 'tail ရှည်၊ loop သေး'), values: [5, 8, 1, 9, 4, 7, 6], pos: 5 },
 ];
 

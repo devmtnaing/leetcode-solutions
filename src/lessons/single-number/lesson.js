@@ -366,8 +366,8 @@ const CODE = {
  */
 
 const QW_SETS = [
-  { label: t('example 2', 'ဥပမာ ၂'), nums: [4, 1, 2, 1, 2] },
-  { label: t('example 1', 'ဥပမာ ၁'), nums: [2, 2, 1] },
+  { label: t('example 2', 'ဥပမာ 2'), nums: [4, 1, 2, 1, 2] },
+  { label: t('example 1', 'ဥပမာ 1'), nums: [2, 2, 1] },
   { label: t('far apart', 'ဝေးဝေး'), nums: [5, 9, 3, 7, 3, 9, 5] },
   { label: t('shared bits', 'bit တူ'), nums: [6, 3, 5, 6, 3] },
 ];

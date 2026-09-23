@@ -290,9 +290,9 @@ const CODE = {
  */
 
 const QW_SETS = [
-  { label: t('example 1', 'ဥပမာ ၁'), nums: [2, 7, 11, 15], target: 9 },
-  { label: t('example 2', 'ဥပမာ ၂'), nums: [3, 2, 4], target: 6 },
-  { label: t('example 3', 'ဥပမာ ၃'), nums: [3, 3], target: 6 },
+  { label: t('example 1', 'ဥပမာ 1'), nums: [2, 7, 11, 15], target: 9 },
+  { label: t('example 2', 'ဥပမာ 2'), nums: [3, 2, 4], target: 6 },
+  { label: t('example 3', 'ဥပမာ 3'), nums: [3, 3], target: 6 },
   { label: t('no pair yet', 'အတွဲ မရှိသေး'), nums: [1, 4, 6, 10], target: 3 },
 ];
 

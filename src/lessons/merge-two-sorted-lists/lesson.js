@@ -465,10 +465,10 @@ const CODE = {
  */
 
 const QW_SETS = [
-  { label: t('example 1', 'ဥပမာ ၁'), a: [1, 2, 4], b: [1, 3, 4] },
+  { label: t('example 1', 'ဥပမာ 1'), a: [1, 2, 4], b: [1, 3, 4] },
   { label: t('one runs out', 'တစ်ခု အရင်ကုန်'), a: [1, 2, 3], b: [7, 8, 9] },
   { label: t('interleaved', 'အလှည့်ကျ'), a: [1, 3, 5, 7], b: [2, 4, 6] },
-  { label: t('example 3', 'ဥပမာ ၃'), a: [], b: [0] },
+  { label: t('example 3', 'ဥပမာ 3'), a: [], b: [0] },
 ];
 
 function mountFrontsWidget(host) {

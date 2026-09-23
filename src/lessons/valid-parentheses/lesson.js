@@ -408,8 +408,8 @@ const CODE = {
  */
 
 const QW_SETS = [
-  { label: t('example 4', 'ဥပမာ ၄'), s: '([])' },
-  { label: t('example 5', 'ဥပမာ ၅'), s: '([)]' },
+  { label: t('example 4', 'ဥပမာ 4'), s: '([])' },
+  { label: t('example 5', 'ဥပမာ 5'), s: '([)]' },
   { label: t('deep', 'အထပ်များ'), s: '{[()()]}' },
   { label: t('never closed', 'မပိတ်'), s: '(()' },
   { label: t('extra closer', 'ပိတ်ကွင်း ပို'), s: '())(' },
@@ -485,15 +485,15 @@ function mountStackWidget(host) {
       const ch = s[r.broke];
       line = r.top < 0
         ? t(`${ch} at position ${r.broke} arrives with nothing open. Invalid — rule 3.`,
-            `နေရာ ${r.broke} ရှိ ${ch} ရောက်လာချိန်တွင် ဖွင့်ထားသည့်အရာ မရှိပါ။ Invalid — စည်းမျဉ်း ၃။`)
+            `နေရာ ${r.broke} ရှိ ${ch} ရောက်လာချိန်တွင် ဖွင့်ထားသည့်အရာ မရှိပါ။ Invalid — စည်းမျဉ်း 3။`)
         : t(`${ch} at position ${r.broke} needs ${OPENER_OF[ch]}, but the most recent open one is ${s[r.top]}. A ${OPENER_OF[ch]} further back does not count. Invalid — rule 2.`,
-            `နေရာ ${r.broke} ရှိ ${ch} သည် ${OPENER_OF[ch]} ကို လိုသည်၊ သို့သော် နောက်ဆုံး ဖွင့်ထားသည်မှာ ${s[r.top]} ဖြစ်သည်။ နောက်ပိုင်းတွင် ${OPENER_OF[ch]} ရှိနေသော်လည်း မရေတွက်ပါ။ Invalid — စည်းမျဉ်း ၂။`);
+            `နေရာ ${r.broke} ရှိ ${ch} သည် ${OPENER_OF[ch]} ကို လိုသည်၊ သို့သော် နောက်ဆုံး ဖွင့်ထားသည်မှာ ${s[r.top]} ဖြစ်သည်။ နောက်ပိုင်းတွင် ${OPENER_OF[ch]} ရှိနေသော်လည်း မရေတွက်ပါ။ Invalid — စည်းမျဉ်း 2။`);
     } else if (k === 0) {
       line = t('Nothing read yet. Drag right.', 'ဘာမျှ မဖတ်ရသေးပါ။ ညာဘက်သို့ ဆွဲပါ။');
     } else if (k === s.length) {
       line = r.open.length
         ? t(`The string is over and ${r.open.length} opener${r.open.length === 1 ? ' is' : 's are'} still waiting. Invalid — rule 1.`,
-            `string ပြီးသွားသော်လည်း ဖွင့်ကွင်း ${r.open.length} ခု စောင့်နေဆဲ။ Invalid — စည်းမျဉ်း ၁။`)
+            `string ပြီးသွားသော်လည်း ဖွင့်ကွင်း ${r.open.length} ခု စောင့်နေဆဲ။ Invalid — စည်းမျဉ်း 1။`)
         : t('Every opener was closed by the most recent matching closer. Valid.',
             'ဖွင့်ကွင်းတိုင်းကို ကိုက်ညီသော နောက်ဆုံး ပိတ်ကွင်းဖြင့် ပိတ်ခဲ့သည်။ Valid ဖြစ်သည်။');
     } else {
@@ -568,7 +568,7 @@ mountLesson({
       load: { s: '()[]{}' } },
     { title: exampleTitle(3), inputHtml: '<code>s = "(]"</code>', output: 'false',
       why: [t('<code>]</code> can only close a <code>[</code>. The one thing open is a <code>(</code> — rule 1.',
-              '<code>]</code> သည် <code>[</code> ကိုသာ ပိတ်နိုင်သည်။ ဖွင့်ထားသည်မှာ <code>(</code> တစ်ခုတည်း — စည်းမျဉ်း ၁။')],
+              '<code>]</code> သည် <code>[</code> ကိုသာ ပိတ်နိုင်သည်။ ဖွင့်ထားသည်မှာ <code>(</code> တစ်ခုတည်း — စည်းမျဉ်း 1။')],
       load: { s: '(]' } },
     { title: exampleTitle(4), inputHtml: '<code>s = "([])"</code>', output: 'true',
       why: [t('Nested: <code>[]</code> closes inside <code>()</code>. The inner pair has to close first, and it does.',
@@ -576,7 +576,7 @@ mountLesson({
       load: { s: '([])' } },
     { title: exampleTitle(5), inputHtml: '<code>s = "([)]"</code>', output: 'false',
       why: [t('Every bracket has a partner of the right type and the counts balance — and it is still invalid. <code>)</code> arrives while <code>[</code> is the most recent opener: the pairs cross instead of nesting. Rule 2.',
-              'ကွင်းတိုင်းတွင် အမျိုးအစားမှန်သော အဖော် ရှိပြီး အရေအတွက်လည်း ညီသည် — သို့သော် invalid ဖြစ်နေဆဲ။ <code>)</code> ရောက်လာချိန်တွင် နောက်ဆုံး ဖွင့်ကွင်းမှာ <code>[</code> ဖြစ်နေသည် — အတွဲများ အထပ်လိုက် မဟုတ်ဘဲ ဖြတ်ကျော်နေသည်။ စည်းမျဉ်း ၂။')],
+              'ကွင်းတိုင်းတွင် အမျိုးအစားမှန်သော အဖော် ရှိပြီး အရေအတွက်လည်း ညီသည် — သို့သော် invalid ဖြစ်နေဆဲ။ <code>)</code> ရောက်လာချိန်တွင် နောက်ဆုံး ဖွင့်ကွင်းမှာ <code>[</code> ဖြစ်နေသည် — အတွဲများ အထပ်လိုက် မဟုတ်ဘဲ ဖြတ်ကျော်နေသည်။ စည်းမျဉ်း 2။')],
       load: { s: '([)]' } },
   ],
   modes: [

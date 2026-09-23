@@ -10,7 +10,7 @@
  *
  * Exits non-zero if anything fails, so it can gate a commit.
  */
-import { readdirSync, existsSync } from 'node:fs';
+import { readdirSync, existsSync, readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 
@@ -142,6 +142,14 @@ for (const slug of slugs) {
   }
 
   if (!existsSync(resolve(LESSONS, slug, 'statement.html'))) fail(slug, 'no statement.html');
+
+  // Numerals stay Arabic in both languages — the page is full of numeric data,
+  // and mixing two digit systems reads worse than either alone.
+  for (const f of ['lesson.js', 'page.js', 'statement.html']) {
+    const path = resolve(LESSONS, slug, f);
+    const hit = existsSync(path) && readFileSync(path, 'utf8').match(/.{0,30}[\u1040-\u1049].{0,10}/);
+    if (hit) fail(slug, `${f} has a Burmese digit — use 0-9: "${hit[0].trim()}"`);
+  }
 
   const mine = failures - before;
   console.log(`${mine ? 'FAIL' : '  ok'}  ${slug.padEnd(34)} ${mine ? `${mine} problem(s)` : notes.join(' · ')}`);

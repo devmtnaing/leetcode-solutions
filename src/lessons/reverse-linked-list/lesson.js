@@ -521,8 +521,8 @@ const CODE = {
  */
 
 const QW_SETS = [
-  { label: t('example 1', 'ဥပမာ ၁'), nums: [1, 2, 3, 4, 5], save: true },
-  { label: t('example 2', 'ဥပမာ ၂'), nums: [1, 2], save: true },
+  { label: t('example 1', 'ဥပမာ 1'), nums: [1, 2, 3, 4, 5], save: true },
+  { label: t('example 2', 'ဥပမာ 2'), nums: [1, 2], save: true },
   { label: t('forget to save next', 'next ကို မသိမ်းမိ'), nums: [1, 2, 3, 4, 5], save: false },
 ];
 
