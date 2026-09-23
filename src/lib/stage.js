@@ -143,8 +143,9 @@ export function tree(root, o = {}) {
     .map((n) => {
       const on = at === n.id;
       const t = tone[n.id];
-      const fill = on ? 'var(--accent)' : t === 'done' ? 'var(--up-soft)' : 'var(--surface)';
-      const stroke = on ? 'var(--accent)' : t === 'done' ? 'var(--up)' : 'var(--line-2)';
+      // done: settled (green) · warn: being changed right now (amber)
+      const fill = on ? 'var(--accent)' : t === 'done' ? 'var(--up-soft)' : t === 'warn' ? 'var(--amber-soft)' : 'var(--surface)';
+      const stroke = on ? 'var(--accent)' : t === 'done' ? 'var(--up)' : t === 'warn' ? 'var(--amber)' : 'var(--line-2)';
       const ink = on ? 'var(--surface)' : 'var(--ink)';
       return `<g>
         <circle cx="${x(n)}" cy="${y(n)}" r="17" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
