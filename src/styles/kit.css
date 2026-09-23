@@ -279,6 +279,13 @@
 :root[data-ui="my"] h1,:root[data-ui="my"] h2,:root[data-ui="my"] h3{
   overflow-wrap:break-word;word-break:break-word;line-height:1.75;
 }
+/* Uppercasing a chip that mixes Burmese and Latin shouts the Latin half and
+   does nothing to the rest, so drop the transform when the page is in Burmese. */
+:root[data-ui="my"] .kit-tag,:root[data-ui="my"] .st-label,
+:root[data-ui="my"] .kit-field span,:root[data-ui="my"] .sol-badge{
+  text-transform:none;letter-spacing:.02em;
+}
+
 /* Code, data and the stage stay in the Latin faces in both languages — the
    numbers must not jump when the language changes. */
 :root[data-ui="my"] code,:root[data-ui="my"] pre,:root[data-ui="my"] .mono,

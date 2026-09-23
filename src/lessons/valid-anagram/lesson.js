@@ -24,51 +24,45 @@ function buildSort({ s, t }) {
   const tc = [...t];
   const snap = (extra) => ({ view: 'sort', a: sc, b: tc, aSorted: false, bSorted: false, ...extra });
 
-  steps.push(snap({ line: 'len', tag: { en: 'length',
-      my: 'အရှည်' },
+  steps.push(snap({ line: 'len', tag: { en: 'length', my: 'အရှည်' },
     note: { en: `<b>s</b> has ${plural(sc.length, 'letter')}, <b>t</b> has ${plural(tc.length, 'letter')}.`,
-      my: `<b>s</b> တွင် စာလုံး ${sc.length} လုံး၊ <b>t</b> တွင် ${tc.length} လုံး ရှိသည်။` } }));
+            my: `<b>s</b> တွင် စာလုံး ${sc.length} လုံး၊ <b>t</b> တွင် ${tc.length} လုံး ရှိသည်။` } }));
 
   if (sc.length !== tc.length) {
-    steps.push(snap({ line: 'len', verdict: false, tag: { en: 'no',
-      my: 'မဟုတ်' },
+    steps.push(snap({ line: 'len', verdict: false, tag: { en: 'no', my: 'မဟုတ်' },
       note: { en: 'Two strings of different lengths cannot be anagrams, and the check is free. Return <b>false</b>.',
-      my: 'အရှည် မတူသော စာကြောင်းနှစ်ကြောင်းသည် anagram မဖြစ်နိုင်ပါ။ စစ်ဆေးရန်လည်း ဘာမှ မကုန်ပါ။ <b>false</b> ပြန်ပေးလိုက်သည်။' } }));
+              my: 'အရှည် မတူသော စာကြောင်းနှစ်ကြောင်းသည် anagram မဖြစ်နိုင်ပါ။ စစ်ဆေးရန်လည်း ဘာမှ မကုန်ပါ။ <b>false</b> ပြန်ပေးလိုက်သည်။' } }));
     return steps;
   }
 
   const a = [...sc].sort();
   const b = [...tc].sort();
 
-  steps.push(snap({ line: 'sorts', a, aSorted: true, tag: { en: 'sort',
-      my: 'sort လုပ်' },
+  steps.push(snap({ line: 'sorts', a, aSorted: true, tag: { en: 'sort', my: 'sort လုပ်' },
     note: { en: `Sort a copy of <b>s</b>: <b>${a.join('')}</b>. The original order is gone, which is fine — order was never what the question asked about.`,
-      my: `<b>s</b> ၏ မိတ္တူတစ်ခုကို sort လုပ်လိုက်သည် — <b>${a.join('')}</b>။ မူရင်းအစီအစဉ် ပျောက်သွားပြီ၊ သို့သော် ကိစ္စ မရှိပါ — မေးခွန်းက အစီအစဉ်ကို ဘယ်တုန်းကမှ မမေးခဲ့ပါ။` } }));
-  steps.push(snap({ line: 'sortt', a, b, aSorted: true, bSorted: true, tag: { en: 'sort',
-      my: 'sort လုပ်' },
+            my: `<b>s</b> ၏ မိတ္တူတစ်ခုကို sort လုပ်လိုက်သည် — <b>${a.join('')}</b>။ မူရင်းအစီအစဉ် ပျောက်သွားပြီ၊ သို့သော် ကိစ္စ မရှိပါ — မေးခွန်းက အစီအစဉ်ကို ဘယ်တုန်းကမှ မမေးခဲ့ပါ။` } }));
+  steps.push(snap({ line: 'sortt', a, b, aSorted: true, bSorted: true, tag: { en: 'sort', my: 'sort လုပ်' },
     note: { en: `Sort <b>t</b> the same way: <b>${b.join('')}</b>. Two sorts is where the <b>O(n log n)</b> goes.`,
-      my: `<b>t</b> ကိုလည်း အတူတူ sort လုပ်သည် — <b>${b.join('')}</b>။ <b>O(n log n)</b> ကုန်သွားသည်မှာ ဤ sort နှစ်ခုကြောင့် ဖြစ်သည်။` } }));
+            my: `<b>t</b> ကိုလည်း အတူတူ sort လုပ်သည် — <b>${b.join('')}</b>။ <b>O(n log n)</b> ကုန်သွားသည်မှာ ဤ sort နှစ်ခုကြောင့် ဖြစ်သည်။` } }));
 
   for (let i = 0; i < a.length; i++) {
     const same = a[i] === b[i];
     if (!same) {
       steps.push(snap({ line: 'compare', a, b, aSorted: true, bSorted: true, i, bad: true,
-        verdict: false, tag: { en: 'differ',
-      my: 'ကွဲသွား' },
+        verdict: false, tag: { en: 'differ', my: 'ကွဲသွား' },
         note: { en: `Position ${i}: <b>${a[i]}</b> against <b>${b[i]}</b>. The sorted forms part ways here, so return <b>false</b>.`,
-      my: `နေရာ ${i} — <b>${a[i]}</b> နှင့် <b>${b[i]}</b>။ sort လုပ်ထားသော ပုံစံနှစ်ခု ဤနေရာတွင် ကွဲသွားသဖြင့် <b>false</b> ပြန်ပေးသည်။` } }));
+                my: `နေရာ ${i} — <b>${a[i]}</b> နှင့် <b>${b[i]}</b>။ sort လုပ်ထားသော ပုံစံနှစ်ခု ဤနေရာတွင် ကွဲသွားသဖြင့် <b>false</b> ပြန်ပေးသည်။` } }));
       return steps;
     }
-    steps.push(snap({ line: 'compare', a, b, aSorted: true, bSorted: true, i, tag: { en: 'same',
-      my: 'တူ' },
+    steps.push(snap({ line: 'compare', a, b, aSorted: true, bSorted: true, i, tag: { en: 'same', my: 'တူ' },
       note: { en: `Position ${i}: both <b>${a[i]}</b>. The equality check does this for every position; it stops at the first pair that differs.`,
-      my: `နေရာ ${i} — နှစ်ခုလုံး <b>${a[i]}</b>။ တူညီမှု စစ်ဆေးချက်သည် နေရာတိုင်းအတွက် ဤအတိုင်း လုပ်ပြီး ပထမဆုံး မတူသည့် အတွဲတွင် ရပ်သည်။` } }));
+              my: `နေရာ ${i} — နှစ်ခုလုံး <b>${a[i]}</b>။ တူညီမှု စစ်ဆေးချက်သည် နေရာတိုင်းအတွက် ဤအတိုင်း လုပ်ပြီး ပထမဆုံး မတူသည့် အတွဲတွင် ရပ်သည်။` } }));
   }
 
   steps.push(snap({ line: 'compare', a, b, aSorted: true, bSorted: true, verdict: true, tag: { en: 'yes',
-      my: 'ဟုတ်' },
+                                                                                               my: 'ဟုတ်' },
     note: { en: 'Every position matched, so the sorted forms are the same string. Return <b>true</b>.',
-      my: 'နေရာတိုင်း ကိုက်ညီသဖြင့် sort လုပ်ထားသော ပုံစံနှစ်ခုမှာ တစ်ထပ်တည်း ဖြစ်နေသည်။ <b>true</b> ပြန်ပေးသည်။' } }));
+            my: 'နေရာတိုင်း ကိုက်ညီသဖြင့် sort လုပ်ထားသော ပုံစံနှစ်ခုမှာ တစ်ထပ်တည်း ဖြစ်နေသည်။ <b>true</b> ပြန်ပေးသည်။' } }));
   return steps;
 }
 
@@ -78,46 +72,40 @@ function buildCount({ s, t }) {
   const snap = (extra) => ({ view: 'count', count: { ...count }, si: null, ti: null,
     sDone: 0, tDone: 0, ...extra });
 
-  steps.push(snap({ line: 'len', tag: { en: 'length',
-      my: 'အရှည်' },
+  steps.push(snap({ line: 'len', tag: { en: 'length', my: 'အရှည်' },
     note: { en: `<b>s</b> has ${plural(s.length, 'letter')}, <b>t</b> has ${plural(t.length, 'letter')}.`,
-      my: `<b>s</b> တွင် စာလုံး ${s.length} လုံး၊ <b>t</b> တွင် ${t.length} လုံး ရှိသည်။` } }));
+            my: `<b>s</b> တွင် စာလုံး ${s.length} လုံး၊ <b>t</b> တွင် ${t.length} လုံး ရှိသည်။` } }));
 
   if (s.length !== t.length) {
-    steps.push(snap({ line: 'len', verdict: false, tag: { en: 'no',
-      my: 'မဟုတ်' },
+    steps.push(snap({ line: 'len', verdict: false, tag: { en: 'no', my: 'မဟုတ်' },
       note: { en: 'Different lengths, so no tally can balance. Return <b>false</b> before touching a single letter.',
-      my: 'အရှည် မတူသဖြင့် ဘယ်လို ရေတွက်ရေတွက် မျှမည် မဟုတ်ပါ။ စာလုံးတစ်လုံးမှ မထိရသေးဘဲ <b>false</b> ပြန်ပေးလိုက်သည်။' } }));
+              my: 'အရှည် မတူသဖြင့် ဘယ်လို ရေတွက်ရေတွက် မျှမည် မဟုတ်ပါ။ စာလုံးတစ်လုံးမှ မထိရသေးဘဲ <b>false</b> ပြန်ပေးလိုက်သည်။' } }));
     return steps;
   }
 
-  steps.push(snap({ line: 'init', tag: { en: 'tally',
-      my: 'ရေတွက်' },
+  steps.push(snap({ line: 'init', tag: { en: 'tally', my: 'ရေတွက်' },
     note: { en: 'One table, letter to a number. Nothing in it yet, and it never grows past 26 rows.',
-      my: 'ဇယားတစ်ခုတည်း — စာလုံးတစ်လုံးလျှင် ကိန်းတစ်လုံး။ ယခု ဘာမှ မရှိသေးဘဲ၊ အတန်း 26 ကြောင်းထက် ဘယ်တော့မှ မကျော်ပါ။' } }));
-  steps.push(snap({ line: 'sloop', tag: { en: 'phase',
-      my: 'အဆင့်' },
+            my: 'ဇယားတစ်ခုတည်း — စာလုံးတစ်လုံးလျှင် ကိန်းတစ်လုံး။ ယခု ဘာမှ မရှိသေးဘဲ၊ အတန်း 26 ကြောင်းထက် ဘယ်တော့မှ မကျော်ပါ။' } }));
+  steps.push(snap({ line: 'sloop', tag: { en: 'phase', my: 'အဆင့်' },
     note: { en: 'First pass: walk <b>s</b> and add one to the row for each letter. This is the demand t will have to meet.',
-      my: 'ပထမ အကျော့ — <b>s</b> ကို လျှောက်ပြီး စာလုံးတစ်လုံးစီအတွက် သက်ဆိုင်ရာ အတန်းကို တစ်တိုးသည်။ ဤသည်မှာ t ဖြည့်ဆည်းပေးရမည့် လိုအပ်ချက် ဖြစ်သည်။' } }));
+            my: 'ပထမ အကျော့ — <b>s</b> ကို လျှောက်ပြီး စာလုံးတစ်လုံးစီအတွက် သက်ဆိုင်ရာ အတန်းကို တစ်တိုးသည်။ ဤသည်မှာ t ဖြည့်ဆည်းပေးရမည့် လိုအပ်ချက် ဖြစ်သည်။' } }));
 
   for (let i = 0; i < s.length; i++) {
     const ch = s[i];
     const before = count[ch] || 0;
     count[ch] = before + 1;
     steps.push(snap({ line: 'up', si: i, sDone: i, key: ch, keyTone: 'warn',
-      tag: { en: 'in s',
-      my: 's ထဲ' },
+      tag: { en: 'in s', my: 's ထဲ' },
       note: before === 0
         ? { en: `<b>s[${i}]</b> is <b>${ch}</b>, the first one. The row starts at <b>1</b>.`,
-      my: `<b>s[${i}]</b> မှာ <b>${ch}</b> ဖြစ်ပြီး ပထမဆုံး တစ်လုံး ဖြစ်သည်။ ထိုအတန်းသည် <b>1</b> မှ စသည်။` }
+            my: `<b>s[${i}]</b> မှာ <b>${ch}</b> ဖြစ်ပြီး ပထမဆုံး တစ်လုံး ဖြစ်သည်။ ထိုအတန်းသည် <b>1</b> မှ စသည်။` }
         : { en: `<b>s[${i}]</b> is another <b>${ch}</b>. Its row goes ${before} → <b>${before + 1}</b>.`,
-      my: `<b>s[${i}]</b> က နောက်ထပ် <b>${ch}</b> တစ်လုံး။ သူ့အတန်း ${before} → <b>${before + 1}</b> သို့ တက်သည်။` } }));
+            my: `<b>s[${i}]</b> က နောက်ထပ် <b>${ch}</b> တစ်လုံး။ သူ့အတန်း ${before} → <b>${before + 1}</b> သို့ တက်သည်။` } }));
   }
 
-  steps.push(snap({ line: 'loop', sDone: s.length, tag: { en: 'phase',
-      my: 'အဆင့်' },
+  steps.push(snap({ line: 'loop', sDone: s.length, tag: { en: 'phase', my: 'အဆင့်' },
     note: { en: 'Second pass: walk <b>t</b> and subtract. Each letter of t spends one unit of what s put in.',
-      my: 'ဒုတိယ အကျော့ — <b>t</b> ကို လျှောက်ပြီး နုတ်သည်။ t ၏ စာလုံးတစ်လုံးစီသည် s ထည့်ထားသည့်အထဲမှ တစ်ခုစီ သုံးသည်။' } }));
+            my: 'ဒုတိယ အကျော့ — <b>t</b> ကို လျှောက်ပြီး နုတ်သည်။ t ၏ စာလုံးတစ်လုံးစီသည် s ထည့်ထားသည့်အထဲမှ တစ်ခုစီ သုံးသည်။' } }));
 
   for (let i = 0; i < t.length; i++) {
     const ch = t[i];
@@ -126,28 +114,25 @@ function buildCount({ s, t }) {
     const now = count[ch];
 
     steps.push(snap({ line: 'down', ti: i, sDone: s.length, tDone: i, key: ch,
-      keyTone: now < 0 ? 'down' : now === 0 ? 'up' : 'warn', bad: now < 0, tag: { en: 'in t',
-      my: 't ထဲ' },
+      keyTone: now < 0 ? 'down' : now === 0 ? 'up' : 'warn', bad: now < 0, tag: { en: 'in t', my: 't ထဲ' },
       note: now < 0
         ? { en: `<b>t[${i}]</b> is <b>${ch}</b>, but the row is already at 0 — s never supplied this one. Subtracting takes it to <b>-1</b>.`,
-      my: `<b>t[${i}]</b> မှာ <b>${ch}</b> ဖြစ်သော်လည်း ထိုအတန်းသည် 0 ရောက်နေပြီ — s က ဤစာလုံးကို လုံးဝ မပေးခဲ့ပါ။ နုတ်လိုက်သဖြင့် <b>-1</b> သို့ ကျသွားသည်။` }
+            my: `<b>t[${i}]</b> မှာ <b>${ch}</b> ဖြစ်သော်လည်း ထိုအတန်းသည် 0 ရောက်နေပြီ — s က ဤစာလုံးကို လုံးဝ မပေးခဲ့ပါ။ နုတ်လိုက်သဖြင့် <b>-1</b> သို့ ကျသွားသည်။` }
         : { en: `<b>t[${i}]</b> is <b>${ch}</b>. The row owed ${before}, so spend one: ${before} → <b>${now}</b>.`,
-      my: `<b>t[${i}]</b> မှာ <b>${ch}</b>။ ထိုအတန်းတွင် ${before} ကျန်သေးသဖြင့် တစ်ခု သုံးလိုက်သည် — ${before} → <b>${now}</b>။` } }));
+            my: `<b>t[${i}]</b> မှာ <b>${ch}</b>။ ထိုအတန်းတွင် ${before} ကျန်သေးသဖြင့် တစ်ခု သုံးလိုက်သည် — ${before} → <b>${now}</b>။` } }));
 
     if (now < 0) {
       steps.push(snap({ line: 'neg', ti: i, sDone: s.length, tDone: i, key: ch, keyTone: 'down',
-        bad: true, verdict: false, tag: { en: 'no',
-      my: 'မဟုတ်' },
+        bad: true, verdict: false, tag: { en: 'no', my: 'မဟုတ်' },
         note: { en: `A negative row means t has more <b>${ch}</b>s than s does. Nothing later can fix that, so return <b>false</b> now.`,
-      my: `အတန်းက အနုတ် ဖြစ်သွားသည်ဆိုသည်မှာ t တွင် <b>${ch}</b> အရေအတွက် s ထက် ပိုများနေသည် ဟု ဆိုလိုသည်။ နောက်ပိုင်းတွင် ဘာမှ ပြန်ပြင်၍ မရတော့သဖြင့် ယခုပင် <b>false</b> ပြန်ပေးလိုက်သည်။` } }));
+                my: `အတန်းက အနုတ် ဖြစ်သွားသည်ဆိုသည်မှာ t တွင် <b>${ch}</b> အရေအတွက် s ထက် ပိုများနေသည် ဟု ဆိုလိုသည်။ နောက်ပိုင်းတွင် ဘာမှ ပြန်ပြင်၍ မရတော့သဖြင့် ယခုပင် <b>false</b> ပြန်ပေးလိုက်သည်။` } }));
       return steps;
     }
   }
 
-  steps.push(snap({ line: 'yes', sDone: s.length, tDone: t.length, verdict: true, tag: { en: 'yes',
-      my: 'ဟုတ်' },
+  steps.push(snap({ line: 'yes', sDone: s.length, tDone: t.length, verdict: true, tag: { en: 'yes', my: 'ဟုတ်' },
     note: { en: 'Every row is back at zero: t spent exactly what s supplied. Return <b>true</b>. Equal lengths are what make "no row went negative" sufficient — with equal totals, no row can be left positive either.',
-      my: 'အတန်းတိုင်း သုညသို့ ပြန်ရောက်သွားပြီ — s ပေးထားသမျှအတိုင်း t က အတိအကျ သုံးသွားသည်။ <b>true</b> ပြန်ပေးသည်။ အရှည် တူညီခြင်းကြောင့်သာ “အတန်းတစ်ခုမှ အနုတ် မဖြစ်ခဲ့” ဆိုသည်က လုံလောက်သည် — စုစုပေါင်း တူညီနေလျှင် အတန်းတစ်ခုမှ အပေါင်းဘက်တွင်လည်း ကျန်နေနိုင်မည် မဟုတ်ပါ။' } }));
+            my: 'အတန်းတိုင်း သုညသို့ ပြန်ရောက်သွားပြီ — s ပေးထားသမျှအတိုင်း t က အတိအကျ သုံးသွားသည်။ <b>true</b> ပြန်ပေးသည်။ အရှည် တူညီခြင်းကြောင့်သာ “အတန်းတစ်ခုမှ အနုတ် မဖြစ်ခဲ့” ဆိုသည်က လုံလောက်သည် — စုစုပေါင်း တူညီနေလျှင် အတန်းတစ်ခုမှ အပေါင်းဘက်တွင်လည်း ကျန်နေနိုင်မည် မဟုတ်ပါ။' } }));
   return steps;
 }
 
@@ -202,12 +187,9 @@ function vars(s) {
             ['b[i]', s.i != null && s.bSorted ? s.b[s.i] : '—'],
             ['verdict', verdict]];
   }
-  return [[{ en: 'pass',
-      my: 'အကျော့' }, s.ti != null
-              ? pick({ en: 'spending on t',
-      my: 't ကို သုံးနေ' })
-              : s.si != null ? pick({ en: 'tallying s',
-      my: 's ကို ရေတွက်နေ' }) : '—'],
+  return [[{ en: 'pass', my: 'အကျော့' }, s.ti != null
+              ? pick({ en: 'spending on t', my: 't ကို သုံးနေ' })
+              : s.si != null ? pick({ en: 'tallying s', my: 's ကို ရေတွက်နေ' }) : '—'],
           ['letter', s.key ?? '—'],
           ['count[letter]', s.key != null ? s.count[s.key] : '—'],
           ['rows', Object.keys(s.count || {}).length],
@@ -363,26 +345,18 @@ const CODE = {
  */
 
 const W = {
-  title: { en: 'Order or count — which one decides?',
-      my: 'အစီအစဉ်လား၊ အရေအတွက်လား — ဘယ်ဟာက ဆုံးဖြတ်သလဲ။' },
+  title: { en: 'Order or count — which one decides?', my: 'အစီအစဉ်လား၊ အရေအတွက်လား — ဘယ်ဟာက ဆုံးဖြတ်သလဲ။' },
   sub: { en: 'Rearrange <b>t</b> as much as you like — click a tile to swap it with the one after it, or shuffle the whole word. Watch the two count tables while you do. Then change a single letter.',
-      my: '<b>t</b> ကို ကြိုက်သလောက် ပြန်စီကြည့်ပါ — tile တစ်ခုကို နှိပ်လျှင် သူ့နောက်က တစ်ခုနှင့် နေရာလဲသည်၊ သို့မဟုတ် စကားလုံးတစ်ခုလုံးကို shuffle လုပ်နိုင်သည်။ လုပ်ရင်း အရေအတွက်ဇယား နှစ်ခုကို စောင့်ကြည့်ပါ။ ပြီးမှ စာလုံးတစ်လုံးကို လဲကြည့်ပါ။' },
-  labS: { en: 's — fixed',
-      my: 's — မပြောင်း' },
-  labT: { en: 't — click to swap',
-      my: 't — နေရာလဲရန် နှိပ်ပါ' },
-  cntS: { en: 'counts in s',
-      my: 's ထဲက အရေအတွက်' },
-  cntT: { en: 'counts in t',
-      my: 't ထဲက အရေအတွက်' },
-  letter: { en: 'letter',
-      my: 'စာလုံး' },
-  isAna: { en: 'anagram',
-      my: 'anagram ဖြစ်သည်' },
-  notAna: { en: 'not an anagram',
-      my: 'anagram မဟုတ်' },
+         my: '<b>t</b> ကို ကြိုက်သလောက် ပြန်စီကြည့်ပါ — tile တစ်ခုကို နှိပ်လျှင် သူ့နောက်က တစ်ခုနှင့် နေရာလဲသည်၊ သို့မဟုတ် စကားလုံးတစ်ခုလုံးကို shuffle လုပ်နိုင်သည်။ လုပ်ရင်း အရေအတွက်ဇယား နှစ်ခုကို စောင့်ကြည့်ပါ။ ပြီးမှ စာလုံးတစ်လုံးကို လဲကြည့်ပါ။' },
+  labS: { en: 's — fixed', my: 's — မပြောင်း' },
+  labT: { en: 't — click to swap', my: 't — နေရာလဲရန် နှိပ်ပါ' },
+  cntS: { en: 'counts in s', my: 's ထဲက အရေအတွက်' },
+  cntT: { en: 'counts in t', my: 't ထဲက အရေအတွက်' },
+  letter: { en: 'letter', my: 'စာလုံး' },
+  isAna: { en: 'anagram', my: 'anagram ဖြစ်သည်' },
+  notAna: { en: 'not an anagram', my: 'anagram မဟုတ်' },
   start: { en: '<b>s</b> and <b>t</b> hold exactly the same letters, so <b>t</b> is an anagram of <b>s</b>. Now move the letters of <b>t</b> and watch what does — and does not — change.',
-      my: '<b>s</b> နှင့် <b>t</b> တွင် စာလုံးများ အတိအကျ တူညီသဖြင့် <b>t</b> သည် <b>s</b> ၏ anagram ဖြစ်သည်။ ယခု <b>t</b> ၏ စာလုံးများကို ရွှေ့ကြည့်ပြီး ဘာပြောင်းသည်၊ ဘာ မပြောင်းသည်ကို ကြည့်ပါ။' },
+           my: '<b>s</b> နှင့် <b>t</b> တွင် စာလုံးများ အတိအကျ တူညီသဖြင့် <b>t</b> သည် <b>s</b> ၏ anagram ဖြစ်သည်။ ယခု <b>t</b> ၏ စာလုံးများကို ရွှေ့ကြည့်ပြီး ဘာပြောင်းသည်၊ ဘာ မပြောင်းသည်ကို ကြည့်ပါ။' },
   held: {
     en: (n) => `Rearranged ${n} time${n === 1 ? '' : 's'}. <b>t</b> reads differently every time and not one row of the counts has moved. Order carries no information here — the counts carry all of it.`,
     my: (n) => `${n} ကြိမ် ပြန်စီပြီးပြီ။ <b>t</b> သည် အကြိမ်တိုင်း ပုံစံ မတူတော့သော်လည်း အရေအတွက်ဇယားမှ အတန်းတစ်ကြောင်းမှ မရွေ့ခဲ့ပါ။ ဤနေရာတွင် အစီအစဉ်က သတင်းအချက်အလက် ဘာမှ မသယ်ဆောင်ဘဲ အရေအတွက်များကသာ အကုန် သယ်ဆောင်ထားသည်။`,
@@ -395,12 +369,9 @@ const W = {
     en: (l, a, b) => `<b>${l}</b>: s has ${a}, t has ${b}`,
     my: (l, a, b) => `<b>${l}</b>: s တွင် ${a}၊ t တွင် ${b}`,
   },
-  bShuffle: { en: 'Shuffle t',
-      my: 't ကို shuffle လုပ်' },
-  bMutate: { en: 'Change one letter',
-      my: 'စာလုံးတစ်လုံး လဲကြည့်' },
-  bReset: { en: 'Reset',
-      my: 'အစသို့ ပြန်' },
+  bShuffle: { en: 'Shuffle t', my: 't ကို shuffle လုပ်' },
+  bMutate: { en: 'Change one letter', my: 'စာလုံးတစ်လုံး လဲကြည့်' },
+  bReset: { en: 'Reset', my: 'အစသို့ ပြန်' },
 };
 
 const WIDGET_CSS = `
@@ -606,10 +577,8 @@ const word = (v) => {
 };
 
 const CONTROLS = [
-  { key: 's', label: { en: 'word s',
-      my: 'စကားလုံး s' }, size: 14, value: 'anagram', parse: word },
-  { key: 't', label: { en: 'word t',
-      my: 'စကားလုံး t' }, size: 14, value: 'nagaram', parse: word },
+  { key: 's', label: { en: 'word s', my: 'စကားလုံး s' }, size: 14, value: 'anagram', parse: word },
+  { key: 't', label: { en: 'word t', my: 'စကားလုံး t' }, size: 14, value: 'nagaram', parse: word },
 ];
 
 mountLesson({
@@ -618,16 +587,12 @@ mountLesson({
   controls: CONTROLS,
   modes: [
     { id: 'sort',
-      name: { en: 'Sort both',
-      my: 'နှစ်ခုလုံးကို sort လုပ်ရန်' },
-      blurb: { en: 'Same letters, same sorted string',
-      my: 'စာလုံးတူလျှင် sort လုပ်ထားသည့် စာကြောင်းလည်း တူသည်' },
+      name: { en: 'Sort both', my: 'နှစ်ခုလုံးကို sort လုပ်ရန်' },
+      blurb: { en: 'Same letters, same sorted string', my: 'စာလုံးတူလျှင် sort လုပ်ထားသည့် စာကြောင်းလည်း တူသည်' },
       cost: 'O(n log n) time · O(n) space', build: buildSort },
     { id: 'count',
-      name: { en: 'Count letters',
-      my: 'စာလုံးများကို ရေတွက်ရန်' },
-      blurb: { en: 'One tally, up on s and down on t',
-      my: 'ဇယားတစ်ခုတည်း — s တွင် တိုး၊ t တွင် နုတ်' },
+      name: { en: 'Count letters', my: 'စာလုံးများကို ရေတွက်ရန်' },
+      blurb: { en: 'One tally, up on s and down on t', my: 'ဇယားတစ်ခုတည်း — s တွင် တိုး၊ t တွင် နုတ်' },
       cost: 'O(n) time · O(1) space', build: buildCount },
   ],
   languages: [

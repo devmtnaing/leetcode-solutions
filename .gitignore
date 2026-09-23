@@ -6,3 +6,10 @@ dist/
 *.log
 .env
 .env.production
+
+# Screenshots from browser checks; never part of the site
+*.png
+*.jpg
+*.webp
+!public/**/*.png
+!src/**/*.png

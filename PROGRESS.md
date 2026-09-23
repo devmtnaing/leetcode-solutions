@@ -5,7 +5,14 @@ lesson lands; everything needed to pick this up in a fresh session is here.
 
 ## Where we are
 
-**Phase: 2 of 3 — lessons, three at a time.**
+**Phase: 2b — retrofitting the built lessons to the skill's full spec.**
+
+The first ten were built short of the spec: no part 1 widget, no traps
+list, part 3 replaced by a takeaway, and no Burmese. The layout and the
+translation mechanism are fixed centrally; the per-lesson content —
+widget, traps, Burmese strings — is being written three lessons at a time.
+
+**Retrofitted so far: Two Sum, Best Time, Valid Anagram (3 of 10).**
 
 The x-sum page was written as one bespoke 4,000-line file. Fifteen more of
 those would mean fifteen reimplementations of the same transport, code panel
@@ -20,7 +27,8 @@ buys nothing.
 | --- | --- | --- |
 | 1 | Shared lesson kit + Two Sum as the proof | **done** |
 | 2 | Remaining 14 lessons, 3 at a time | in progress — 10 of 15 done |
-| 3 | Cross-check pass: every page at 3 widths, both themes | not started |
+| 2b | Retrofit the 10 built lessons to full spec | in progress — 3 of 10 |
+| 3 | Cross-check pass: every page at 3 widths, both themes, both languages | not started |
 
 ## The plan per lesson
 
