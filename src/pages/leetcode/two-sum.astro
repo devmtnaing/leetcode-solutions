@@ -3,22 +3,43 @@ import Walkthrough from '../../layouts/Walkthrough.astro';
 import statement from '../../lessons/two-sum/statement.html?raw';
 
 const takeaway = `
-<p>The brute force asks a question about <strong>a pair</strong>: do these two add up?
+<p data-i18n="Brute force သည် <strong>အတွဲတစ်တွဲ</strong> အကြောင်း မေးသည် — ဤနှစ်ခု ပေါင်းလျှင် ကိုက်သလား။ အတွဲပေါင်း <code>n(n-1)/2</code> ရှိသဖြင့် ကုန်ကျစရိတ်မှာ ထိုမျှဖြစ်သည်။">The brute force asks a question about <strong>a pair</strong>: do these two add up?
 There are <code>n(n-1)/2</code> pairs, so that is the cost.</p>
 
-<p>The hash map asks a question about <strong>one element</strong>: has the number that
+<p data-i18n="Hash map ကမူ <strong>element တစ်ခုတည်း</strong> အကြောင်း မေးသည် — ငါ့ကို ပြည့်စုံစေမည့် ကိန်းသည် ဖြတ်သွားပြီးပြီလား။ ထိုမေးခွန်းကို အချိန်ကုန် မတိုးဘဲ (constant time) ဖြေနိုင်ပြီး၊ မေးစရာ element မှာလည်း <code>n</code> ခုသာ ရှိသည်။">The hash map asks a question about <strong>one element</strong>: has the number that
 would complete me already gone by? That question is answerable in constant time, and
 there are only <code>n</code> elements to ask it of.</p>
 
-<p>That reframing — from "check every combination" to "ask each element one question a
+<p data-i18n="ထိုသို့ အမြင်ပြောင်းလိုက်ခြင်း — ပေါင်းစပ်မှုတိုင်းကို စစ်မည် မှ element တစ်ခုချင်းစီကို lookup ဖြင့် ဖြေနိုင်သည့် မေးခွန်းတစ်ခု မေးမည် သို့ — သည်ပင် အဓိက အချက်ဖြစ်သည်။ <strong>Valid Anagram</strong>၊ <strong>Majority Element</strong> နှင့် subarray-sum ပြဿနာ အများစုတွင်လည်း ဤနည်းအတိုင်းပင် ဖြစ်သည်။ <code>O(n)</code> memory ပေးလိုက်ပြီး အချိန်မှ quadratic factor ကို လျှော့ခြင်းသည် များသောအားဖြင့် တန်သည့် အလဲအလှယ် ဖြစ်သည်။">That reframing — from "check every combination" to "ask each element one question a
 lookup can answer" — is the whole trick, and it is the same trick behind
 <strong>Valid Anagram</strong>, <strong>Majority Element</strong> and most of the
 subarray-sum problems. Trading <code>O(n)</code> memory for a quadratic factor of time
 is usually the right trade.</p>
 
-<p>One detail the examples hide: store the value <em>after</em> checking for its partner,
+<p data-i18n="ဥပမာများက ဖုံးကွယ်ထားသည့် အချက်တစ်ခု — လက်ရှိတန်ဖိုးကို map ထဲ သိမ်းရမည်မှာ ၎င်း၏ partner ကို စစ်<em>ပြီးမှ</em> ဖြစ်သည်၊ မစစ်မီ မဟုတ်ပါ။ အရင်သိမ်းလိုက်လျှင် <code>target</code> သည် ထိုတန်ဖိုး၏ နှစ်ဆဖြစ်နေသည့်အခါ element သည် သူ့ကိုယ်သူ partner ဖြစ်သွားလိမ့်မည်။">One detail the examples hide: store the value <em>after</em> checking for its partner,
 not before. Store first and an element becomes its own partner whenever
 <code>target</code> is double it.</p>`;
+
+const traps = `
+<ul>
+  <li data-i18n="<strong>အဖြေ တစ်ခုတည်းသာ ရှိသည်</strong> ဆိုသည်မှာ တွေ့သည်နှင့် ချက်ချင်း ပြန်ပေးလိုက်နိုင်သည်ဟု ဆိုလိုသည်။ နောက်ထပ် အတွဲ ရှာစရာ မလို၊ အတွဲနှစ်ခုကြားက ရွေးစရာလည်း မလိုသဖြင့် loop ထဲကပင် return လုပ်လိုက်ပါ။"><strong>"Exactly one solution"</strong> is a licence to leave early. There is no second
+    pair to find and no tie to break, so the first pair that works is the answer —
+    <code>return</code> from inside the loop rather than collecting matches.</li>
+
+  <li data-i18n="<strong>element တစ်ခုတည်းကို နှစ်ကြိမ် မသုံးရ</strong> ဆိုသည်မှာ နေရာ (index) အတွက် ဖြစ်သည်၊ တန်ဖိုးအတွက် မဟုတ်ပါ။ ဥပမာ ၃ တွင် <code>nums = [3,3]</code>၊ <code>target = 6</code> ၏ အဖြေမှာ <code>[0,1]</code> — တန်ဖိုးတူသော်လည်း element နှစ်ခု ကွဲပြားသောကြောင့် ရသည်။ ထို့ကြောင့် <code>j &gt; i</code> ဖြင့်ဖြစ်စေ၊ လက်ရှိတန်ဖိုးကို မသိမ်းမီ map ကို စစ်ခြင်းဖြင့်ဖြစ်စေ ကာကွယ်ပါ — တန်ဖိုးချင်း နှိုင်းယှဉ်၍ ကာကွယ်ခြင်းက မှားသည်။"><strong>"You may not use the same element twice"</strong> is about positions, not values.
+    Example 3 is <code>nums = [3,3]</code>, <code>target = 6</code>, and the answer is
+    <code>[0,1]</code> — two different elements that happen to hold the same number.
+    Keep them apart with <code>j &gt; i</code>, or by checking the map before storing the
+    current value. Comparing the values themselves rejects a legal answer.</li>
+
+  <li data-i18n="မေးထားသည်မှာ <strong>index များ</strong> ဖြစ်သည်၊ တန်ဖိုးများ မဟုတ်ပါ။ ဥပမာ ၁ ၏ အဖြေမှာ <code>[0,1]</code> ဖြစ်ပြီး <code>[2,7]</code> မဟုတ်ပါ။">It asks for <strong>indices</strong>, not values. The answer to example 1 is
+    <code>[0,1]</code>, not <code>[2,7]</code>.</li>
+
+  <li data-i18n="<code>nums</code> ကို အစဉ်လိုက် စီထားသည် မဟုတ်ပါ — ကန့်သတ်ချက်များတွင် ထိုသို့ မပါပါ။ two-pointer နည်းသည် စီထားမှသာ အလုပ်လုပ်သည်ဖြစ်ရာ အရင် sort လုပ်ရမည်။ ထိုအခါ <code>O(n log n)</code> ကုန်ရုံသာမက မေးထားသည့် index များပါ ရွှေ့ကုန်မည် — တန်ဖိုးနှင့်အတူ မူလ index ကို တွဲယူသွားမှသာ အဖြေ မှန်မည်။"><code>nums</code> is not sorted — nothing in the constraints says it is. Two-pointer
+    only works on sorted input, so it needs a sort first: that costs
+    <code>O(n log n)</code> and, worse, moves the very indices you were asked to return.
+    It works only if you carry each original index alongside its value.</li>
+</ul>`;
 ---
 <Walkthrough
   title="Two Sum"
@@ -28,7 +49,31 @@ not before. Store first and an element becomes its own partner whenever
   difficulty="Easy"
   statement={statement}
   takeaway={takeaway}
+  traps={traps}
 />
+
+<style is:global>
+  /* The part-1 widget. Everything it draws is a kit shape already; these are
+     only the few things the kit has no class for — the slider row, and cells
+     that are clickable here but not in the walkthrough. */
+  #question-widget{margin-top:20px;max-width:74ch}
+  #question-widget h3{font-size:14.5px;color:var(--ink);margin-bottom:5px}
+  #question-widget .qw{display:flex;flex-direction:column;gap:12px}
+  #question-widget .qw-sub{font-size:13.5px;color:var(--ink-2);line-height:1.65}
+  #question-widget .kit-stage{min-height:0;padding:16px 15px}
+  #question-widget .qw-slider{flex-direction:row;align-items:center;gap:12px;flex:1;min-width:0}
+  #question-widget .qw-slider > span{white-space:nowrap}
+  #question-widget .qw-slider b{
+    font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--accent);margin-left:5px;
+  }
+  #question-widget input[type=range]{
+    flex:1;min-width:120px;max-width:340px;accent-color:var(--accent);
+    background:transparent;border:0;padding:0;
+  }
+  #question-widget .st-cell{cursor:pointer}
+  #question-widget .st-cell:hover{border-color:var(--accent)}
+  #question-widget .st-cell:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
 
 <script>
   import '../../lessons/two-sum/lesson.js';

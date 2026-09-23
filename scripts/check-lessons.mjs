@@ -77,9 +77,15 @@ for (const slug of slugs) {
     const unused = [...base].filter((k) => !used.has(k));
 
     for (const [i, s] of steps.entries()) {
-      if (!s.note) { fail(slug, `${mode.id} step ${i} has no narration`); break; }
-      if (/undefined|NaN|\[object Object\]/.test(s.note)) {
-        fail(slug, `${mode.id} step ${i} narration reads "${s.note.slice(0, 60)}"`); break;
+      // A note may be a plain string or an { en, my } pair; check both sides.
+      const sides = s.note == null ? []
+        : typeof s.note === 'string' ? [s.note]
+        : [s.note.en, s.note.my].filter(Boolean);
+      if (!sides.length) { fail(slug, `${mode.id} step ${i} has no narration`); break; }
+      const bad = sides.find((x) => /undefined|NaN|\[object Object\]/.test(x));
+      if (bad) { fail(slug, `${mode.id} step ${i} narration reads "${bad.slice(0, 60)}"`); break; }
+      if (typeof s.note === 'object' && !s.note.en) {
+        fail(slug, `${mode.id} step ${i} has a Burmese note with no English side`); break;
       }
       let html;
       try { html = cfg.draw(s, cfg.input); }

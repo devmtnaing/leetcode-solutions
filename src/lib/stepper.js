@@ -245,7 +245,15 @@ export function mountLesson(cfg) {
   // snapshots rather than swap text in place. Hold the reader's position.
   onLangChange(() => {
     const at = state.i;
-    root.querySelector('[data-controls]') && el.controls.querySelectorAll('[data-field]').forEach(() => {});
+    // The input row is written once at mount, so its labels need relabelling
+    // here or they keep the language the page loaded in.
+    if (cfg.controls) {
+      el.controls.querySelectorAll('[data-field]').forEach((input) => {
+        const spec = cfg.controls.find((c) => c.key === input.dataset.field);
+        const label = input.closest('.kit-field')?.querySelector('span');
+        if (spec && label) label.textContent = pick(spec.label);
+      });
+    }
     rebuild(true);
     go(at);
     root.querySelectorAll('[data-mode]').forEach((b) => {
@@ -270,7 +278,7 @@ function renderSolutions(cfg) {
 
   const langs = cfg.languages;
   const badge = (lang) => {
-    const how = (cfg.verification || {})[lang];
+    const how = pick((cfg.verification || {})[lang]);
     if (!how) return '';
     const unrun = /not compiled|not run|unverified/i.test(how);
     return `<span class="sol-badge${unrun ? ' unrun' : ''}">${esc(how)}</span>`;
@@ -284,8 +292,8 @@ function renderSolutions(cfg) {
     ${cfg.modes.map((m) => `
       <section class="sol" data-sol-mode="${m.id}">
         <header class="sol-head">
-          <h3>${esc(m.name)}</h3>
-          <span class="sol-cost mono">${esc(m.cost || '')}</span>
+          <h3>${esc(pick(m.name))}</h3>
+          <span class="sol-cost mono">${esc(pick(m.cost))}</span>
         </header>
         ${langs.map((l, i) => `
           <div class="sol-pane" data-sol-pane="${m.id}:${l.id}" ${i ? 'hidden' : ''}>

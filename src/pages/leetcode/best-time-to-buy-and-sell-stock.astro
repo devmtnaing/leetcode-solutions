@@ -2,30 +2,53 @@
 import Walkthrough from '../../layouts/Walkthrough.astro';
 import statement from '../../lessons/best-time-to-buy-and-sell-stock/statement.html?raw';
 
+const traps = `
+<ul>
+  <li data-i18n="အရောင်းအဝယ် <strong>တစ်ကြိမ်တည်း</strong> သာ — တစ်ခါဝယ်၊ တစ်ခါရောင်း။ အကြိမ်ကြိမ် ရောင်းဝယ်လို့ရသော ပုစ္ဆာမှာ <em>Best Time to Buy and Sell Stock II</em> ဖြစ်ပြီး ဤဟာ မဟုတ်ပါ။ ဈေးတက်တိုင်း ပေါင်းယူသည့် greedy အဖြေသည် ဤနေရာတွင် မှားသည်။">
+    <strong>One transaction only</strong> — buy once, sell once. The variant where you may trade
+    as often as you like is <em>Best Time to Buy and Sell Stock II</em>, not this one, and its
+    greedy answer of summing every rise is wrong here.</li>
+
+  <li data-i18n="ရောင်းသည့်နေ့က ဝယ်သည့်နေ့ နောက်မှ ဖြစ်ရမည်၊ ထို့ကြောင့် အဖြေသည် <code>max(prices) − min(prices)</code> မဟုတ်ပါ။ <code>[7,6,4,3,1]</code> တွင် ထိုပုံသေနည်းက 6 ဟု ဆိုသော်လည်း ဈေးအသက်သာဆုံးနေ့သည် နောက်ဆုံးနေ့ ဖြစ်နေသဖြင့် ရောင်းစရာ နေ့ မကျန်တော့ပါ။ နေ့တစ်ရက်တည်းသာ ရှိလျှင်လည်း တရားဝင် နေ့တွဲ လုံးဝ မရှိသဖြင့် အဖြေမှာ 0 ဖြစ်သည်။">
+    <strong>The sell must come after the buy</strong>, so the answer is not
+    <code>max(prices) &minus; min(prices)</code>. On <code>[7,6,4,3,1]</code> that formula says 6,
+    but the cheapest day is the last day and there is nothing left to sell into. With a single
+    day there is no valid pair at all, so the answer is 0.</li>
+
+  <li data-i18n="အမြတ် မရနိုင်လျှင် <code>0</code> ပြန်ပေးရမည် — အရှုံး အနည်းဆုံး ဂဏန်းလည်း မဟုတ်၊ error လည်း မဟုတ်။ ရှုံးမည့် နေ့တွဲကို ဘယ်တော့မှ အဖြေအဖြစ် မယူရပါ၊ ဘာမှ မဝယ်၊ မရောင်းဘဲ နေလိုက်ရုံသာ ဖြစ်သည်။">
+    <strong>No profit means <code>0</code></strong> — not the least-bad loss, not an error. A
+    losing pair is never the answer; you simply take no trade at all.</li>
+
+  <li data-i18n="ဈေးနှုန်းများ ဆက်တိုက် တူညီနေနိုင်ပြီး <code>0</code> လည်း ဖြစ်နိုင်သည်။ ဈေးတူသော နေ့နှစ်ရက်က အမြတ် 0 သာ ပေးသဖြင့် 0 ကနေ စထားသော <code>best</code> ကို ဘယ်တော့မှ မကျော်နိုင်ပါ — ထို့ကြောင့် ဈေးတူညီမှုအတွက် သီးသန့် စစ်ဆေးစရာ မလိုပါ။">
+    <strong>Prices may repeat on consecutive days</strong>, and may be <code>0</code>. Two equal
+    days earn exactly 0, which can never beat a <code>best</code> that already starts at 0 — so
+    ties need no special case.</li>
+</ul>`;
+
 const takeaway = `
-<p>The brute force asks a question about <strong>a pair of days</strong>: what would buying
+<p data-i18n="brute force က <strong>နေ့နှစ်ရက်တွဲ</strong> အကြောင်း မေးသည် — ဒီနေ့ ဝယ်ပြီး ဟိုနေ့ ရောင်းလျှင် ဘယ်လောက် ရမလဲ။ နေ့တွဲ <code>n(n-1)/2</code> တွဲ ရှိသဖြင့် ကုန်ကျစရိတ်က ထိုအတိုင်းပင် ဖြစ်သည်။">The brute force asks a question about <strong>a pair of days</strong>: what would buying
 here and selling there have earned? There are <code>n(n-1)/2</code> pairs, so that is the cost.</p>
 
-<p>The one-pass asks a question about <strong>one day</strong>: if I sold today, what is the
+<p data-i18n="one pass က <strong>နေ့တစ်ရက်</strong> အကြောင်း မေးသည် — ဒီနေ့ ရောင်းမည်ဆိုလျှင် stock ကို အနည်းဆုံး ဘယ်လောက်နှင့် ဝယ်ထားနိုင်ခဲ့သလဲ။ အဖြေမှာ ဘယ်ဘက်ရှိ အားလုံးထဲက အနည်းဆုံး ဖြစ်ပြီး၊ ပြေးနေသော အနည်းဆုံးကို ထိန်းရန် တစ်နေ့လျှင် နှိုင်းယှဉ်မှု တစ်ကြိမ်သာ လိုသည်။ <code>n</code> ရက်၊ တစ်ရက်လျှင် မေးခွန်း တစ်ခုစီ။">The one-pass asks a question about <strong>one day</strong>: if I sold today, what is the
 least I could have paid for the stock? That answer is the minimum of everything to the left,
 and a running minimum is one comparison per day to maintain. <code>n</code> days, one question
 each.</p>
 
-<p>The reason it is allowed to throw away the past is worth stating out loud: once a cheaper
+<p data-i18n="အတိတ်ကို လွှင့်ပစ်လို့ ရသည့် အကြောင်းရင်းကို ပွင့်ပွင့်လင်းလင်း ပြောထိုက်သည် — ဈေးပိုသက်သာသော နေ့တစ်ခု ပေါ်လာသည်နှင့် နောင်လာမည့် အရောင်းတစ်ခုမှ ယခင် ဈေးကြီးသော နေ့ကို ရွေးတော့မည် မဟုတ်ပါ။ ယခင် အနည်းဆုံးသည် အရေးမပါနိုင်ဖို့ များသည် ဆိုသည်မျိုး မဟုတ်ဘဲ၊ <em>သက်သေပြနိုင်လောက်အောင်</em> လုံးဝ အသုံးမဝင်တော့ခြင်း ဖြစ်သည်။ ဤကိုယ်စားလှယ်သည် နောက်ထပ် ဘယ်တော့မှ မနိုင်နိုင်တော့သဖြင့် သယ်မသွားတော့ဘူး ဆိုသော အငြင်းအခုံက တစ်ခေါက်တည်း လျှောက်ခြင်းကို ခွင့်ပြုပေးသည်။ <strong>Trapping Rain Water</strong> ၏ monotonic stack နှင့် <strong>Container With Most Water</strong> ၏ two pointers နောက်ကွယ်တွင်လည်း ဤအငြင်းအခုံပင် ရှိသည်။">The reason it is allowed to throw away the past is worth stating out loud: once a cheaper
 day appears, no later sale would ever prefer an earlier, dearer one. The old minimum is not
 just unlikely to matter, it is <em>provably</em> dominated. That argument — this candidate can
 never win again, so stop carrying it — is what licenses a single pass, and it is the same
 argument behind the monotonic stack in <strong>Trapping Rain Water</strong> and the two
 pointers in <strong>Container With Most Water</strong>.</p>
 
-<p>The shape generalises past this problem. Walk left to right, keep a small summary of the
+<p data-i18n="ဤပုံစံသည် ဤပုစ္ဆာထက် ကျော်လွန်၍ အသုံးဝင်သည်။ ဘယ်မှညာ လျှောက်ပါ၊ prefix ၏ အကျဉ်းချုပ် သေးသေးလေး တစ်ခုကို ကိုင်ထားပါ၊ နေရာတိုင်းတွင် လက်ရှိ element ကို ထိုအကျဉ်းချုပ်နှင့် ပေါင်းစပ်ပါ — <strong>Maximum Subarray</strong> က ပြေးနေသော ပေါင်းလဒ်ကို၊ <strong>Product of Array Except Self</strong> က ပြေးနေသော မြှောက်လဒ်ကို၊ subarray-sum ပုစ္ဆာများက prefix-sum map ကို ကိုင်ထားကြသည်။ ပထမ index က ဒုတိယ index ထက် စောရမည့် အကောင်းဆုံး နေ့တွဲ ဟု ဖတ်ရသော ပုစ္ဆာမျိုး တွေ့လျှင် — ညာဘက် index တစ်ခုစီအတွက် ဘယ်ဘက်ခြမ်း၏ ဘယ်လို အကျဉ်းချုပ်မျိုး လိုအပ်သလဲ ဟု မေးကြည့်ပါ။">The shape generalises past this problem. Walk left to right, keep a small summary of the
 prefix, and at each position combine the current element with that summary:
 <strong>Maximum Subarray</strong> keeps a running sum, <strong>Product of Array Except Self</strong>
 keeps a running product, the subarray-sum problems keep a prefix-sum map. Whenever a problem
 reads as "best pair where the first index comes before the second", try asking what summary
 of the left half each right index actually needs.</p>
 
-<p>Two details the code hides. Starting <code>cheapest</code> at infinity removes the special
+<p data-i18n="code ထဲတွင် ဖုံးကွယ်နေသော အချက် နှစ်ချက် ရှိသည်။ <code>cheapest</code> ကို infinity နှင့် စတင်ခြင်းက နေ့ 0 အတွက် သီးသန့် စစ်ဆေးမှုကို ဖယ်ရှားပေးသည် — မရှိလျှင် အလွတ် prefix အတွက် သီးခြား branch တစ်ခု လိုလာမည်။ နောက်တစ်ချက်၊ <code>else</code> သည် အမြန်အောင် လုပ်ထားခြင်း မဟုတ်ပါ — အနည်းဆုံးအသစ် သတ်မှတ်လိုက်သော နေ့တွင် အမြတ်သည် သဘာဝအားဖြင့် သုည ဖြစ်နေပြီး၊ သုညကနေ စထားသော <code>best</code> ကို ဘယ်တော့မှ မကျော်နိုင်ပါ။ <code>if</code> နှစ်ခု သီးခြားစီ ရေးလည်း မှန်သည်၊ ပိုနေရုံသာ ဖြစ်သည်။">Two details the code hides. Starting <code>cheapest</code> at infinity removes the special
 case for day 0 — without it you need a separate branch for the empty prefix. And the
 <code>else</code> is not an optimisation: on a day that sets a new minimum, the profit is zero
 by construction, which can never beat a <code>best</code> that already starts at zero. Writing
@@ -38,6 +61,7 @@ it as two independent <code>if</code>s is equally correct, just redundant.</p>`;
   leetcodeSlug="best-time-to-buy-and-sell-stock"
   difficulty="Easy"
   statement={statement}
+  traps={traps}
   takeaway={takeaway}
 />
 
