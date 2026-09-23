@@ -25,10 +25,15 @@ const { title, summary, leetcodeId, leetcodeSlug, difficulty, statement, takeawa
   up={{ href: '/leetcode', title: 'All algorithm lessons' }}
 >
   <div class="shell">
+    <div class="lang-switch" role="group" aria-label="Page language">
+      <button class="lang-opt" data-lang-opt="en" aria-pressed="true">English</button>
+      <button class="lang-opt" data-lang-opt="my" aria-pressed="false" lang="my">မြန်မာ</button>
+    </div>
+
     <section class="part">
-      <h2><span class="part-n">1</span> The question</h2>
+      <h2><span class="part-n">1</span> <span data-i18n="မေးခွန်း">The question</span></h2>
       <p class="part-sub">
-        Quoted from LeetCode —
+        <span data-i18n="LeetCode မှ ကူးယူဖော်ပြသည် —">Quoted from LeetCode —</span>
         <a href={`https://leetcode.com/problems/${leetcodeSlug}/`} target="_blank" rel="noopener">
           {leetcodeId}. {title}</a>
         <span class={`diff ${difficulty.toLowerCase()}`}>{difficulty}</span>
@@ -37,7 +42,7 @@ const { title, summary, leetcodeId, leetcodeSlug, difficulty, statement, takeawa
 
       {traps && (
         <details class="traps">
-          <summary>Where the wording catches people out</summary>
+          <summary data-i18n="မေးခွန်းစာသားထဲက ချော်လွယ်သည့်နေရာများ">Where the wording catches people out</summary>
           <div set:html={traps} />
         </details>
       )}
@@ -46,10 +51,10 @@ const { title, summary, leetcodeId, leetcodeSlug, difficulty, statement, takeawa
     </section>
 
     <section class="part">
-      <h2><span class="part-n">2</span> The answer, step by step</h2>
+      <h2><span class="part-n">2</span> <span data-i18n="အဖြေ — အဆင့်ဆင့်">The answer, step by step</span></h2>
       <p class="part-sub">
-        Pick an approach, then drive it one step at a time. The highlighted line is the one
-        running; the stage on the left is the state it is acting on.
+        <span data-i18n="နည်းလမ်းတစ်ခုကို ရွေးပြီး တစ်ဆင့်ချင်း လျှောက်ကြည့်ပါ။ အရောင်ခြယ်ထားသော ကြောင်းသည် အလုပ်လုပ်နေသည့် ကြောင်းဖြစ်ပြီး၊ ဘယ်ဘက်ကမူ ၎င်းပြုပြင်နေသော အခြေအနေကို ပြသည်။">Pick an approach, then drive it one step at a time. The highlighted line is the one
+        running; the stage on the left is the state it is acting on.</span>
       </p>
       <div id="lesson">
         <noscript><p class="part-sub">The walkthrough needs JavaScript. The whole solution is in part 3 either way.</p></noscript>
@@ -59,12 +64,17 @@ const { title, summary, leetcodeId, leetcodeSlug, difficulty, statement, takeawa
     </section>
 
     <section class="part">
-      <h2><span class="part-n">3</span> The whole solution</h2>
+      <h2><span class="part-n">3</span> <span data-i18n="အဖြေ code အပြည့်အစုံ">The whole solution</span></h2>
       <p class="part-sub">
-        Every approach in every language, complete and paste-ready. Each carries a badge
-        saying exactly how it was checked — including the ones that were not run.
+        <span data-i18n="နည်းလမ်းတိုင်းကို ဘာသာစကားတိုင်းဖြင့် ပြည့်စုံစွာ ရေးထားသည်၊ copy ကူးပြီး တင်နိုင်သည်။ တစ်ခုစီတွင် မည်သို့ စမ်းသပ်ခဲ့သည်ကို ပြသော အမှတ်အသား ပါသည် — မစမ်းသပ်ရသေးသည့်အရာများပါ အပါအဝင်။">Every approach in every language, complete and paste-ready. Each carries a badge
+        saying exactly how it was checked — including the ones that were not run.</span>
       </p>
       <div id="solutions"></div>
     </section>
   </div>
 </Lesson>
+
+<script>
+  import { initLangSwitch } from '../lib/i18n.js';
+  initLangSwitch();
+</script>

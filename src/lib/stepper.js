@@ -26,6 +26,8 @@
  * the scrubber possible: any frame is one array index away.
  */
 
+import { pick, onLangChange, lang as currentLang } from './i18n.js';
+
 const $ = (sel, el = document) => el.querySelector(sel);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -79,7 +81,7 @@ export function mountLesson(cfg) {
     }
     state.steps = steps.length ? steps : [{ line: null, note: 'Nothing to step through.' }];
     state.i = keepIndex ? Math.min(state.i, state.steps.length - 1) : 0;
-    el.cost.textContent = m.cost || '';
+    el.cost.textContent = pick(m.cost);
     renderCode();
     render();
   }
@@ -96,7 +98,7 @@ export function mountLesson(cfg) {
     // safe Rust and linked lists being the recurring case. Saying so beside
     // the code beats letting the reader watch the highlight jump and wonder.
     const cav = (cfg.caveats?.[state.mode] ?? {})[state.lang];
-    el.caveat.innerHTML = cav || '';
+    el.caveat.innerHTML = pick(cav);
     el.caveat.hidden = !cav;
 
     el.code.innerHTML = listing()
@@ -126,13 +128,16 @@ export function mountLesson(cfg) {
       }
     }
 
-    el.note.innerHTML = s.note
-      ? `${s.tag ? `<span class="kit-tag">${esc(s.tag)}</span>` : ''}<span>${s.note}</span>`
+    // note and tag may be a plain string or an { en, my } pair
+    const note = pick(s.note);
+    const tag = pick(s.tag);
+    el.note.innerHTML = note
+      ? `${tag ? `<span class="kit-tag">${esc(tag)}</span>` : ''}<span>${note}</span>`
       : '';
 
     const vars = cfg.vars ? cfg.vars(s, state.input) : null;
     el.vars.innerHTML = vars && vars.length
-      ? vars.map(([k, v]) => `<span class="kit-var"><b>${esc(k)}</b>${esc(v)}</span>`).join('')
+      ? vars.map(([k, v]) => `<span class="kit-var"><b>${esc(pick(k))}</b>${esc(v)}</span>`).join('')
       : '';
     el.vars.hidden = !(vars && vars.length);
 
@@ -210,7 +215,7 @@ export function mountLesson(cfg) {
 
   if (cfg.controls) {
     el.controls.innerHTML = cfg.controls
-      .map((c) => `<label class="kit-field"><span>${esc(c.label)}</span>
+      .map((c) => `<label class="kit-field"><span>${esc(pick(c.label))}</span>
         <input type="${c.type || 'text'}" data-field="${c.key}" value="${esc(c.value)}"
                ${c.min != null ? `min="${c.min}"` : ''} ${c.max != null ? `max="${c.max}"` : ''}
                ${c.size ? `size="${c.size}"` : ''}></label>`)
@@ -235,6 +240,20 @@ export function mountLesson(cfg) {
 
   rebuild();
   renderSolutions(cfg);
+
+  // Narration is generated per step, so a language change has to rebuild the
+  // snapshots rather than swap text in place. Hold the reader's position.
+  onLangChange(() => {
+    const at = state.i;
+    root.querySelector('[data-controls]') && el.controls.querySelectorAll('[data-field]').forEach(() => {});
+    rebuild(true);
+    go(at);
+    root.querySelectorAll('[data-mode]').forEach((b) => {
+      const m = cfg.modes.find((x) => x.id === b.dataset.mode);
+      b.innerHTML = `<b>${esc(pick(m.name))}</b>${m.blurb ? `<span>${esc(pick(m.blurb))}</span>` : ''}`;
+    });
+    renderSolutions(cfg);
+  });
   return { rebuild, go, stop, state };
 }
 
@@ -298,7 +317,7 @@ function isOnScreen(el) {
 function shell(cfg) {
   const modeTabs = cfg.modes
     .map((m, i) => `<button class="kit-tab" role="tab" data-mode="${m.id}"
-        aria-selected="${i === 0}"><b>${esc(m.name)}</b>${m.blurb ? `<span>${esc(m.blurb)}</span>` : ''}</button>`)
+        aria-selected="${i === 0}"><b>${esc(pick(m.name))}</b>${m.blurb ? `<span>${esc(pick(m.blurb))}</span>` : ''}</button>`)
     .join('');
 
   const langTabs = cfg.languages

@@ -258,3 +258,32 @@
 .sol-code .k{color:var(--accent)}
 .sol-code .s{color:var(--up)}
 .sol-code .n{color:var(--amber)}
+
+/* ---------- English / မြန်မာ ---------- */
+.lang-switch{
+  display:inline-flex;gap:3px;background:var(--sunk);border:1px solid var(--line);
+  border-radius:999px;padding:3px;margin-top:8px;
+}
+.lang-opt{
+  background:transparent;border:0;border-radius:999px;padding:5px 13px;cursor:pointer;
+  font:inherit;font-size:13px;color:var(--ink-3);line-height:1.45;
+}
+.lang-opt:hover{color:var(--ink)}
+.lang-opt[aria-pressed="true"]{background:var(--surface);color:var(--accent);font-weight:600}
+
+/* Burmese has no spaces between words, so a long run has no break opportunity
+   and will push the page sideways unless told it may break anywhere. */
+:root[data-ui="my"] body{font-family:"Noto Sans Myanmar","IBM Plex Sans",sans-serif}
+:root[data-ui="my"] .kit-note,:root[data-ui="my"] .part-sub,:root[data-ui="my"] .statement,
+:root[data-ui="my"] .takeaway,:root[data-ui="my"] .traps,:root[data-ui="my"] .kit-tab,
+:root[data-ui="my"] h1,:root[data-ui="my"] h2,:root[data-ui="my"] h3{
+  overflow-wrap:break-word;word-break:break-word;line-height:1.75;
+}
+/* Code, data and the stage stay in the Latin faces in both languages — the
+   numbers must not jump when the language changes. */
+:root[data-ui="my"] code,:root[data-ui="my"] pre,:root[data-ui="my"] .mono,
+:root[data-ui="my"] .kit-code,:root[data-ui="my"] .sol-code,:root[data-ui="my"] .kit-var,
+:root[data-ui="my"] .st-cell,:root[data-ui="my"] .st-kv,:root[data-ui="my"] .st-node,
+:root[data-ui="my"] .kit-count,:root[data-ui="my"] .st-read{
+  font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
