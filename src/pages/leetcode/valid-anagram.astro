@@ -1,76 +1,43 @@
 ---
 import Walkthrough from '../../layouts/Walkthrough.astro';
 import statement from '../../lessons/valid-anagram/statement.html?raw';
-
-const traps = `
-<ul>
-  <li data-i18n="<b>အရှည် မတူလျှင် ချက်ချင်း ပြီးသွားသည်။</b> ဤပြဿနာတွင် ဤထက် ပေါ့သော စစ်ဆေးမှု မရှိပါ — စာလုံးတစ်လုံးမှ မဖတ်ရသေးဘဲ နှိုင်းယှဉ်မှု တစ်ကြိမ်တည်း၊ <code>O(1)</code> ဖြင့် ပြီးသည်။ ရေတွက်သည့် နည်းအတွက်မူ ဤစစ်ဆေးမှုသည် အမြန်ဖြစ်အောင် ထည့်ထားသည့် အပိုအဆင့် မဟုတ်ပါ — စုစုပေါင်း အရေအတွက် တူညီနေမှသာ “အတန်းတစ်ခုမှ အနုတ် မဖြစ်ခဲ့” ဆိုသည်က “အတန်းတစ်ခုမှ အပေါင်းဘက် မကျန်ခဲ့” ကို ကောက်ချက်ချနိုင်စေသည်။">
-    <b>Different lengths end it immediately.</b> Nothing in the problem is cheaper: one
-    comparison, <code>O(1)</code>, before a single letter is read. For the counting solution
-    it is not merely an optimisation — equal totals are what make &ldquo;no row went
-    negative&rdquo; enough to conclude &ldquo;no row was left positive&rdquo; either.
-  </li>
-  <li data-i18n="<b>အင်္ဂလိပ် စာလုံးအသေးများသာ ဆိုသည့် ကန့်သတ်ချက်က အရေးပါသည်။</b> <code>[26]int</code> အသေတစ်ခု သုံးခွင့် ရသည်မှာ ဤကန့်သတ်ချက်ကြောင့်သာ ဖြစ်သည် — ဖြစ်နိုင်ခြေ 26 မျိုးသာ ရှိသောကြောင့် <code>s[i] - 'a'</code> သည် တရားဝင် index ဖြစ်သည်။ Unicode နောက်ဆက်တွဲ မေးခွန်းက ထိုခွင့်ကို ရုပ်သိမ်းလိုက်သည်။ ယင်းအစား code point ကို key ထားသော hash map သုံးလျှင် algorithm မှာ အတူတူပင် ဖြစ်သော်လည်း နေရာယူမှုမှာ ကိန်းသေ မဟုတ်တော့ဘဲ ကွဲပြားသော စာလုံး အရေအတွက်နှင့် အချိုးကျ သွားသည်။">
-    <b>&ldquo;Lowercase English letters&rdquo; is load-bearing.</b> That constraint is the whole
-    licence for a fixed <code>[26]int</code>: <code>s[i] - 'a'</code> is a valid index only
-    because there are 26 possibilities. The Unicode follow-up takes the licence away — key a
-    hash map by code point instead and the algorithm is unchanged, but the space is now
-    proportional to the number of distinct characters rather than constant.
-  </li>
-  <li data-i18n="<b>စကားလုံးတစ်လုံးသည် သူ့ကိုယ်သူ anagram ဖြစ်သည်။</b> <code>s = &quot;rat&quot;, t = &quot;rat&quot;</code> ဆိုလျှင် <code>true</code> ပြန်သည်။ နေ့စဉ်သုံး စကားအရ anagram ဆိုသည်မှာ မတူညီသော အသစ်တစ်ခုအဖြစ် ပြန်စီထားခြင်း ဟု နားလည်ကြသော်လည်း၊ မေးခွန်းစာသားတွင် ထိုသို့ မတောင်းဆိုထားပါ — စာလုံးများ ကိုက်ညီ မကိုက်ညီကိုသာ မေးထားသည်။">
-    <b>A word is an anagram of itself.</b> <code>s = "rat", t = "rat"</code> returns
-    <code>true</code>. The everyday sense of <em>anagram</em> implies a rearrangement into
-    something different, and nothing in the statement asks for that — the question is only
-    whether the letters match.
-  </li>
-  <li data-i18n="<b>sort လုပ်ခြင်းသည် အဖြေမှား မဟုတ်ပါ။</b> <code>O(n)</code> နှင့် ယှဉ်လျှင် <code>O(n log n)</code> ဖြစ်သော်လည်း၊ ဘာကြောင့် ရေတွက်သည့်နည်းကို ပိုရွေးမည်ကို ရှင်းပြနိုင်လျှင် အင်တာဗျူးတွင် လုံလောက်သော အဖြေတစ်ခု ဖြစ်သည် — တစ်ဖက်စီ တစ်ကျော့စီ၊ ဤကန့်သတ်ချက်အောက်တွင် နေရာ <code>O(1)</code>၊ ပြီးတော့ အရေအတွက် အနုတ် ဖြစ်သည်နှင့် ချက်ချင်း ထွက်နိုင်ခြင်း။ sort ကလည်း အားသာချက် တစ်ခု ပြန်ရှိသည် — Unicode နောက်ဆက်တွဲ မေးခွန်းကို ဘာမှ မပြင်ဘဲ ရင်ဆိုင်နိုင်သည်။">
-    <b>Sorting is not the wrong answer.</b> It is <code>O(n log n)</code> against
-    <code>O(n)</code>, and in an interview it is a perfectly good answer as long as you can
-    say why you would reach for counting instead: one pass each way, <code>O(1)</code> space
-    under this constraint, and an exit the moment a count goes negative. Sorting keeps one
-    advantage of its own — it survives the Unicode follow-up without an edit.
-  </li>
-</ul>`;
-
-const takeaway = `
-<p data-i18n="sort လုပ်ခြင်းက အလုပ်ဖြစ်ရသည့် အကြောင်းရင်းမှာ မေးခွန်းက ဂရုမစိုက်သည့် တစ်ခုတည်းသော အချက် — အစီအစဉ် — ကို ဖျက်ပစ်လိုက်ပြီး၊ စာလုံး အရေအတွက်များ ကိုက်ညီမှသာ တူညီမည့် စာကြောင်းနှစ်ကြောင်း ကျန်ခဲ့စေသောကြောင့် ဖြစ်သည်။ သုံးကြောင်းသာ ရှိပြီး မှားရန်လည်း ခက်သည်။ သို့သော် တိုက်ရိုက် ရေတွက်လို့ရသည့်အရာကို ပြန်တည်ဆောက်ရန် <code>O(n log n)</code> ကုန်သည်။">Sorting works because it destroys the only information the question does not care
-about — the order — and leaves two strings that are equal exactly when the letter counts
-match. It is three lines and hard to get wrong, and it costs <code>O(n log n)</code> to
-rebuild something you could have counted directly.</p>
-
-<p data-i18n="ဇယားနည်းက မေးခွန်း တစ်မျိုး မေးသည်။ <code>t</code> ၏ စာလုံးတစ်လုံးစီအတွက် — <em>ဤစာလုံးအတွက် ဇယားတွင် ကျန်သေးသလား</em> ဟု မေးသည်။ ထိုမေးခွန်းကို lookup တစ်ခုက အချိန် ကိန်းသေဖြင့် ဖြေပေးနိုင်သဖြင့် အလုပ်တစ်ခုလုံးမှာ linear အကျော့ နှစ်ကျော့သာ ဖြစ်သည်။ ဇယားတွင် အတန်း 26 ကြောင်းထက် ဘယ်တော့မှ မပိုသဖြင့် နေရာမှာ <code>O(n)</code> မဟုတ်ဘဲ <code>O(1)</code> ဖြစ်သည်။">The tally asks a different question. For each letter of <code>t</code> it asks: <em>does
-the table still owe me one of these?</em> A lookup answers that in constant time, so the
-whole job is two linear passes. The table never holds more than 26 rows, which is why the
-space is <code>O(1)</code> rather than <code>O(n)</code>.</p>
-
-<p data-i18n="ဤသည်မှာ <strong>Two Sum</strong> ၏ hash map၊ <strong>Majority Element</strong> ၏ counter တို့နှင့် တစ်ထပ်တည်း ဖြစ်သည် — အားလုံးကို အားလုံးနှင့် နှိုင်းယှဉ်မည့်အစား၊ element တစ်ခုလျှင် lookup တစ်ခုဖြင့် ဖြေနိုင်သော မေးခွန်းတစ်ခုသာ မေးပြီး မှတ်ဉာဏ်ကို ဇယားက သယ်ပေးစေခြင်း ဖြစ်သည်။ ဤနေရာတွင် တစ်ခါ မြင်လိုက်လျှင် ပစ္စည်းများကို ရေတွက်ရသည့် ပြဿနာ အများစုသည် ပြဿနာတစ်ခုတည်း ဖြစ်နေသည်ကို တွေ့ရမည်။">That is the same move as <strong>Two Sum</strong>'s hash map and <strong>Majority
-Element</strong>'s counter: instead of comparing everything to everything, ask one question
-per element that a lookup can answer, and let a table carry the memory. Once you see it
-here, most of the "count the things" problems are the same problem.</p>
-
-<p data-i18n="walkthrough က မြင်သာအောင် ပြထားသည့် အသေးစိတ် နှစ်ချက်။ အရှည် စစ်ခြင်းသည် အမြန်ဖြစ်အောင် ထည့်ထားသည့် အပိုအဆင့် မဟုတ်ဘဲ၊ စည်းမျဉ်းကို မှန်ကန်စေသည့် အချက် ဖြစ်သည် — စုစုပေါင်း တူညီနေသောကြောင့် “အတန်းတစ်ခုမှ အနုတ် မဖြစ်ခဲ့” ဆိုရုံဖြင့် အတန်းတစ်ခုမှ အပေါင်းဘက်တွင်လည်း မကျန်ခဲ့ဟု ကောက်ချက်ချနိုင်သည်။ ပြီးတော့ အနုတ် ဖြစ်သည်နှင့် <code>false</code> ကို ချက်ချင်း ပြန်ခြင်းမှာလည်း စိတ်ချရသည် — <code>t</code> က နုတ်ရုံသာ နုတ်သဖြင့် သုညအောက် ရောက်သွားသော အတန်းသည် ဘယ်တော့မှ ပြန်မတက်နိုင်တော့ပါ။">Two details the walkthrough makes visible. The length check is not an optimisation, it is
-what makes the rule sound: because the totals are equal, "no row went negative" is enough to
-conclude that no row was left positive either. And the early <code>false</code> on a negative
-row is safe — a row that has gone below zero can never climb back, since <code>t</code> only
-subtracts.</p>
-
-<p data-i18n="Unicode နောက်ဆက်တွဲ မေးခွန်းတွင် နည်းလမ်းနှစ်ခု ထပ်ကွဲသွားသည်။ စာလုံးတစ်လုံးသည် <code>a</code>–<code>z</code> မဟုတ်သည်နှင့် <code>[26]int</code> အသေသည် အလုပ် မဖြစ်တော့ပါ။ ယင်းအစား code point ကို key ထားသော hash map ဖြင့် လဲလိုက်လျှင် algorithm မှာ အပြောင်းအလဲ မရှိဘဲ၊ နေရာယူမှုကသာ ကွဲပြားသော စာလုံး အရေအတွက်နှင့် အချိုးကျ သွားသည်။ sort လုပ်ခြင်းကမူ ဘာမှ မပြင်ဘဲ လိုက်လျောညီထွေ ဖြစ်နေသည် — ဤသည်မှာ သူ၏ တကယ့် အားသာချက် တစ်ခုတည်း ဖြစ်သည်။ Grapheme cluster များ — အသားအရောင် modifier ပါသော emoji၊ combining mark ဖြင့် ရေးထားသော သံနေသံထား — မှာမူ သီးခြား ပြဿနာ ဖြစ်သည် — အရင် normalise လုပ်ပြီးမှ ရေတွက်ပါ၊ မဟုတ်လျှင် အမြင်တူသော စာကြောင်းနှစ်ကြောင်းကို မတူဟု ပြောမိလိမ့်မည်။">The Unicode follow-up is where the two approaches separate again. A fixed
-<code>[26]int</code> stops working the moment a character is not <code>a</code>–<code>z</code>;
-swap it for a hash map keyed by code point and the algorithm is unchanged, with space now
-proportional to the number of distinct characters. Sorting adapts without any edit, which is
-its one real advantage. Grapheme clusters — an emoji with a skin-tone modifier, an accent
-written as a combining mark — are a separate problem: normalise first, then count, or you will
-call two identical-looking strings different.</p>`;
 ---
 <Walkthrough
   title="Valid Anagram"
   summary="Sort both strings, or keep one tally. The difference is whether you rebuild the letter counts or just count them."
-  leetcodeId={242}
-  leetcodeSlug="valid-anagram"
-  difficulty="Easy"
+  eyebrow="LeetCode 242 &nbsp;·&nbsp; Easy"
+  lede={{ en: "Given two strings <code>s</code> and <code>t</code>, decide whether <code>t</code> is an anagram of <code>s</code>. One approach sorts both and compares; the other tallies the letters of <code>s</code> and spends them with <code>t</code>.", my: "စာကြောင်းနှစ်ကြောင်း <code>s</code> နှင့် <code>t</code> ပေးထားသည် — <code>t</code> သည် <code>s</code> ၏ anagram ဟုတ်မဟုတ် ဆုံးဖြတ်ပါ။ နည်းတစ်ခုက နှစ်ခုလုံးကို sort လုပ်ပြီး နှိုင်းယှဉ်သည်။ နောက်တစ်ခုက <code>s</code> ၏ စာလုံးများကို ရေတွက်ပြီး <code>t</code> ဖြင့် နုတ်သွားသည်။" }}
+  links={[{ id: 242, title: 'Valid Anagram', slug: 'valid-anagram', difficulty: 'Easy' }]}
   statement={statement}
-  takeaway={takeaway}
-  traps={traps}
+  constraints={{ en: "<span><b>n</b> 1 &le; s.length, t.length &le; 5 × 10&#8304;</span><span>s and t consist of lowercase English letters</span>", my: "<span><b>n</b> 1 &le; s.length, t.length &le; 5 × 10&#8304;</span><span>s နှင့် t တွင် အင်္ဂလိပ် စာလုံးအသေးများသာ ပါသည်</span>" }}
+  part1Sub={{ en: "Read the statement, then rearrange the letters of t and watch what changes — and what doesn't.", my: "မေးခွန်းကို အရင်ဖတ်ပါ။ ပြီးလျှင် t ၏ စာလုံးများကို ပြန်စီကြည့်ပြီး ဘာပြောင်းသည်၊ ဘာ မပြောင်းသည်ကို ကြည့်ပါ။" }}
+  widgetTitle={{ en: "Order or count — which one decides?", my: "အစီအစဉ်လား၊ အရေအတွက်လား — ဘယ်ဟာက ဆုံးဖြတ်သလဲ။" }}
+  traps={{
+    summary: { en: "Four ways the statement bites &mdash; worth reading before you code", my: "မေးခွန်းစာသားထဲက ချော်လွယ်သည့်နေရာ လေးခု — code မရေးမီ ဖတ်ထားသင့်သည်" },
+    items: [
+      { en: "<strong>Different lengths end it immediately.</strong> Nothing in the problem is cheaper: one comparison, <code>O(1)</code>, before a single letter is read. For the counting solution it is not merely an optimisation — equal totals are what make &ldquo;no row went negative&rdquo; enough to conclude &ldquo;no row was left positive&rdquo; either.", my: "<strong>အရှည် မတူလျှင် ချက်ချင်း ပြီးသွားသည်။</strong> ဤပြဿနာတွင် ဤထက် ပေါ့သော စစ်ဆေးမှု မရှိပါ — စာလုံးတစ်လုံးမှ မဖတ်ရသေးဘဲ နှိုင်းယှဉ်မှု တစ်ကြိမ်တည်း၊ <code>O(1)</code> ဖြင့် ပြီးသည်။ ရေတွက်သည့် နည်းအတွက်မူ ဤစစ်ဆေးမှုသည် အမြန်ဖြစ်အောင် ထည့်ထားသည့် အပိုအဆင့် မဟုတ်ပါ — စုစုပေါင်း အရေအတွက် တူညီနေမှသာ &ldquo;အတန်းတစ်ခုမှ အနုတ် မဖြစ်ခဲ့&rdquo; ဆိုသည်က &ldquo;အတန်းတစ်ခုမှ အပေါင်းဘက် မကျန်ခဲ့&rdquo; ကို ကောက်ချက်ချနိုင်စေသည်။" },
+      { en: "<strong>&ldquo;Lowercase English letters&rdquo; is load-bearing.</strong> That constraint is the whole licence for a fixed <code>[26]int</code>: <code>s[i] - 'a'</code> is a valid index only because there are 26 possibilities. The Unicode follow-up takes the licence away — key a hash map by code point instead and the algorithm is unchanged, but the space is now proportional to the number of distinct characters rather than constant.", my: "<strong>အင်္ဂလိပ် စာလုံးအသေးများသာ ဆိုသည့် ကန့်သတ်ချက်က အရေးပါသည်။</strong> <code>[26]int</code> အသေတစ်ခု သုံးခွင့် ရသည်မှာ ဤကန့်သတ်ချက်ကြောင့်သာ ဖြစ်သည် — ဖြစ်နိုင်ခြေ 26 မျိုးသာ ရှိသောကြောင့် <code>s[i] - 'a'</code> သည် တရားဝင် index ဖြစ်သည်။ Unicode နောက်ဆက်တွဲ မေးခွန်းက ထိုခွင့်ကို ရုပ်သိမ်းလိုက်သည်။ ယင်းအစား code point ကို key ထားသော hash map သုံးလျှင် algorithm မှာ အတူတူပင် ဖြစ်သော်လည်း နေရာယူမှုမှာ ကိန်းသေ မဟုတ်တော့ဘဲ ကွဲပြားသော စာလုံး အရေအတွက်နှင့် အချိုးကျ သွားသည်။" },
+      { en: "<strong>A word is an anagram of itself.</strong> <code>s = \"rat\", t = \"rat\"</code> returns <code>true</code>. The everyday sense of <em>anagram</em> implies a rearrangement into something different, and nothing in the statement asks for that — the question is only whether the letters match.", my: "<strong>စကားလုံးတစ်လုံးသည် သူ့ကိုယ်သူ anagram ဖြစ်သည်။</strong> <code>s = \"rat\", t = \"rat\"</code> ဆိုလျှင် <code>true</code> ပြန်သည်။ နေ့စဉ်သုံး စကားအရ anagram ဆိုသည်မှာ မတူညီသော အသစ်တစ်ခုအဖြစ် ပြန်စီထားခြင်း ဟု နားလည်ကြသော်လည်း၊ မေးခွန်းစာသားတွင် ထိုသို့ မတောင်းဆိုထားပါ — စာလုံးများ ကိုက်ညီ မကိုက်ညီကိုသာ မေးထားသည်။" },
+      { en: "<strong>Sorting is not the wrong answer.</strong> It is <code>O(n log n)</code> against <code>O(n)</code>, and in an interview it is a perfectly good answer as long as you can say why you would reach for counting instead: one pass each way, <code>O(1)</code> space under this constraint, and an exit the moment a count goes negative. Sorting keeps one advantage of its own — it survives the Unicode follow-up without an edit.", my: "<strong>sort လုပ်ခြင်းသည် အဖြေမှား မဟုတ်ပါ။</strong> <code>O(n)</code> နှင့် ယှဉ်လျှင် <code>O(n log n)</code> ဖြစ်သော်လည်း၊ ဘာကြောင့် ရေတွက်သည့်နည်းကို ပိုရွေးမည်ကို ရှင်းပြနိုင်လျှင် အင်တာဗျူးတွင် လုံလောက်သော အဖြေတစ်ခု ဖြစ်သည် — တစ်ဖက်စီ တစ်ကျော့စီ၊ ဤကန့်သတ်ချက်အောက်တွင် နေရာ <code>O(1)</code>၊ ပြီးတော့ အရေအတွက် အနုတ် ဖြစ်သည်နှင့် ချက်ချင်း ထွက်နိုင်ခြင်း။ sort ကလည်း အားသာချက် တစ်ခု ပြန်ရှိသည် — Unicode နောက်ဆက်တွဲ မေးခွန်းကို ဘာမှ မပြင်ဘဲ ရင်ဆိုင်နိုင်သည်။" },
+    ],
+  }}
+  part2Sub={{ en: "Two approaches over the same two strings. The stage shows the state each one carries; the panel shows the line running.", my: "စာကြောင်းနှစ်ကြောင်းတည်းပေါ်တွင် နည်းလမ်းနှစ်မျိုး။ ဘယ်ဘက်က နည်းတစ်ခုစီ သယ်ဆောင်သွားသော အခြေအနေကို ပြပြီး၊ ညာဘက် panel က အလုပ်လုပ်နေသော code ကြောင်းကို ပြသည်။" }}
+  notes={{
+    eyebrow: { en: "If you are implementing it", my: "ကိုယ်တိုင် ရေးမည်ဆိုလျှင်" },
+    title: { en: "Three questions the count approach raises", my: "ရေတွက်သည့် နည်းနှင့်ပတ်သက်၍ မေးစရာ သုံးခု" },
+    items: [
+      { q: { en: "Why is the count approach <code>O(1)</code> space, not <code>O(n)</code>?", my: "ရေတွက်သည့်နည်းက <code>O(n)</code> မဟုတ်ဘဲ <code>O(1)</code> space ဟု ဘာကြောင့် ဆိုနိုင်သလဲ။" }, a: { en: "The table never grows past 26 rows, because the constraints say lowercase English letters only — a-z. Twenty-six is a constant. If the constraints change — say, to Unicode — the hash-map version is still <code>O(n)</code> time, but the space becomes proportional to the number of distinct characters in the input.", my: "ဇယားတွင် အတန်း 26 ကြောင်းထက် ဘယ်တော့မှ မပိုပါ၊ အဘယ်ကြောင့်ဆိုသော် ကန့်သတ်ချက်က အင်္ဂလိပ် စာလုံးအသေးများသာ — a-z ဟု ဆိုထားသောကြောင့် ဖြစ်သည်။ 26 သည် ကိန်းသေဖြစ်သည်။ ကန့်သတ်ချက် ပြောင်းသွားလျှင် — Unicode သို့ ဆိုပါစို့ — hash map ပုံစံသည် အချိန်အားဖြင့် <code>O(n)</code> ဆက်ဖြစ်သော်လည်း နေရာယူမှုမှာ input ထဲရှိ ကွဲပြားသော စာလုံး အရေအတွက်နှင့် အချိုးကျ သွားမည်။" } },
+      { q: { en: "Why check the length first? Isn't it just an optimisation?", my: "အရှည်ကို အရင် ဘာကြောင့် စစ်ရသလဲ — optimization တစ်ခုပဲ မဟုတ်လား။" }, a: { en: "It is also what makes the rule sound. The tally says: walk <code>s</code> and add, walk <code>t</code> and subtract, and if no row went negative, return <code>true</code>. But if the strings have different lengths, a row could be left positive — <code>s</code> had more of a letter than <code>t</code> consumed — and the tally would never notice. Equal lengths mean the totals balance; &ldquo;no row went negative&rdquo; is then enough.", my: "၎င်းသည်လည်း စည်းမျဉ်းကို မှန်ကန်စေသည့် အချက် ဖြစ်သည်။ ဇယားနည်းက <code>s</code> ကို လျှောက်ပြီး တိုး၊ <code>t</code> ကို လျှောက်ပြီး နုတ်၊ အတန်းတစ်ခုမှ အနုတ် မဖြစ်ခဲ့လျှင် <code>true</code> ပြန်သည် ဟု ဆိုထားသည်။ သို့သော် အရှည် မတူလျှင် အတန်းတစ်ခုသည် အပေါင်းဘက်တွင် ကျန်နေနိုင်သည် — <code>s</code> က <code>t</code> သုံးသည်ထက် စာလုံးတစ်လုံးကို ပိုပေးထားသော်လည်း ဇယားနည်းက ထိုအချက်ကို ဘယ်တော့မှ သတိမထားမိနိုင်ပါ။ အရှည် တူညီမှုကြောင့် စုစုပေါင်း တူညီနေပြီး &ldquo;အတန်းတစ်ခုမှ အနုတ် မဖြစ်ခဲ့&rdquo; ဆိုသည်က &ldquo;အတန်းတစ်ခုမှ အပေါင်းဘက်တွင် မကျန်ခဲ့&rdquo; ကို ကောက်ချက်ချရန် လုံလောက်သွားသည်။" } },
+      { q: { en: "What about Unicode?", my: "Unicode အတွက်ကရော။" }, a: { en: "The fixed <code>[26]int</code> stops working the moment a character is not a-z. Swap it for a hash map keyed by code point and the algorithm is the same — the same two passes, the same early exit on a negative row. Sorting handles Unicode without any change, which is its one real advantage. Grapheme clusters — an emoji with a skin-tone modifier, an accent written as a combining mark — are a separate problem: normalise first, then count, or you will call two identical-looking strings different.", my: "<code>[26]int</code> အသေသည် စာလုံးတစ်လုံး a-z မဟုတ်သည်နှင့် အလုပ် မဖြစ်တော့ပါ။ code point ကို key ထားသော hash map ဖြင့် လဲလိုက်လျှင် algorithm မှာ အတူတူပင် ဖြစ်သည် — ထိုနည်းတူ အကျော့နှစ်ကျော့၊ အနုတ်ပြသည်နှင့် ချက်ချင်းထွက်ခြင်း။ sort လုပ်ခြင်းကမူ ဘာမှ မပြင်ဘဲ လိုက်လျောညီထွေ ဖြစ်နေသည် — ဤသည်မှာ သူ၏ တကယ့် အားသာချက် တစ်ခုတည်း ဖြစ်သည်။ Grapheme cluster များ — အသားအရောင် modifier ပါသော emoji၊ combining mark ဖြင့် ရေးထားသော သံနေသံထား — မှာမူ သီးခြား ပြဿနာ ဖြစ်သည် — အရင် normalise လုပ်ပြီးမှ ရေတွက်ပါ၊ မဟုတ်လျှင် အမြင်တူသော စာကြောင်းနှစ်ကြောင်းကို မတူဟု ပြောမိလိမ့်မည်။" } },
+    ],
+  }}
+  cost={{
+    eyebrow: { en: "Why bother", my: "ဘာကြောင့် ဂရုစိုက်ရသလဲ" },
+    title: { en: "The same answer, a different price", my: "အဖြေတူ၊ ကုန်ကျစရိတ် မတူ" },
+    html: { en: "<table>\n  <thead><tr><th>Approach</th><th>Time</th><th>Extra space</th><th>At n = 5 × 10⁴ (the constraint)</th></tr></thead>\n  <tbody>\n    <tr><td><b>Sort both</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">rearrange, then compare</span></td>\n        <td class=\"mono\">O(n log n)</td><td class=\"mono\">O(n)</td><td class=\"cross\">≈ 8 × 10⁵ comparisons</td></tr>\n    <tr><td><b>Count letters</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">one tally, two passes</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(1)</td><td class=\"tick\">10⁵ increments</td></tr>\n  </tbody>\n</table>\n<figcaption>Counts are computed from the constraint, not measured. The constant in O(1) space is 26 — the tally never grows past lowercase letters. In practice sorting often wins on the tiny strings LeetCode runs, but the tally answers the question directly rather than rebuilding order to throw it away.</figcaption>", my: "<table>\n  <thead><tr><th>နည်းလမ်း</th><th>အချိန်</th><th>အပို memory</th><th>n = 5 × 10⁴ (ကန့်သတ်ချက်) တွင်</th></tr></thead>\n  <tbody>\n    <tr><td><b>Sort လုပ်ခြင်း</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">ပြန်စီ၊ ပြီးမှ နှိုင်းယှဉ်</span></td>\n        <td class=\"mono\">O(n log n)</td><td class=\"mono\">O(n)</td><td class=\"cross\">≈ 8 × 10⁵ ကြိမ် နှိုင်းယှဉ်</td></tr>\n    <tr><td><b>စာလုံး ရေတွက်ခြင်း</b><br><span style=\"color:var(--ink-3);font-size:12.5px\">ဇယားတစ်ခု၊ အကျော့နှစ်ကျော့</span></td>\n        <td class=\"mono\">O(n)</td><td class=\"mono\">O(1)</td><td class=\"tick\">10⁵ ကြိမ် တိုး/နုတ်</td></tr>\n  </tbody>\n</table>\n<figcaption>ဤအရေအတွက်များကို ကန့်သတ်ချက်မှ တွက်ထားခြင်းဖြစ်ပြီး တိုင်းတာထားခြင်း မဟုတ်ပါ။ O(1) space ၏ ကိန်းသေမှာ 26 ဖြစ်သည် — ရေတွက်ဇယားသည် အင်္ဂလိပ် စာလုံးအသေးများထက် ဘယ်တော့မှ မကြီးပါ။ LeetCode ၏ သေးငယ်သည့် စာကြောင်းများတွင် sort က ပိုမြန်လေ့ရှိသော်လည်း ရေတွက်နည်းက အစီအစဉ်ကို ပြန်တည်ဆောက်ပြီးမှ လွှင့်ပစ်မည့်အစား မေးခွန်းကို တိုက်ရိုက် ဖြေပေးသည်။</figcaption>" },
+  }}
+  part3Sub={{ en: "Two approaches in five languages. Every block is a complete submission; each badge says exactly how it was checked, including the ones that were not run.", my: "နည်းလမ်းနှစ်မျိုးကို ဘာသာစကား ငါးမျိုးဖြင့်။ Block တိုင်းသည် ပြည့်စုံသော submission ဖြစ်ပြီး၊ မည်သို့ စမ်းသပ်ခဲ့သည်ကို badge က အတိအကျ ဖော်ပြသည် — မစမ်းသပ်ရသေးသည့်အရာများပါ အပါအဝင်။" }}
+  footer={{ en: "<kbd>←</kbd> <kbd>→</kbd> step · <kbd>space</kbd> play/pause. Edit <code>s</code> or <code>t</code> above and both walkthroughs rebuild against your input.", my: "<kbd>←</kbd> <kbd>→</kbd> အဆင့် · <kbd>space</kbd> ဖွင့်/ရပ်။ အပေါ်က <code>s</code> သို့မဟုတ် <code>t</code> ကို ပြင်လိုက်လျှင် walkthrough နှစ်ခုစလုံး သင့် input ဖြင့် ပြန်တည်ဆောက်မည်။" }}
 />
 
 <script>

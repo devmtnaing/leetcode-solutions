@@ -11,9 +11,10 @@
  * time" is notation, not prose.
  */
 import { mountLesson, esc } from '../../lib/stepper.js';
-import { strip, kv, panels } from '../../lib/stage.js';
+import { cells, strip, kv, panels } from '../../lib/stage.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 
+const t = (en, my) => ({ en, my });
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
 /* ---------------- step generators ---------------- */
@@ -581,18 +582,79 @@ const CONTROLS = [
   { key: 't', label: { en: 'word t', my: 'စကားလုံး t' }, size: 14, value: 'nagaram', parse: word },
 ];
 
+/* ---------------- strip card, answer card ---------------- */
+
+function stripCard(s, input) {
+  const sc = [...input.s];
+  const tc = [...input.t];
+  const toneS = {};
+  const toneT = {};
+  const marksS = {};
+  const marksT = {};
+
+  if (s.si != null) { toneS[s.si] = 'inwin'; marksS[s.si] = 'i'; }
+  if (s.ti != null) { toneT[s.ti] = s.bad ? 'leaving' : 'inwin'; marksT[s.ti] = 'j'; }
+  if (s.view === 'count') {
+    for (let j = 0; j < (s.sDone || 0); j++) toneS[j] = 'done';
+    for (let j = 0; j < (s.tDone || 0); j++) toneT[j] = 'done';
+  }
+
+  const sRow = cells(sc, { tone: toneS, marks: marksS });
+  const tRow = cells(tc, { tone: toneT, marks: marksT });
+  return `<div style="display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:12px;color:var(--ink-3);width:11px;flex-shrink:0;font-family:IBM Plex Mono,monospace">s</span>
+      ${sRow}
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:12px;color:var(--ink-3);width:11px;flex-shrink:0;font-family:IBM Plex Mono,monospace">t</span>
+      ${tRow}
+    </div></div>`;
+}
+
+function answer(s) {
+  if (s.verdict == null) return { html: '', note: t('...', '...') };
+  return {
+    html: s.verdict
+      ? '<strong style="color:var(--up);font-size:18px">true</strong>'
+      : '<strong style="color:var(--down);font-size:18px">false</strong>',
+    note: s.verdict ? t('is an anagram', 'anagram ဖြစ်သည်') : t('not an anagram', 'anagram မဟုတ်'),
+  };
+}
+
+/* ---------------- mount ---------------- */
+
 mountLesson({
-  root: document.getElementById('lesson'),
   input: { s: 'anagram', t: 'nagaram' },
   controls: CONTROLS,
+  presets: [
+    { label: t('Example 1', 'ဥပမာ ၁'), input: { s: 'anagram', t: 'nagaram' } },
+    { label: t('Example 2', 'ဥပမာ ၂'), input: { s: 'rat', t: 'car' } },
+    { label: t('Same letters, different order', 'စာလုံးတူ၊ အစီအစဉ် မတူ'), input: { s: 'listen', t: 'silent' } },
+    { label: t('Full mismatch', 'လုံးဝ မတူ'), input: { s: 'hello', t: 'world' } },
+  ],
+  examples: [
+    { title: t('Example 1', 'ဥပမာ ၁'),
+      inputHtml: '<code>s = "anagram"</code>, <code>t = "nagaram"</code>', output: '<code>true</code>',
+      why: [t('<code>s</code> rearranged is exactly <code>t</code> — each letter appears the same number of times.',
+              '<code>s</code> ကို ပြန်စီလိုက်လျှင် <code>t</code> အတိုင်း ဖြစ်သည် — စာလုံးတိုင်း၏ အရေအတွက် တူညီသည်။')],
+      load: { s: 'anagram', t: 'nagaram' } },
+    { title: t('Example 2', 'ဥပမာ ၂'),
+      inputHtml: '<code>s = "rat"</code>, <code>t = "car"</code>', output: '<code>false</code>',
+      why: [t('<code>r</code> appears in both, but <code>a</code> and <code>t</code> are in <code>s</code> while <code>c</code> is in <code>t</code> — the counts do not match.',
+              '<code>r</code> သည် နှစ်ခုလုံးတွင် ပါသော်လည်း <code>a</code> နှင့် <code>t</code> က <code>s</code> ထဲတွင် ရှိပြီး <code>c</code> က <code>t</code> ထဲတွင် ရှိသည် — အရေအတွက်များ မကိုက်ညီပါ။')],
+      load: { s: 'rat', t: 'car' } },
+  ],
   modes: [
     { id: 'sort',
       name: { en: 'Sort both', my: 'နှစ်ခုလုံးကို sort လုပ်ရန်' },
-      blurb: { en: 'Same letters, same sorted string', my: 'စာလုံးတူလျှင် sort လုပ်ထားသည့် စာကြောင်းလည်း တူသည်' },
+      desc: t('Same letters, same sorted string — two sorts, then walk both together.',
+              'စာလုံးတူလျှင် sort လုပ်ထားသည့် စာကြောင်းလည်း တူသည် — sort နှစ်ခါ၊ ပြီးလျှင် အတူလျှောက်ကြည့်ရုံ။'),
       cost: 'O(n log n) time · O(n) space', build: buildSort },
     { id: 'count',
       name: { en: 'Count letters', my: 'စာလုံးများကို ရေတွက်ရန်' },
-      blurb: { en: 'One tally, up on s and down on t', my: 'ဇယားတစ်ခုတည်း — s တွင် တိုး၊ t တွင် နုတ်' },
+      desc: t('One tally, up on s and down on t. The first number below zero says no.',
+              'ဇယားတစ်ခုတည်း — s တွင် တိုး၊ t တွင် နုတ်။ သုညအောက် ရောက်သည်နှင့် false ပြန်လိုက်သည်။'),
       cost: 'O(n) time · O(1) space', build: buildCount },
   ],
   languages: [
@@ -600,23 +662,27 @@ mountLesson({
     { id: 'javascript', name: 'JavaScript' }, { id: 'go', name: 'Go' }, { id: 'rust', name: 'Rust' },
   ],
   code: CODE,
-  // How each language was actually checked. Printed as a badge on every
-  // listing in part 3, so a language nothing ran says so on the page.
-  verification: {
-    ruby: 'run here · 4 examples + 10,000 random cases',
-    python: 'run here · 4 examples + 10,000 random cases',
-    javascript: 'run here · 4 examples + 10,000 random cases',
-    go: 'not compiled — no Go/Rust toolchain, Docker down',
-    rust: 'not compiled — no Go/Rust toolchain, Docker down',
+  solutions: {
+    sort: { desc: t('Sort a copy of each string, then compare. Three lines, hard to get wrong, and the only approach that handles Unicode without an edit.',
+                    'စာကြောင်းနှစ်ခုစလုံး၏ မိတ္တူကို sort လုပ်ပြီး နှိုင်းယှဉ်သည်။ သုံးကြောင်းသာ ရှိပြီး မှားရန် ခက်သည်။ Unicode ကို ဘာမှ မပြင်ဘဲ ရင်ဆိုင်နိုင်သည့် တစ်ခုတည်းသော နည်းလည်း ဖြစ်သည်。') },
+    count: { desc: t('Walk s and add to a count table, walk t and subtract. The moment a row goes below zero, return false — no recovery possible.',
+                    's ကို လျှောက်ပြီး ရေတွက်ဇယားတွင် တိုးသည်၊ t ကို လျှောက်ပြီး နုတ်သည်။ အတန်းတစ်ခု သုညအောက် ရောက်သည်နှင့် false ပြန်လိုက်သည် — ပြန်တက်လာနိုင်မည် မဟုတ်ပါ။') },
   },
+  verification: {
+    ruby: 'ran here · 4 examples + 10,000 random cases',
+    python: 'ran here · 4 examples + 10,000 random cases',
+    javascript: 'ran here · 4 examples + 10,000 random cases',
+    go: 'written here · not compiled — no Go toolchain, Docker down',
+    rust: 'written here · not compiled — no Rust toolchain, Docker down',
+  },
+  strip: stripCard,
   draw,
+  answer,
   vars,
+  widget: mountWidget,
 });
 
 /* Exported so the verification script can assert every widget string has a
    Burmese side; nothing on the page imports it. */
 export { W as WIDGET_STRINGS };
-
-const widgetHost = document.getElementById('question-widget');
-if (widgetHost) mountWidget(widgetHost);
 
