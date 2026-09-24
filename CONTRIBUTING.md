@@ -201,13 +201,18 @@ collects phrasings a native reader should check. Help there is very welcome.
 - [ ] opens on step 1; every approach × language highlights a line on every step
 - [ ] no sideways scroll at 400px
 - [ ] `npm run build` succeeds
+- [ ] if you changed how every page is built (`src/lib/`, `src/layouts/`,
+      `lesson.css`, `kit.css`, the checker), the skill in
+      `.claude/skills/leetcode-solution-page/` and this guide say so too
 
 Every pull request runs `.github/workflows/verify.yml`: `npm run check` and the
 build, then `npm run verify -- <slug> --strict` for each lesson the PR
 touches — every lesson, if it touches the shared kit or the verify scripts.
 Go and Rust run in Docker there too, and `--strict` fails the job if any
-language was skipped. The browser checks in the list above are still yours to
-do by hand.
+language was skipped. It also warns, without failing, when a PR changes the
+shared page code but neither the skill nor this guide, so a reviewer can ask
+whether the docs need to follow. The browser checks in the list above are
+still yours to do by hand.
 
 ## Using Claude Code
 

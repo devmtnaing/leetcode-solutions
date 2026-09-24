@@ -1,6 +1,7 @@
 # Checks every pull request the way CONTRIBUTING.md asks a contributor to:
 #
 #   check   — npm run check (every page has every part) and npm run build
+#   docs    — warns when the shared page code changed but the skill did not
 #   plan    — which lessons the PR touched
 #   verify  — for each of those, every listing in all five languages against
 #             its corpus, then its walkthroughs (scripts/verify/run.py --strict)
@@ -34,6 +35,37 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run build
+
+  # The skill and CONTRIBUTING.md describe how a page is built. A PR that
+  # changes the shared page code without touching either gets a warning (not
+  # a failure: plenty of kit changes need no docs), so review sees it.
+  docs:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Page code changed, skill and CONTRIBUTING.md not
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          changed=$(git diff --name-only "$BASE" HEAD)
+          code=$(echo "$changed" | grep -E '^(src/lib/|src/layouts/|src/styles/(lesson|kit)\.css$|scripts/check-lessons\.mjs$)' || true)
+          docs=$(echo "$changed" | grep -E '^(\.claude/skills/leetcode-solution-page/|CONTRIBUTING\.md$)' || true)
+          if [ -n "$code" ] && [ -z "$docs" ]; then
+            files=$(echo "$code" | sed 's/^/- `/; s/$/`/')
+            echo "::warning title=Skill not updated::This PR changes how solution pages are built but not .claude/skills/leetcode-solution-page/ or CONTRIBUTING.md. If the change affects how a page is made, update them too."
+            {
+              echo "### Skill and CONTRIBUTING.md not updated"
+              echo "These files change how every solution page is built:"
+              echo "$files"
+              echo
+              echo "If that changes how a new page should be made, update \`.claude/skills/leetcode-solution-page/\` (usually \`references/lesson-kit.md\`) and \`CONTRIBUTING.md\` in this PR."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Nothing to flag."
+          fi
 
   plan:
     runs-on: ubuntu-latest
