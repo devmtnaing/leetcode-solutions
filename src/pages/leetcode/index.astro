@@ -1,43 +1,38 @@
 ---
 import Base from '../../layouts/Base.astro';
 import problems from '../../data/problems.json';
-import { getCollection } from 'astro:content';
 
 interface Problem {
   id: number; title: string; slug: string; difficulty: string;
-  paid: boolean; acRate: string; tags: string[];
+  paid: boolean; acRate: string; tags: string[]; extra?: boolean;
 }
 
-const lessons = await getCollection('lessons', ({ data }) => data.track === 'leetcode' && !data.draft);
+// A problem gets a walkthrough link when a lesson folder names it: every kit
+// lesson's page.js lists the LeetCode problems it covers. x-sum is built by
+// hand, without a page.js, so it is added here.
+const pages = import.meta.glob('../../lessons/*/page.js', { eager: true, import: 'default' }) as
+  Record<string, { links: { id: number }[] }>;
+const WALKTHROUGH: Record<number, string> = { 3318: '/leetcode/x-sum', 3321: '/leetcode/x-sum' };
+for (const [path, page] of Object.entries(pages)) {
+  const slug = path.split('/').at(-2);
+  for (const { id } of page.links) WALKTHROUGH[id] = `/leetcode/${slug}`;
+}
 
-// A problem links to a lesson here only when one exists; everything else points
-// at LeetCode so the roadmap is useful long before it is complete.
-const WORKED: Record<number, string> = {
-  1: '/leetcode/two-sum',
-  121: '/leetcode/best-time-to-buy-and-sell-stock',
-  242: '/leetcode/valid-anagram',
-  283: '/leetcode/move-zeroes',
-  20: '/leetcode/valid-parentheses',
-  125: '/leetcode/valid-palindrome',
-  136: '/leetcode/single-number',
-  21: '/leetcode/merge-two-sorted-lists',
-  141: '/leetcode/linked-list-cycle',
-  206: '/leetcode/reverse-linked-list',
-  226: '/leetcode/invert-binary-tree',
-  104: '/leetcode/maximum-depth-of-binary-tree',
-  543: '/leetcode/diameter-of-binary-tree',
-  169: '/leetcode/majority-element',
-  70: '/leetcode/climbing-stairs',
-  3318: '/leetcode/x-sum', 3321: '/leetcode/x-sum',
+// Outside the core list, but they have a walkthrough, so they are listed with
+// their difficulty rather than hidden.
+const EXTRA: Record<string, Problem[]> = {
+  EASY: [{ id: 3318, title: 'Find X-Sum of All K-Long Subarrays I', slug: 'find-x-sum-of-all-k-long-subarrays-i', difficulty: 'Easy', paid: false, acRate: '75.8%', tags: ['Array', 'Hash Table', 'Sliding Window'], extra: true }],
+  HARD: [{ id: 3321, title: 'Find X-Sum of All K-Long Subarrays II', slug: 'find-x-sum-of-all-k-long-subarrays-ii', difficulty: 'Hard', paid: false, acRate: '41.1%', tags: ['Array', 'Hash Table', 'Sliding Window'], extra: true }],
 };
 
 const groups = (['EASY', 'MEDIUM', 'HARD'] as const).map((key) => ({
   key,
   label: key[0] + key.slice(1).toLowerCase(),
-  rows: (problems as Record<string, Problem[]>)[key] ?? [],
+  rows: [...((problems as Record<string, Problem[]>)[key] ?? []), ...(EXTRA[key] ?? [])],
 }));
-const total = groups.reduce((n, g) => n + g.rows.length, 0);
-const worked = Object.keys(WORKED).length;
+const core = Object.values(problems as Record<string, Problem[]>).flat().length;
+const all = groups.flatMap((g) => g.rows);
+const worked = all.filter((p) => WALKTHROUGH[p.id]).length;
 ---
 <Base
   title="Algorithms · learn"
@@ -47,131 +42,13 @@ const worked = Object.keys(WORKED).length;
     <div class="page-head">
       <h1>Algorithms</h1>
       <p class="lede">
-        {total} problems, split evenly across easy, medium and hard, chosen where three
-        separate study plans agree. Each worked lesson animates the algorithm step by step
-        and ships solutions in Ruby, Python, JavaScript, Go and Rust — all of them compiled
-        and run against the examples plus 25,000 randomised cases.
+        {core} problems, split evenly across easy, medium and hard, chosen where three
+        separate study plans agree. Every problem links to LeetCode; the ones with a
+        walkthrough also link to an interactive answer that runs the algorithm step by
+        step, with solutions in Ruby, Python, JavaScript, Go and Rust that were all run
+        before they were published.
       </p>
     </div>
-
-    {lessons.length > 0 && (
-      <section class="roadmap">
-        <h2>Written lessons</h2>
-        <div class="lesson-list">
-          {lessons.sort((a, b) => a.data.order - b.data.order).map((l, i) => (
-            <a class="lesson-row" href={`/leetcode/${l.id.replace(/\.mdx?$/, '')}`}>
-              <span class="n">{String(i + 1).padStart(2, '0')}</span>
-              <span class="t">{l.data.title}</span>
-              <span class="m">{l.data.minutes ? `${l.data.minutes} min` : ''}</span>
-              <span class="s">{l.data.summary}</span>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
-
-    <section class="roadmap">
-      <h2>Walkthroughs</h2>
-      <p class="note">Interactive lessons — drive the algorithm one step at a time and watch the state change.</p>
-      <div class="lesson-list">
-        <a class="lesson-row" href="/leetcode/two-sum">
-          <span class="n">01</span>
-          <span class="t">Two Sum <span class="badge">interactive</span></span>
-          <span class="m">1</span>
-          <span class="s">Every pair, or one pass with a hash map. The difference is what question you ask.</span>
-        </a>
-        <a class="lesson-row" href="/leetcode/best-time-to-buy-and-sell-stock">
-          <span class="n">02</span>
-          <span class="t">Best Time to Buy and Sell Stock <span class="badge">interactive</span></span>
-          <span class="m">121</span>
-          <span class="s">Every pair of days, or one walk that carries the cheapest price seen so far.</span>
-        </a>
-        <a class="lesson-row" href="/leetcode/valid-anagram">
-          <span class="n">03</span>
-          <span class="t">Valid Anagram <span class="badge">interactive</span></span>
-          <span class="m">242</span>
-          <span class="s">Sort both strings, or tally once — up for one string, down for the other, and see if it lands on zero.</span>
-        </a>
-        <a class="lesson-row" href="/leetcode/move-zeroes">
-          <span class="n">04</span>
-          <span class="t">Move Zeroes <span class="badge">interactive</span></span>
-          <span class="m">283</span>
-          <span class="s">A second array, or one pointer marking the boundary where everything to its left is already right.</span>
-        </a>
-        <a class="lesson-row" href="/leetcode/valid-parentheses">
-          <span class="n">05</span>
-          <span class="t">Valid Parentheses <span class="badge">interactive</span></span>
-          <span class="m">20</span>
-          <span class="s">Delete matching pairs until nothing changes, or push openers on a stack and check each closer against the top.</span>
-        </a>
-        <a class="lesson-row" href="/leetcode/valid-palindrome">
-          <span class="n">06</span>
-          <span class="t">Valid Palindrome <span class="badge">interactive</span></span>
-          <span class="m">125</span>
-          <span class="s">Build the cleaned string and reverse it, or walk in from both ends and skip the punctuation where it stands.</span>
-        </a>
-        <a class="lesson-row" href="/leetcode/single-number">
-          <span class="n">07</span>
-          <span class="t">Single Number <span class="badge">interactive</span></span>
-          <span class="m">136</span>
-          <span class="s">Tally every value, or fold the array with XOR and let each pair cancel itself out. The difference is space, not time.</span>
-        </a>
-        <a class="lesson-row" href="/leetcode/reverse-linked-list">
-          <span class="n">08</span>
-          <span class="t">Reverse Linked List <span class="badge">interactive</span></span>
-          <span class="m">206</span>
-          <span class="s">Three pointers rewiring one link at a time, or recurse to the tail and point each node back on the way out.</span>
-        </a>
-        <a class="lesson-row" href="/leetcode/merge-two-sorted-lists">
-          <span class="n">09</span>
-          <span class="t">Merge Two Sorted Lists <span class="badge">interactive</span></span>
-          <span class="m">21</span>
-          <span class="s">A dummy head turns "append to the result" into one uniform move, with no special case for the first node.</span>
-        </a>
-        <a class="lesson-row" href="/leetcode/linked-list-cycle">
-          <span class="n">10</span>
-          <span class="t">Linked List Cycle <span class="badge">interactive</span></span>
-          <span class="m">141</span>
-          <span class="s">Remember every node you visit, or send two pointers round at different speeds and watch the gap close.</span>
-        </a>
-        <a class="lesson-row" href="/leetcode/invert-binary-tree">
-          <span class="n">11</span>
-          <span class="t">Invert Binary Tree <span class="badge">interactive</span></span>
-          <span class="m">226</span>
-          <span class="s">One swap per node, driven by the call stack or by a queue — the first pays for the tree's height, the second for its width.</span>
-        </a>
-        <a class="lesson-row" href="/leetcode/maximum-depth-of-binary-tree">
-          <span class="n">12</span>
-          <span class="t">Maximum Depth of Binary Tree <span class="badge">interactive</span></span>
-          <span class="m">104</span>
-          <span class="s">Each node is one deeper than its deeper child, or count the levels from the top — and why a 10⁴-node chain can crash the recursion.</span>
-        </a>
-        <a class="lesson-row" href="/leetcode/diameter-of-binary-tree">
-          <span class="n">13</span>
-          <span class="t">Diameter of Binary Tree <span class="badge">interactive</span></span>
-          <span class="m">543</span>
-          <span class="s">The longest path bends at some node, so it is that node's left height plus its right — measured afresh everywhere, or collected in one pass.</span>
-        </a>
-        <a class="lesson-row" href="/leetcode/majority-element">
-          <span class="n">14</span>
-          <span class="t">Majority Element <span class="badge">interactive</span></span>
-          <span class="m">169</span>
-          <span class="s">Tally every value, or keep one candidate and let every other value cancel a vote — a majority is the one thing pairing-off cannot remove.</span>
-        </a>
-        <a class="lesson-row" href="/leetcode/climbing-stairs">
-          <span class="n">15</span>
-          <span class="t">Climbing Stairs <span class="badge">interactive</span></span>
-          <span class="m">70</span>
-          <span class="s">Every climb ends in a 1 or a 2. The same recurrence three ways — 3.7 billion calls, 89 calls, or two variables.</span>
-        </a>
-        <a class="lesson-row" href="/leetcode/x-sum">
-          <span class="n">16</span>
-          <span class="t">X-Sum, Two Ways <span class="badge">interactive</span></span>
-          <span class="m">3318 · 3321</span>
-          <span class="s">Brute force against a sliding window, in two containers — sorted arrays, then lazy heaps. The second is what makes the hard version pass.</span>
-        </a>
-      </div>
-    </section>
 
     {groups.map((g) => (
       <section class="roadmap">
@@ -182,9 +59,10 @@ const worked = Object.keys(WORKED).length;
               <tr>
                 <th style="width:1%">#</th>
                 <th>Problem</th>
-                <th>Pattern</th>
-                <th style="width:1%">Level</th>
-                <th style="width:1%;text-align:right">Accepted</th>
+                <th class="wide">Pattern</th>
+                <th class="wide" style="width:1%">Level</th>
+                <th class="wide" style="width:1%;text-align:right">Accepted</th>
+                <th style="width:1%">Links</th>
               </tr>
             </thead>
             <tbody>
@@ -192,12 +70,16 @@ const worked = Object.keys(WORKED).length;
                 <tr>
                   <td class="num">{p.id}</td>
                   <td>
-                    <a href={`https://leetcode.com/problems/${p.slug}/`} target="_blank" rel="noopener">{p.title}</a>
-                    {WORKED[p.id] && <a class="done" href={WORKED[p.id]}>· worked →</a>}
+                    <span class="title">{p.title}</span>
+                    {p.extra && <span class="extra">outside the core list</span>}
                   </td>
-                  <td class="tags">{p.tags.slice(0, 3).join(' · ')}</td>
-                  <td><span class={`diff ${p.difficulty.toLowerCase()}`}>{p.difficulty}</span></td>
-                  <td class="rate">{p.acRate}</td>
+                  <td class="tags wide">{p.tags.slice(0, 3).join(' · ')}</td>
+                  <td class="wide"><span class={`diff ${p.difficulty.toLowerCase()}`}>{p.difficulty}</span></td>
+                  <td class="rate wide">{p.acRate}</td>
+                  <td class="links">
+                    <a href={`https://leetcode.com/problems/${p.slug}/`} target="_blank" rel="noopener">LeetCode ↗</a>
+                    {WALKTHROUGH[p.id] && <a class="walk" href={WALKTHROUGH[p.id]}>Walkthrough →</a>}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -207,7 +89,7 @@ const worked = Object.keys(WORKED).length;
     ))}
 
     <p class="note" style="color:var(--ink-3);font-size:13px;padding-bottom:50px">
-      {worked} of {total} problems have a worked lesson. Metadata pulled from LeetCode and
+      {worked} of {all.length} problems have a walkthrough. Metadata pulled from LeetCode and
       verified problem by problem — difficulty labels here match the site, not folklore.
     </p>
   </div>
