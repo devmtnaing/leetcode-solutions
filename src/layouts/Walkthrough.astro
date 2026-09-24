@@ -52,10 +52,9 @@ const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
 <Lesson
   title={plain(p.title)}
   summary={p.summary}
-  track="leetcode"
   interactive
   ownHeader
-  up={{ href: '/leetcode', title: 'All algorithm lessons' }}
+  up={{ href: '/', title: 'All problems' }}
 >
 <div class="wrap">
   {p.css && <style is:inline set:html={p.css} />}

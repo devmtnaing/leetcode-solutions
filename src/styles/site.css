@@ -1,4 +1,4 @@
-/* Chrome around the lessons: masthead, track cards, indexes, prose.
+/* Chrome around the lessons: masthead, the problem list, pager, footer.
    Reads every colour from tokens.css so the shell and the walkthrough
    inside it are demonstrably the same design. */
 
@@ -57,49 +57,7 @@
 .crumbs a{color:var(--ink-2);text-decoration:none}
 .crumbs a:hover{color:var(--accent)}
 
-/* ---------- home ---------- */
-.hero{padding-block:72px 56px;max-width:64ch}
-.hero h1{font-size:clamp(34px,6vw,54px);margin-bottom:18px}
-.hero p{color:var(--ink-2);font-size:17px;line-height:1.6}
-.tracks{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:64px}
-@media (min-width:760px){.tracks{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.track{
-  display:flex;flex-direction:column;gap:9px;padding:24px 22px 26px;
-  background:var(--surface);text-decoration:none;color:inherit;
-  border-top:3px solid var(--tone);
-}
-.track:hover{background:var(--sunk)}
-.track h2{font-size:22px;letter-spacing:-.018em}
-.track .tagline{color:var(--ink-2);font-size:14px}
-.track .outcome{color:var(--ink-3);font-size:13px;margin-top:auto;padding-top:14px;border-top:1px solid var(--line)}
-.track .count{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--tone);font-weight:500}
-
-/* ---------- lesson index ---------- */
-.lesson-list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
-.lesson-row{
-  display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 16px;align-items:baseline;
-  padding:15px 18px;text-decoration:none;color:inherit;border-top:1px solid var(--line);
-}
-.lesson-row:first-child{border-top:0}
-.lesson-row:hover{background:var(--sunk)}
-.lesson-row .n{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
-.lesson-row .t{font-weight:600;font-size:15px}
-.lesson-row:hover .t{color:var(--accent)}
-.lesson-row .s{grid-column:2;color:var(--ink-2);font-size:13.5px}
-.lesson-row .m{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);white-space:nowrap}
-.lesson-row .badge{
-  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
-  background:var(--accent-soft);color:var(--accent);padding:2px 7px;border-radius:999px;font-weight:600;
-}
-
-.empty{
-  border:1px dashed var(--line-2);border-radius:var(--radius);padding:30px 22px;
-  color:var(--ink-3);font-size:14px;background:var(--surface);
-}
-.empty b{color:var(--ink-2);display:block;margin-bottom:6px;font-weight:600}
-.empty code{background:var(--sunk);padding:1px 5px;border-radius:4px;font-size:12.5px}
-
-/* ---------- roadmap table ---------- */
+/* ---------- the problem list ---------- */
 .roadmap{margin-bottom:46px}
 .roadmap h2{margin-bottom:6px}
 .roadmap .note{color:var(--ink-2);font-size:14px;margin-bottom:16px;max-width:62ch}
@@ -144,20 +102,6 @@ table.problems .rate{font-family:"IBM Plex Mono",monospace;color:var(--ink-2);fo
 .diff.easy{background:var(--up-soft);color:var(--up)}
 .diff.medium{background:var(--amber-soft);color:var(--amber)}
 .diff.hard{background:var(--down-soft);color:var(--down)}
-.done{display:inline-block;margin-left:7px;font-size:11px;color:var(--accent);font-weight:600;text-decoration:none}
-
-/* ---------- prose ---------- */
-.prose{max-width:68ch;padding-bottom:56px}
-.prose > * + *{margin-top:18px}
-.prose h2{font-size:22px;margin-top:40px}
-.prose h3{font-size:16px;margin-top:30px}
-.prose p,.prose li{color:var(--ink-2);font-size:15.5px;line-height:1.68}
-.prose strong{color:var(--ink)}
-.prose ul,.prose ol{padding-left:22px;display:flex;flex-direction:column;gap:7px}
-.prose a{color:var(--accent)}
-.prose :not(pre) > code{background:var(--sunk);border:1px solid var(--line);padding:1px 5px;border-radius:5px;font-size:.9em}
-.prose pre{border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.6}
-.prose blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--ink-2);font-style:italic}
 
 /* ---------- pager ---------- */
 .pager{display:flex;gap:12px;justify-content:space-between;border-top:1px solid var(--line);padding-top:20px;margin-top:8px;margin-bottom:64px;flex-wrap:wrap}

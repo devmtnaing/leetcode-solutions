@@ -1,11 +1,10 @@
 ---
 import Base from './Base.astro';
-import { trackById } from '../data/tracks';
+import { SITE_NAME } from '../data/site';
 
 interface Props {
   title: string;
   summary: string;
-  track: string;
   interactive?: boolean;
   /** A walkthrough page draws its own title inside the stage; prose pages don't. */
   ownHeader?: boolean;
@@ -14,14 +13,12 @@ interface Props {
   /** Where this lesson sits, for a lesson with nothing after it. */
   up?: { href: string; title: string };
 }
-const { title, summary, track, interactive = false, ownHeader = false, prev, next, up } = Astro.props;
-const t = trackById(track);
+const { title, summary, interactive = false, ownHeader = false, prev, next, up } = Astro.props;
 ---
-<Base title={`${title} · learn`} description={summary} interactive={interactive}>
+<Base title={`${title} · ${SITE_NAME}`} description={summary} interactive={interactive}>
   <div class="shell">
     <nav class="crumbs" aria-label="Breadcrumb">
-      <a href="/">learn</a><span>/</span>
-      <a href={`/${track}`}>{t?.name ?? track}</a><span>/</span>
+      <a href="/">Problems</a><span>/</span>
       <span>{title}</span>
     </nav>
   </div>

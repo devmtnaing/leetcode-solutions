@@ -1,5 +1,5 @@
 {
-  "name": "learn-site",
+  "name": "leetcode-solution-pages",
   "type": "module",
   "version": "0.1.0",
   "private": true,
@@ -7,10 +7,12 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "node scripts/check-lessons.mjs",
+    "verify": "python3 scripts/verify/run.py"
   },
   "dependencies": {
-    "@astrojs/mdx": "^8.0.1",
     "astro": "^7.3.3"
-  }
+  },
+  "description": "Interactive, verified LeetCode solution pages — step through the algorithm, copy code that was run in five languages.",
+  "license": "MIT"
 }
