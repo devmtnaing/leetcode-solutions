@@ -4,6 +4,7 @@
     python3 scripts/verify/run.py <slug>              everything
     python3 scripts/verify/run.py <slug> --lang ruby  one language
     python3 scripts/verify/run.py <slug> --no-docker  skip Go and Rust
+    python3 scripts/verify/run.py <slug> --strict     a skipped language fails the run (CI)
     python3 scripts/verify/run.py <slug> --from DIR   run listing files (brute.rb, …)
                                                       before they are in lesson.js
 
@@ -41,7 +42,7 @@ def command(lang, work, big_stack=False):
     if lang == 'python':
         return ['python3', f'{work}/main.py']
     if lang == 'javascript':
-        return ['node'] + (['--stack-size=7800'] if big_stack else []) + [f'{work}/main.cjs']
+        return ['node'] + (['--stack-size=4000'] if big_stack else []) + [f'{work}/main.cjs']
     if lang == 'go':
         return ['docker', 'run', '--rm', '-i', '-v', f'{work}:/w', '-w', '/w', 'golang:1.23-alpine',
                 'sh', '-c', 'go build -o m main.go && ./m']
@@ -56,12 +57,13 @@ def main():
     ap.add_argument('slug')
     ap.add_argument('--lang', choices=list(EXT))
     ap.add_argument('--no-docker', action='store_true')
+    ap.add_argument('--strict', action='store_true', help='fail if any language could not run')
     ap.add_argument('--from', dest='source', help='a folder of <mode>.<ext> listings to run instead of lesson.js')
     args = ap.parse_args()
 
     spec_path = os.path.join(ROOT, 'verify', args.slug, 'spec.py')
     if not os.path.exists(spec_path):
-        sys.exit(f'no verify/{args.slug}/spec.py — see CONTRIBUTING.md, "Verifying a lesson"')
+        sys.exit(f'no verify/{args.slug}/spec.py — see CONTRIBUTING.md, "6. Verify"')
     spec = importlib.util.spec_from_file_location('spec', spec_path)
     S = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(S)
@@ -125,6 +127,9 @@ def main():
         steps = subprocess.run(['node', os.path.join(HERE, 'steps.mjs'), args.slug,
                                 f'{cache}/cases.txt', f'{cache}/expected.txt'])
         failed += steps.returncode != 0
+    if args.strict and skipped:
+        failed += 1
+        print(f'\n{skipped} language run(s) skipped, and --strict counts a skip as a failure')
     print(f'\n{"FAILED" if failed else "passed"}' + (f' ({skipped} skipped — not verified)' if skipped else ''))
     sys.exit(1 if failed else 0)
 

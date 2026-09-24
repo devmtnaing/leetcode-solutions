@@ -200,6 +200,13 @@ collects phrasings a native reader should check. Help there is very welcome.
 - [ ] no sideways scroll at 400px
 - [ ] `npm run build` succeeds
 
+Every pull request runs `.github/workflows/verify.yml`: `npm run check` and the
+build, then `npm run verify -- <slug> --strict` for each lesson the PR
+touches — every lesson, if it touches the shared kit or the verify scripts.
+Go and Rust run in Docker there too, and `--strict` fails the job if any
+language was skipped. The browser checks in the list above are still yours to
+do by hand.
+
 ## Using Claude Code
 
 The repo ships a project skill, `.claude/skills/leetcode-solution-page/`. In

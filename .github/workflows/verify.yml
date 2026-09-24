@@ -1,0 +1,97 @@
+# Checks every pull request the way CONTRIBUTING.md asks a contributor to:
+#
+#   check   — npm run check (every page has every part) and npm run build
+#   plan    — which lessons the PR touched
+#   verify  — for each of those, every listing in all five languages against
+#             its corpus, then its walkthroughs (scripts/verify/run.py --strict)
+#
+# A change to shared code (the kit, the verify scripts, the tree helpers, the
+# dependencies or this file) re-verifies every lesson. Run it by hand from the
+# Actions tab to verify all of them.
+
+name: verify
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build
+
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      slugs: ${{ steps.pick.outputs.slugs }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: pick
+        name: Pick the lessons to verify
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          all=$(ls -d verify/*/spec.py | cut -d/ -f2 | sort)
+          if [ "$EVENT" != "pull_request" ]; then
+            picked="$all"
+          else
+            changed=$(git diff --name-only "$BASE" HEAD)
+            echo "Changed files:"; echo "$changed" | sed 's/^/  /'
+            if echo "$changed" | grep -qE '^(scripts/verify/|verify/_lib/|src/lib/|package(-lock)?\.json$|\.github/workflows/verify\.yml$)'; then
+              echo "Shared code changed: verifying every lesson."
+              picked="$all"
+            else
+              touched=$(echo "$changed" | sed -nE 's#^(src/lessons|verify)/([^/]+)/.*#\2#p' | sort -u)
+              # only lessons that have a spec; a lesson without one fails npm run check's review, not this job
+              picked=$(comm -12 <(echo "$all") <(echo "$touched"))
+            fi
+          fi
+          json=$(printf '%s\n' $picked | jq -R . | jq -sc 'map(select(length > 0))')
+          echo "Verifying: $json"
+          echo "slugs=$json" >> "$GITHUB_OUTPUT"
+
+  verify:
+    needs: plan
+    if: needs.plan.outputs.slugs != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        slug: ${{ fromJson(needs.plan.outputs.slugs) }}
+    name: verify ${{ matrix.slug }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+      - name: Pull the Go and Rust images run.py uses
+        run: docker pull -q golang:1.23-alpine && docker pull -q rust:1-slim
+      - name: Every listing, five languages, then the walkthroughs
+        run: python3 scripts/verify/run.py "${{ matrix.slug }}" --strict
