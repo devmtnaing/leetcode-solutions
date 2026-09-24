@@ -10,7 +10,8 @@
    "tags": [
     "Array",
     "Hash Table"
-   ]
+   ],
+   "category": "Arrays & Hashing"
   },
   {
    "id": 20,
@@ -23,7 +24,8 @@
     "String",
     "Stack",
     "Bracket Sequences"
-   ]
+   ],
+   "category": "Stack"
   },
   {
    "id": 21,
@@ -35,7 +37,8 @@
    "tags": [
     "Linked List",
     "Recursion"
-   ]
+   ],
+   "category": "Linked List"
   },
   {
    "id": 121,
@@ -47,7 +50,8 @@
    "tags": [
     "Array",
     "Dynamic Programming"
-   ]
+   ],
+   "category": "Sliding Window"
   },
   {
    "id": 141,
@@ -61,7 +65,8 @@
     "Linked List",
     "Two Pointers",
     "Floyd's Cycle Finding Algorithm"
-   ]
+   ],
+   "category": "Linked List"
   },
   {
    "id": 206,
@@ -73,7 +78,8 @@
    "tags": [
     "Linked List",
     "Recursion"
-   ]
+   ],
+   "category": "Linked List"
   },
   {
    "id": 226,
@@ -87,7 +93,8 @@
     "Depth-First Search",
     "Breadth-First Search",
     "Binary Tree"
-   ]
+   ],
+   "category": "Trees"
   },
   {
    "id": 104,
@@ -101,7 +108,8 @@
     "Depth-First Search",
     "Breadth-First Search",
     "Binary Tree"
-   ]
+   ],
+   "category": "Trees"
   },
   {
    "id": 136,
@@ -113,7 +121,8 @@
    "tags": [
     "Array",
     "Bit Manipulation"
-   ]
+   ],
+   "category": "Bit Manipulation"
   },
   {
    "id": 242,
@@ -126,7 +135,8 @@
     "Hash Table",
     "String",
     "Sorting"
-   ]
+   ],
+   "category": "Arrays & Hashing"
   },
   {
    "id": 70,
@@ -139,7 +149,8 @@
     "Math",
     "Dynamic Programming",
     "Memoization"
-   ]
+   ],
+   "category": "Dynamic Programming"
   },
   {
    "id": 169,
@@ -154,8 +165,9 @@
     "Divide and Conquer",
     "Sorting",
     "Counting",
-    "Boyer\u2013Moore Majority Vote Algorithm"
-   ]
+    "Boyer–Moore Majority Vote Algorithm"
+   ],
+   "category": "Arrays & Hashing"
   },
   {
    "id": 283,
@@ -167,7 +179,8 @@
    "tags": [
     "Array",
     "Two Pointers"
-   ]
+   ],
+   "category": "Two Pointers"
   },
   {
    "id": 125,
@@ -179,7 +192,8 @@
    "tags": [
     "Two Pointers",
     "String"
-   ]
+   ],
+   "category": "Two Pointers"
   },
   {
    "id": 543,
@@ -193,7 +207,23 @@
     "Depth-First Search",
     "Binary Tree",
     "DP on Trees"
-   ]
+   ],
+   "category": "Trees"
+  },
+  {
+   "id": 3318,
+   "title": "Find X-Sum of All K-Long Subarrays I",
+   "slug": "find-x-sum-of-all-k-long-subarrays-i",
+   "difficulty": "Easy",
+   "paid": false,
+   "acRate": "75.8%",
+   "tags": [
+    "Array",
+    "Hash Table",
+    "Sliding Window"
+   ],
+   "extra": true,
+   "category": "Sliding Window"
   }
  ],
  "MEDIUM": [
@@ -208,7 +238,8 @@
     "Hash Table",
     "String",
     "Sliding Window"
-   ]
+   ],
+   "category": "Sliding Window"
   },
   {
    "id": 15,
@@ -221,7 +252,8 @@
     "Array",
     "Two Pointers",
     "Sorting"
-   ]
+   ],
+   "category": "Two Pointers"
   },
   {
    "id": 33,
@@ -233,7 +265,8 @@
    "tags": [
     "Array",
     "Binary Search"
-   ]
+   ],
+   "category": "Binary Search"
   },
   {
    "id": 46,
@@ -245,7 +278,8 @@
    "tags": [
     "Array",
     "Backtracking"
-   ]
+   ],
+   "category": "Backtracking"
   },
   {
    "id": 48,
@@ -258,7 +292,8 @@
     "Array",
     "Math",
     "Matrix"
-   ]
+   ],
+   "category": "Math & Geometry"
   },
   {
    "id": 53,
@@ -271,7 +306,8 @@
     "Array",
     "Divide and Conquer",
     "Dynamic Programming"
-   ]
+   ],
+   "category": "Dynamic Programming"
   },
   {
    "id": 56,
@@ -284,7 +320,8 @@
     "Array",
     "Sorting",
     "Quicksort"
-   ]
+   ],
+   "category": "Intervals"
   },
   {
    "id": 146,
@@ -298,7 +335,8 @@
     "Linked List",
     "Design",
     "Doubly-Linked List"
-   ]
+   ],
+   "category": "Linked List"
   },
   {
    "id": 200,
@@ -313,7 +351,8 @@
     "Breadth-First Search",
     "Union-Find",
     "Matrix"
-   ]
+   ],
+   "category": "Graphs"
   },
   {
    "id": 207,
@@ -328,7 +367,8 @@
     "Graph Theory",
     "Topological Sort",
     "Directed Acyclic Graph"
-   ]
+   ],
+   "category": "Graphs"
   },
   {
    "id": 208,
@@ -342,7 +382,8 @@
     "String",
     "Design",
     "Trie"
-   ]
+   ],
+   "category": "Tries"
   },
   {
    "id": 215,
@@ -357,7 +398,8 @@
     "Sorting",
     "Heap (Priority Queue)",
     "Quickselect"
-   ]
+   ],
+   "category": "Heap"
   },
   {
    "id": 236,
@@ -372,7 +414,8 @@
     "Binary Tree",
     "Binary Lifting",
     "Lowest Common Ancestor"
-   ]
+   ],
+   "category": "Trees"
   },
   {
    "id": 238,
@@ -384,7 +427,8 @@
    "tags": [
     "Array",
     "Prefix Sum"
-   ]
+   ],
+   "category": "Arrays & Hashing"
   },
   {
    "id": 322,
@@ -399,7 +443,8 @@
     "Breadth-First Search",
     "Knapsack Problem",
     "Complete Knapsack"
-   ]
+   ],
+   "category": "Dynamic Programming"
   }
  ],
  "HARD": [
@@ -414,7 +459,8 @@
     "Array",
     "Binary Search",
     "Divide and Conquer"
-   ]
+   ],
+   "category": "Binary Search"
   },
   {
    "id": 23,
@@ -429,7 +475,8 @@
     "Heap (Priority Queue)",
     "Merge Sort",
     "Tournament Sort"
-   ]
+   ],
+   "category": "Linked List"
   },
   {
    "id": 25,
@@ -441,7 +488,8 @@
    "tags": [
     "Linked List",
     "Recursion"
-   ]
+   ],
+   "category": "Linked List"
   },
   {
    "id": 42,
@@ -456,7 +504,8 @@
     "Dynamic Programming",
     "Stack",
     "Monotonic Stack"
-   ]
+   ],
+   "category": "Two Pointers"
   },
   {
    "id": 76,
@@ -469,7 +518,8 @@
     "Hash Table",
     "String",
     "Sliding Window"
-   ]
+   ],
+   "category": "Sliding Window"
   },
   {
    "id": 84,
@@ -483,7 +533,8 @@
     "Stack",
     "Monotonic Stack",
     "Range Minimum/Maximum Query"
-   ]
+   ],
+   "category": "Stack"
   },
   {
    "id": 124,
@@ -498,7 +549,8 @@
     "Depth-First Search",
     "Binary Tree",
     "DP on Trees"
-   ]
+   ],
+   "category": "Trees"
   },
   {
    "id": 127,
@@ -512,7 +564,8 @@
     "String",
     "Breadth-First Search",
     "Bidirectional Search"
-   ]
+   ],
+   "category": "Graphs"
   },
   {
    "id": 212,
@@ -527,7 +580,8 @@
     "Backtracking",
     "Trie",
     "Matrix"
-   ]
+   ],
+   "category": "Tries"
   },
   {
    "id": 224,
@@ -541,7 +595,8 @@
     "String",
     "Stack",
     "Recursion"
-   ]
+   ],
+   "category": "Stack"
   },
   {
    "id": 239,
@@ -557,7 +612,8 @@
     "Heap (Priority Queue)",
     "Monotonic Queue",
     "Range Minimum/Maximum Query"
-   ]
+   ],
+   "category": "Sliding Window"
   },
   {
    "id": 295,
@@ -572,7 +628,8 @@
     "Sorting",
     "Heap (Priority Queue)",
     "Data Stream"
-   ]
+   ],
+   "category": "Heap"
   },
   {
    "id": 297,
@@ -588,7 +645,8 @@
     "Breadth-First Search",
     "Design",
     "Binary Tree"
-   ]
+   ],
+   "category": "Trees"
   },
   {
    "id": 329,
@@ -607,7 +665,8 @@
     "Memoization",
     "Matrix",
     "Directed Acyclic Graph"
-   ]
+   ],
+   "category": "Dynamic Programming"
   },
   {
    "id": 51,
@@ -620,7 +679,23 @@
     "Array",
     "Backtracking",
     "Algorithm X"
-   ]
+   ],
+   "category": "Backtracking"
+  },
+  {
+   "id": 3321,
+   "title": "Find X-Sum of All K-Long Subarrays II",
+   "slug": "find-x-sum-of-all-k-long-subarrays-ii",
+   "difficulty": "Hard",
+   "paid": false,
+   "acRate": "41.1%",
+   "tags": [
+    "Array",
+    "Hash Table",
+    "Sliding Window"
+   ],
+   "extra": true,
+   "category": "Sliding Window"
   }
  ]
 }

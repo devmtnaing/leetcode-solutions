@@ -80,7 +80,9 @@ Everything for a lesson is one folder; `src/pages/leetcode/[slug].astro`
 renders every folder that has a `page.js`, and the home page lists problems
 only: a problem whose id is in some lesson's `links` gets its title linked
 (the whole row opens the page), the rest say "Solution coming soon", and every
-row has a "View on LeetCode ↗" link. There is no page file and no index entry to add.
+row has a "View on LeetCode ↗" link. Problems are grouped by the `category`
+each has in `src/data/problems.json`; a problem added there needs one of the
+categories listed in `src/pages/index.astro`. There is no page file and no index entry to add.
 
 ```
 src/lessons/<slug>/page.js           the static prose, as Walkthrough props

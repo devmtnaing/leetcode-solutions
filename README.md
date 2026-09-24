@@ -30,8 +30,9 @@ npm run check      # structural check of every lesson
 
 The home page lists 45 interview problems, 15 each of easy, medium and hard,
 chosen where three of LeetCode's own study plans agree
-([how](docs/problem-list.md)). A problem with an interactive solution opens
-it; every problem also links to LeetCode. **Most don't yet, and adding one is the
+([how](docs/problem-list.md)), grouped by pattern (Arrays & Hashing, Two
+Pointers, Trees, …) with search and a difficulty filter. A problem with an
+interactive solution opens it; every problem also links to LeetCode. **Most don't yet, and adding one is the
 main way to contribute.** See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## What is in the repo

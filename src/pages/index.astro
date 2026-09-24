@@ -4,11 +4,11 @@ import { SITE_NAME } from '../data/site';
 import problems from '../data/problems.json';
 
 interface Problem {
-  id: number; title: string; slug: string; difficulty: string;
-  paid: boolean; acRate: string; tags: string[]; extra?: boolean;
+  id: number; title: string; slug: string; difficulty: 'Easy' | 'Medium' | 'Hard';
+  paid: boolean; acRate: string; tags: string[]; category: string; extra?: boolean;
 }
 
-// A problem gets a walkthrough link when a lesson folder names it: every
+// A problem gets a solution page when a lesson folder names it: every
 // lesson's page.js lists the LeetCode problems it covers.
 const pages = import.meta.glob('../lessons/*/page.js', { eager: true, import: 'default' }) as
   Record<string, { links: { id: number }[] }>;
@@ -18,79 +18,208 @@ for (const [path, page] of Object.entries(pages)) {
   for (const { id } of page.links) WALKTHROUGH[id] = `/leetcode/${slug}`;
 }
 
-// Outside the core list, but they have a walkthrough, so they are listed with
-// their difficulty rather than hidden.
-const EXTRA: Record<string, Problem[]> = {
-  EASY: [{ id: 3318, title: 'Find X-Sum of All K-Long Subarrays I', slug: 'find-x-sum-of-all-k-long-subarrays-i', difficulty: 'Easy', paid: false, acRate: '75.8%', tags: ['Array', 'Hash Table', 'Sliding Window'], extra: true }],
-  HARD: [{ id: 3321, title: 'Find X-Sum of All K-Long Subarrays II', slug: 'find-x-sum-of-all-k-long-subarrays-ii', difficulty: 'Hard', paid: false, acRate: '41.1%', tags: ['Array', 'Hash Table', 'Sliding Window'], extra: true }],
-};
+// The patterns, in the order they build on each other. Every problem in
+// problems.json names one of these as its category.
+const CATEGORIES = [
+  'Arrays & Hashing', 'Two Pointers', 'Sliding Window', 'Stack', 'Binary Search',
+  'Linked List', 'Trees', 'Tries', 'Heap', 'Backtracking', 'Graphs',
+  'Dynamic Programming', 'Intervals', 'Math & Geometry', 'Bit Manipulation',
+];
+const LEVEL = { Easy: 0, Medium: 1, Hard: 2 };
 
-const groups = (['EASY', 'MEDIUM', 'HARD'] as const).map((key) => ({
-  key,
-  label: key[0] + key.slice(1).toLowerCase(),
-  rows: [...((problems as Record<string, Problem[]>)[key] ?? []), ...(EXTRA[key] ?? [])],
-}));
-const core = Object.values(problems as Record<string, Problem[]>).flat().length;
-const all = groups.flatMap((g) => g.rows);
+const all = Object.values(problems as Record<string, Problem[]>).flat();
+const core = all.filter((p) => !p.extra).length;
 const worked = all.filter((p) => WALKTHROUGH[p.id]).length;
+for (const p of all) {
+  if (!CATEGORIES.includes(p.category)) throw new Error(`problems.json: ${p.id} has unknown category "${p.category}"`);
+}
+
+const id = (name: string) => name.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-');
+const groups = CATEGORIES.map((name) => ({
+  name,
+  id: id(name),
+  rows: all.filter((p) => p.category === name).sort((a, b) => LEVEL[a.difficulty] - LEVEL[b.difficulty]),
+}));
+// What the search box matches against: name, number, pattern and tags.
+const haystack = (p: Problem) => [p.id, p.title, p.category, ...p.tags].join(' ').toLowerCase();
 ---
 <Base
   title={`LeetCode · ${SITE_NAME}`}
-  description="A roadmap of interview problems, worked one at a time — each with an interactive walkthrough and verified solutions in five languages."
+  description="Interview problems grouped by pattern, each with an interactive walkthrough and verified solutions in five languages."
 >
   <div class="shell">
     <div class="page-head">
       <h1>LeetCode</h1>
       <p class="lede">
-        {core} problems, split evenly across easy, medium and hard, chosen where three
-        separate study plans agree. Open a problem to see its interactive solution: a
-        page that runs the algorithm step by step, with solutions in Ruby, Python,
-        JavaScript, Go and Rust that were all run before they were published.
+        {core} interview problems, split evenly across easy, medium and hard and chosen
+        where three separate study plans agree, grouped by the pattern that solves them.
+        Open a problem to see its interactive solution: a page that runs the algorithm
+        step by step, with solutions in Ruby, Python, JavaScript, Go and Rust that were
+        all run before they were published.
       </p>
     </div>
 
-    {groups.map((g) => (
-      <section class="roadmap">
-        <h2>{g.label} <span class="num" style="color:var(--ink-3);font-weight:400;font-size:15px">— {g.rows.length} problems</span></h2>
-        <div class="tablewrap">
-          <table class="problems">
-            <thead>
-              <tr>
-                <th style="width:1%">#</th>
-                <th>Problem</th>
-                <th class="wide">Pattern</th>
-                <th class="wide" style="width:1%">Level</th>
-                <th class="wide" style="width:1%;text-align:right">Accepted</th>
-              </tr>
-            </thead>
-            <tbody>
+    <div class="plist">
+      <aside class="cats">
+        <nav aria-label="Patterns">
+          <a class="cat" href="#top" data-cat="" aria-current="true">
+            <span>All problems</span><span class="cat-n" data-count="">{all.length}</span>
+          </a>
+          {groups.map((g) => (
+            <a class="cat" href={`#${g.id}`} data-cat={g.id}>
+              <span>{g.name}</span><span class="cat-n" data-count={g.id}>{g.rows.length}</span>
+            </a>
+          ))}
+        </nav>
+      </aside>
+
+      <div class="plist-main" id="top">
+        <form class="filters" role="search" data-filters hidden>
+          <label class="search">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <input type="search" name="q" placeholder="Search by name, number or pattern" aria-label="Search problems" autocomplete="off" spellcheck="false">
+          </label>
+          <select name="d" aria-label="Difficulty">
+            <option value="">All difficulties</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+          <label class="only">
+            <input type="checkbox" name="solved" value="1">
+            <span>With a solution</span>
+          </label>
+        </form>
+        <p class="plist-count" aria-live="polite" data-summary>
+          {all.length} problems · {worked} with an interactive solution
+        </p>
+
+        {groups.map((g) => (
+          <section class="cat-sec" id={g.id} data-sec={g.id}>
+            <header>
+              <h2>{g.name}</h2>
+              <span data-sec-count>{g.rows.length} {g.rows.length === 1 ? 'problem' : 'problems'}</span>
+            </header>
+            <ul class="prows">
               {g.rows.map((p) => (
-                <tr class={WALKTHROUGH[p.id] ? 'has-page' : undefined}>
-                  <td class="num">{p.id}</td>
-                  <td>
+                <li
+                  class={WALKTHROUGH[p.id] ? 'prow has-page' : 'prow'}
+                  data-d={p.difficulty.toLowerCase()}
+                  data-text={haystack(p)}
+                  data-solved={WALKTHROUGH[p.id] ? '1' : undefined}
+                >
+                  <span class="pnum">{p.id}</span>
+                  <div class="pmain">
                     {WALKTHROUGH[p.id]
-                      ? <a class="title" href={WALKTHROUGH[p.id]}>{p.title}</a>
-                      : <span class="title">{p.title}</span>}
-                    <span class="sub">
+                      ? <a class="ptitle" href={WALKTHROUGH[p.id]}>{p.title}</a>
+                      : <span class="ptitle">{p.title}</span>}
+                    <span class="psub">
                       {!WALKTHROUGH[p.id] && <span class="soon">Solution coming soon</span>}
                       {p.extra && <span>Outside the core list</span>}
                       <a class="lc" href={`https://leetcode.com/problems/${p.slug}/`} target="_blank" rel="noopener">View on LeetCode ↗</a>
                     </span>
-                  </td>
-                  <td class="tags wide">{p.tags.slice(0, 3).join(' · ')}</td>
-                  <td class="wide"><span class={`diff ${p.difficulty.toLowerCase()}`}>{p.difficulty}</span></td>
-                  <td class="rate wide">{p.acRate}</td>
-                </tr>
+                  </div>
+                  <span class="ptags">{p.tags.slice(0, 3).join(' · ')}</span>
+                  <span class={`diff ${p.difficulty.toLowerCase()}`}>{p.difficulty}</span>
+                  <span class="prate" title="Acceptance rate on LeetCode">{p.acRate}</span>
+                </li>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    ))}
+            </ul>
+          </section>
+        ))}
 
-    <p class="note" style="color:var(--ink-3);font-size:13px;padding-bottom:50px">
-      {worked} of {all.length} problems have an interactive solution. Metadata pulled from LeetCode and
-      verified problem by problem — difficulty labels here match the site, not folklore.
-    </p>
+        <p class="plist-empty" data-empty hidden>
+          No problems match. <button type="button" data-clear>Clear the filters</button>
+        </p>
+      </div>
+    </div>
   </div>
 </Base>
+
+<script>
+  // Search, difficulty and pattern filters. Everything is in the markup
+  // already, so without JavaScript the full list shows and the pattern links
+  // scroll to their section; this only hides rows. State lives in the URL
+  // (?q=&d=&solved=1#pattern) so a filtered list can be shared.
+  const form = document.querySelector<HTMLFormElement>('[data-filters]')!;
+  const q = form.elements.namedItem('q') as HTMLInputElement;
+  const d = form.elements.namedItem('d') as HTMLSelectElement;
+  const solved = form.elements.namedItem('solved') as HTMLInputElement;
+  const cats = [...document.querySelectorAll<HTMLAnchorElement>('.cat')];
+  const secs = [...document.querySelectorAll<HTMLElement>('[data-sec]')];
+  const summary = document.querySelector('[data-summary]')!;
+  const empty = document.querySelector<HTMLElement>('[data-empty]')!;
+  let cat = '';
+
+  const params = new URLSearchParams(location.search);
+  q.value = params.get('q') ?? '';
+  d.value = params.get('d') ?? '';
+  solved.checked = params.get('solved') === '1';
+  const fromHash = location.hash.slice(1);
+  if (secs.some((s) => s.dataset.sec === fromHash)) cat = fromHash;
+  form.hidden = false;
+
+  const plural = (n: number) => `${n} ${n === 1 ? 'problem' : 'problems'}`;
+
+  function apply() {
+    const terms = q.value.toLowerCase().split(/\s+/).filter(Boolean);
+    const counts: Record<string, number> = {};
+    let shown = 0, shownSolved = 0;
+    for (const sec of secs) {
+      let n = 0;
+      for (const row of sec.querySelectorAll<HTMLElement>('.prow')) {
+        const hit = (!d.value || row.dataset.d === d.value)
+          && (!solved.checked || row.dataset.solved)
+          && terms.every((t) => row.dataset.text!.includes(t));
+        row.hidden = !hit;
+        if (hit) { n++; if (row.dataset.solved) shownSolved++; }
+      }
+      counts[sec.dataset.sec!] = n;
+      const inCat = !cat || sec.dataset.sec === cat;
+      sec.hidden = !inCat || n === 0;
+      sec.querySelector('[data-sec-count]')!.textContent = plural(n);
+      if (inCat) shown += n;
+    }
+    // Sidebar counts follow the search and difficulty, not the chosen pattern.
+    let total = 0;
+    for (const a of cats) {
+      const id = a.dataset.cat!;
+      const n = id ? counts[id] : 0;
+      total += n;
+      if (id) {
+        a.querySelector('.cat-n')!.textContent = String(n);
+        a.classList.toggle('none', n === 0);
+      }
+      a.setAttribute('aria-current', String(id === cat));
+    }
+    cats[0].querySelector('.cat-n')!.textContent = String(total);
+    summary.textContent = shown
+      ? `${plural(shown)} · ${shownSolved} with an interactive solution`
+      : 'No problems match';
+    empty.hidden = shown > 0;
+
+    const next = new URLSearchParams();
+    if (q.value) next.set('q', q.value);
+    if (d.value) next.set('d', d.value);
+    if (solved.checked) next.set('solved', '1');
+    const url = `${location.pathname}${next.size ? `?${next}` : ''}${cat ? `#${cat}` : ''}`;
+    history.replaceState(null, '', url);
+  }
+
+  form.addEventListener('input', apply);
+  form.addEventListener('submit', (e) => e.preventDefault());
+  for (const a of cats) {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      cat = a.dataset.cat!;
+      apply();
+      document.getElementById('top')!.scrollIntoView({ block: 'start' });
+    });
+  }
+  document.querySelector('[data-clear]')!.addEventListener('click', () => {
+    q.value = ''; d.value = ''; solved.checked = false; cat = '';
+    apply();
+    q.focus();
+  });
+  apply();
+</script>
