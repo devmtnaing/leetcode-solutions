@@ -1,13 +1,10 @@
 /* Stage shapes for lessons built on the kit — the pictures stage.js draws.
 
-   Everything else on a walkthrough page — header, parts, statement card,
-   widget panel, example cards, mode cards, transport, narration, code panel,
-   solution blocks — is styled by lesson.css, the x-sum page's own stylesheet.
-   That is deliberate: x-sum is the reference design, and a lesson matches it
-   because it uses the same markup and the same rules, not because a second
-   stylesheet imitates them. Do not add page-structure rules here; they will
-   collide with lesson.css (an earlier version of this file redefined .part,
-   .statement and .lang-switch and quietly drifted from x-sum's look). */
+   Everything else on a solution page — header, parts, statement card, widget
+   panel, example cards, approach tabs, player, code panel, solution blocks —
+   is styled by lesson.css. Do not add page-structure rules here; they will
+   collide with it (an earlier version of this file redefined .part,
+   .statement and .lang-switch and quietly drifted from the rest). */
 
 /* ---------- stage shapes ---------- */
 .st-box{display:flex;flex-direction:column;gap:7px;min-width:0}
@@ -98,8 +95,7 @@
 .st-read b{color:var(--ink-3);font-weight:500;margin-right:7px}
 
 /* Code tokens. Kit listings mark keywords, comments, strings and numbers as
-   k / c / s / n; lesson.css styles x-sum's own kw / cm. Same colours, both names,
-   scoped to code so the one-letter classes cannot leak. */
+   k / c / s / n, scoped to code so the one-letter classes cannot leak. */
 .code .k,pre.full .k{color:var(--accent)}
 .code .c,pre.full .c{color:var(--ink-3);font-style:italic}
 .code .s,pre.full .s{color:var(--up)}
@@ -118,7 +114,7 @@
 }
 
 
-/* Pointer labels under x-sum strip cells, for lessons that walk pointers. */
+/* Pointer labels under strip cells, for lessons that walk pointers. */
 .strip .cell,.q-arr .cell{position:relative}
 .cell .ptr{
   position:absolute;top:100%;margin-top:4px;white-space:nowrap;

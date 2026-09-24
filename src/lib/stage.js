@@ -32,8 +32,8 @@ export function strip(items, o = {}) {
   return box(label, `<div class="st-strip">${cells || '<span class="st-empty">empty</span>'}</div>`);
 }
 
-/* The array strip card, in x-sum's own cell markup, so a lesson's strip is
- * indistinguishable from x-sum's. `tone` takes x-sum's cell states:
+/* The array strip, as .cell markup (styled by lesson.css). `tone` takes the
+ * cell states every page uses:
  *   inwin    amber — the element(s) being looked at
  *   entering green — the element that just joined, or that matched
  *   leaving  red, dashed — the element that just dropped out, or failed
@@ -48,7 +48,7 @@ export function cells(items, o = {}) {
   return hasMarks ? `<div class="strip has-ptr">${html}</div>` : html;
 }
 
-/* x-sum's answer card slots: filled ones hold a value, `just` marks the one
+/* The answer card's slots: filled ones hold a value, `just` marks the one
  * this step wrote. */
 export function slots(values, o = {}) {
   const { total = values.length, just = -1 } = o;
@@ -60,7 +60,7 @@ export function slots(values, o = {}) {
   return html;
 }
 
-/* A titled block inside the stage panel, in x-sum's panel-head style. */
+/* A titled block inside the stage panel, in the page's panel-head style. */
 export function stagePanel(title, note, inner) {
   return `<div class="panel-head"><h2>${esc(title)}</h2>${note ? `<span class="note">${esc(note)}</span>` : ''}</div>${inner}`;
 }

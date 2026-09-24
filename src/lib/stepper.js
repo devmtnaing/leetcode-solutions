@@ -1,10 +1,8 @@
-/* The walkthrough engine, rendering the x-sum page's format.
- *
- * x-sum (src/lessons/x-sum/) is the reference design. This file emits the
- * same markup it uses — mode cards, controls with preset chips, the array strip
- * card, transport, narration, the stage/code bench, example cards, and the
- * part 3 solution blocks — so lesson.css styles every lesson exactly as it
- * styles x-sum. Matching x-sum is structural, not a second stylesheet's guess.
+/* The walkthrough engine. It renders every interactive part of a solution
+ * page from a lesson's data: part 2's approach tabs (2·1) and player card
+ * (2·2) — inputs and preset chips, the array strip, transport, narration, the
+ * stage beside the live code — plus the example cards and the part 3 solution
+ * blocks. Every page gets the same markup, so lesson.css styles them alike.
  *
  * A lesson supplies data and nothing else:
  *

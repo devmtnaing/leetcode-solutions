@@ -21,8 +21,8 @@ const subs = new Set();
 
 export let lang = 'en';
 
-// x-sum predates this module and stores its choice under its own key. Read
-// either, write both, so the reader's language follows them between pages.
+// The first page stored the choice under its own key; readers who chose a
+// language there still have it. Read either, write both.
 const LEGACY_KEY = 'xsum-ui';
 try {
   const saved = localStorage.getItem(KEY) ?? localStorage.getItem(LEGACY_KEY);

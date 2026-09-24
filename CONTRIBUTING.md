@@ -4,10 +4,10 @@ The most useful contribution is a new solution page for a problem on the list
 that doesn't have one yet: any row on the home page marked *Solution coming
 soon*. Fixes to existing pages, including better Burmese, are just as welcome.
 
-Before you start, open two pages side by side:
-[`/leetcode/two-sum`](src/lessons/two-sum/) (built on the kit, and the one to
-copy) and [`/leetcode/x-sum`](src/lessons/x-sum/) (the reference design). A
-new page has the same parts, in the same order.
+Before you start, open a page or two to see what one looks like:
+[`/leetcode/two-sum`](src/lessons/two-sum/) is the simplest, and the one to
+copy. Every page has the same parts in the same order — the layout comes from
+the shared kit, so you write content, not markup.
 
 ## What a page promises
 
@@ -173,7 +173,7 @@ Things that have bitten before:
 
 ```sh
 npm run check        # structure: every key highlighted, every part present
-npm run dev          # then open your page next to /leetcode/x-sum
+npm run dev          # then open your page next to /leetcode/two-sum
 ```
 
 In the browser, check that every approach × language highlights a line on

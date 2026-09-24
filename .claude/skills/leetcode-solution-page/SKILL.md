@@ -20,10 +20,14 @@ step. This skill adds the judgement the procedure can't encode.
   `curl` of the problem page gets a Cloudflare 403; that means blocked, not
   missing.
 - Check whether the problem has a harder twin (I/II with bigger constraints,
-  like 3318/3321 on x-sum). If so the page should cover both: the approach
+  like 3318/3321 on the x-sum page). If so the page should cover both: the approach
   that passes the easy one, and the approach the hard one needs.
-- Open `src/lessons/two-sum/` (the kit example) and `src/lessons/x-sum/` (the
-  reference design). Every page has x-sum's components, in x-sum's order.
+- Read `references/lesson-kit.md`: what every page has, top to bottom; the
+  `mountLesson` contract; the stage primitives; the traps. The layout comes
+  from the kit, so a new page gets every part by supplying the data for it.
+- Open `src/lessons/two-sum/` — the smallest page, and the one to copy.
+  `diameter-of-binary-tree` is the example for trees, `x-sum` for three
+  approaches and a stage the primitives can't draw.
 
 ## The order of work
 
@@ -100,5 +104,5 @@ can't check.
 
 - `npm run check` passes (notes about missing Burmese are fine)
 - `npm run verify -- <slug>` passes with Go and Rust actually run
-- the page sits next to x-sum at the same width and has the same parts
+- the page sits next to any other page at the same width and has the same parts
 - the checklist at the end of CONTRIBUTING.md

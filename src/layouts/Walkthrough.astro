@@ -1,11 +1,8 @@
 ---
-/* A walkthrough page in the x-sum format.
- *
- * x-sum (src/lessons/x-sum/body.html) is the reference design, and this
- * layout reproduces its skeleton element for element — the same header, the
- * same numbered parts, the same two-column question section, example cards,
- * disclosures, bench and solution blocks — so lesson.css styles it exactly as
- * it styles x-sum. If the two ever look different, this file has drifted.
+/* The skeleton every solution page shares: header, part 1 (statement,
+ * widget, example cards, traps), part 2 (2·1 and 2·2 rendered by the stepper
+ * into #lesson, then 2·3 going deeper), and part 3 (the solution blocks).
+ * lesson.css styles it; kit.css styles the stage shapes inside it.
  *
  * Every reader-facing prop takes a plain string or an { en, my } pair. HTML is
  * allowed in the prose props. The interactive parts — the widget, the example
