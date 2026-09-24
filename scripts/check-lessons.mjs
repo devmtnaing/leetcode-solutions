@@ -160,7 +160,7 @@ for (const slug of slugs) {
     const page = (await import(pathToFileURL(pagePath).href)).default ?? {};
     if (!Array.isArray(page.links) || !page.links.length) fail(slug, 'page.js has no links');
     for (const prop of ['title', 'summary', 'eyebrow', 'lede', 'constraints', 'part1Sub', 'widgetTitle', 'traps',
-                        'part2Sub', 'notes', 'cost', 'part3Sub', 'footer'])
+                        'part2Sub', 'notes', 'cost', 'part3Sub', 'playHint'])
       if (page[prop] == null) fail(slug, `page.js has no ${prop}`);
     if ('statement' in page) fail(slug, 'page.js sets statement — that comes from statement.html');
   }

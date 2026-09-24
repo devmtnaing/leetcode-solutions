@@ -8,7 +8,8 @@
  * allowed in the prose props. The interactive parts — the widget, the example
  * cards, the whole of part 2 and the part 3 solution blocks — are rendered by
  * the lesson's script into the #q-widget, #examples, #lesson and #solutions
- * mounts below.
+ * mounts below. The play hint sits after #lesson so it still shows without
+ * JavaScript; the stepper moves it to the foot of 2·2, under the player.
  */
 import Lesson from './Lesson.astro';
 import '../styles/lesson.css';
@@ -35,7 +36,8 @@ interface Props {
   notes: { eyebrow: T; title: T; items: Note[] };
   cost: { eyebrow: T; title: T; html: T };
   part3Sub: T;
-  footer: T;
+  /** The keyboard and edit hint, shown under the player in 2·2. */
+  playHint: T;
   /** A lesson's own style.css, when it has one; inlined on its page only. */
   css?: string;
 }
@@ -69,6 +71,12 @@ const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
       <a href="#part-1"><b>1</b> <span data-i18n="မေးခွန်း">The question</span></a>
       <a href="#part-2"><b>2</b> <span data-i18n="အဖြေ">The answer</span></a>
       <a href="#part-3"><b>3</b> <span data-i18n="Code">The code</span></a>
+      {p.links.map((l) => (
+        <a class="lc" href={`https://leetcode.com/problems/${l.slug}/`} target="_blank" rel="noopener">
+          {p.links.length > 1 && <b>{l.id}</b>}
+          <span data-i18n="LeetCode တွင် ကြည့်ရန် ↗">View on LeetCode ↗</span>
+        </a>
+      ))}
     </nav>
   </header>
 
@@ -130,6 +138,7 @@ const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
   <div id="lesson" data-slug={p.slug}>
     <noscript><p>The walkthrough needs JavaScript. The whole solution is in part 3 either way.</p></noscript>
   </div>
+  <p class="play-hint" id="play-hint" data-i18n={my(p.playHint)} set:html={en(p.playHint)} />
 
   <section class="subsec">
     <div class="subsec-head">
@@ -170,8 +179,6 @@ const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
     </div>
   </div>
   <div id="solutions"></div>
-
-  <footer data-i18n={my(p.footer)} set:html={en(p.footer)} />
 </div>
 </Lesson>
 

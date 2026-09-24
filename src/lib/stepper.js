@@ -164,7 +164,7 @@ export function mountLesson(cfg) {
         </div>
       </section>
 
-      <section class="subsec">
+      <section class="subsec" data-run>
         ${head('2·2', UI.secRun)}
         <div class="player">
           <div class="player-row controls">${fields}${presets}
@@ -222,8 +222,12 @@ export function mountLesson(cfg) {
     return Array.isArray(v) ? v.join(', ') : String(v ?? '');
   }
 
+  // The page's keyboard hint, moved under the player on every paint.
+  const hint = document.getElementById('play-hint');
+
   function paint() {
     root.innerHTML = shell();
+    if (hint) $('[data-run]', root).append(hint);
     bindControls();
   }
 

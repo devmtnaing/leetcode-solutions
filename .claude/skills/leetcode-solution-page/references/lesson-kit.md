@@ -28,8 +28,9 @@ bespoke stage, `x-sum`.
 `node scripts/check-lessons.mjs` fails a lesson that is missing any part
 marked ✓.
 
-**Header** — eyebrow (`LeetCode 1 · Easy`), title, lede, the three jump chips,
-English/မြန်မာ switch top right.
+**Header** — eyebrow (`LeetCode 1 · Easy`), title, lede, the three jump chips
+and a "View on LeetCode ↗" chip per problem in `links`, English/မြန်မာ switch
+top right.
 
 **1 · The question**
 - Statement card: LeetCode's prose verbatim (`statement.html`), constraints as
@@ -59,7 +60,11 @@ English/မြန်မာ switch top right.
   array strip (`cfg.strip`; `noStrip: true` only when the input is genuinely
   not a row), transport with the narration under it, then the stage and ✓ the
   answer beside "The code, live" with hoverable variables and any `caveats`
-  note under it. Don't add boxes inside the player.
+  note under it. Don't add boxes inside the player. ✓ Under the player, the
+  `playHint` line from `page.js`: the keys (`←` `→` step · `space`
+  play/pause), what the reader can edit "above" and any limits ("up to 12
+  values"), and what rebuilds. The layout renders it after `#lesson` and the
+  stepper moves it to the foot of 2·2, so a lesson never places it.
 - **2·3 Going deeper.** The cost table ("Why bother"), then the implementation
   notes: question-phrased disclosures ("Why check for the partner *before*
   storing?"). A takeaway goes in the notes — never as a part of its own.
@@ -69,14 +74,13 @@ English/မြန်မာ switch top right.
 ✓ caption (`solutions[mode].desc`, optional `tag` such as `3321`), a
 verification badge and a Copy button.
 
-**Footer** — the keyboard hint.
-
 ## The folder a lesson writes
 
 Everything for a lesson is one folder; `src/pages/leetcode/[slug].astro`
 renders every folder that has a `page.js`, and the home page lists problems
-only, adding a problem's "Interactive solution" link from the `links` ids in
-`page.js`. There is no page file and no index entry to add.
+only: a problem whose id is in some lesson's `links` gets its title linked
+(the whole row opens the page), the rest say "Solution coming soon", and every
+row has a "View on LeetCode ↗" link. There is no page file and no index entry to add.
 
 ```
 src/lessons/<slug>/page.js           the static prose, as Walkthrough props
@@ -141,7 +145,7 @@ mountLesson({
 
 `export default { ... }` with every prose prop: `title`, `summary`, `eyebrow`,
 `lede`, `links`, `constraints`, `part1Sub`, `widgetTitle`, `traps`, `part2Sub`,
-`notes`, `cost`, `part3Sub`, `footer`. Each takes a string or `{ en, my }`. The
+`notes`, `cost`, `part3Sub`, `playHint`. Each takes a string or `{ en, my }`. The
 statement is not a prop here — the route reads `statement.html`. The checker
 fails a lesson whose `page.js` leaves one out.
 
