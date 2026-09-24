@@ -102,8 +102,23 @@ widget straight away.
 - **`widget`**: part 1's one interactive idea. Pick the part of the statement
   people misread and let them drag it (see `maximum-depth-of-binary-tree`:
   depth counts nodes, not edges).
-- **`examples`**, **`presets`**, **`solutions`** (part 3 captions),
-  **`verification`** (the badges), and optional **`caveats`**.
+- **`solutions`**: per approach, a part 3 caption (`desc`) and an
+  **`approach`**, `{ idea, steps, cost }`, shown in 2·1 under the approach's
+  tab. `idea` is the intuition in a sentence or two; `steps` are three or four
+  short steps named after the listing's own identifiers (`seen`, `want`,
+  `i`); `cost` is the reason for the complexity the tab already shows, with a
+  number only if it is measured or computed. Mention a trap in a step only in
+  a clause — its explanation belongs in the notes. `npm run check` fails a
+  mode without one.
+- **`examples`**, **`presets`**, **`verification`** (the badges), and optional
+  **`caveats`**.
+
+Part 2 is laid out for you, in three sub-sections: **2·1 Pick an approach**
+(a tab per mode showing its name, `desc` and `cost`, with the approach block
+attached), **2·2 Watch it run** (one player card: inputs, strip, transport and
+narration, then stage and answer beside the live code) and **2·3 Going deeper**
+(`page.js`'s cost table, then its notes). You supply the content; don't add
+boxes of your own inside the player.
 
 Shapes for the stage are in `src/lib/stage.js` (`cells`, `kv`, `stack`,
 `chain`, `tree`, `bars`, `readout`). Small helpers are in `src/lib/kit.js`,

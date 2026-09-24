@@ -38,13 +38,31 @@ step. This skill adds the judgement the procedure can't encode.
 4. **The step generators and the stage.** Decide what the stage draws using
    `references/visualization.md`: what the algorithm carries between steps, in
    the shape the code holds it.
-5. **The widget**, for the one idea the statement hinges on.
-6. **Prose in `page.js`.** Every trap's wrong output comes from running the
+5. **The approach in brief** for each mode (`solutions[mode].approach`):
+   idea, steps, cost. See "Part 2" below.
+6. **The widget**, for the one idea the statement hinges on.
+7. **Prose in `page.js`.** Every trap's wrong output comes from running the
    wrong code. Every cost number is measured (name the machine) or labelled
    computed.
-7. **`npm run check`**, `npm run verify -- <slug>` again, then the browser:
+8. **`npm run check`**, `npm run verify -- <slug>` again, then the browser:
    every approach × language highlights a line on every step, the page opens on
    step 1, and nothing scrolls sideways at 400px in either language.
+
+## Part 2
+
+It is laid out by the kit in three sub-sections, and every page has all three:
+
+- **2·1 Pick an approach**: a tab per mode (name, one-line `desc`, `cost`) with
+  the approach block attached below the chosen one. The block is `{ idea,
+  steps, cost }`: the intuition in a sentence or two; three or four steps
+  named after the listing's identifiers, in the order the code runs them; the
+  reason for the complexity, with a number only if it is measured or
+  computed. A trap gets at most a clause in a step, since the notes explain it.
+- **2·2 Watch it run**: one player card. Inputs and presets, the strip, the
+  transport with the narration, then the stage and answer beside the live
+  code. Don't add boxes inside it; its rows are divided by rules.
+- **2·3 Going deeper**: `page.js`'s cost table ("Why bother"), then its notes
+  ("If you are implementing it"). This is where the reasoning goes.
 
 ## Judgement calls
 
