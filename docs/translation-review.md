@@ -14,10 +14,11 @@ loan words on purpose.
 
 ## How to use this
 
-Each row names where the string lives. Edit it in place and the page picks it
-up — no rebuild needed in dev. If a whole column of choices is wrong (register,
-say), tell me and I will sweep every lesson rather than fixing them one at a
-time.
+Each row names where the string lives. Edit it in place and the dev server
+picks it up. If a whole class of choices is wrong (register, say), open an
+issue so every lesson can be swept at once rather than fixed one at a time.
+Only the first three lessons have been through this list so far; the rest
+need the same read.
 
 ## Two Sum — `src/lessons/two-sum/`
 
