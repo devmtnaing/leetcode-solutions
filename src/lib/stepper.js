@@ -62,6 +62,8 @@ const UI = {
   idea:      { en: 'Idea', my: 'စိတ်ကူး' },
   steps:     { en: 'Steps', my: 'အဆင့်များ' },
   cost:      { en: 'Cost', my: 'ကုန်ကျမှု' },
+  secPick:   { en: 'Pick an approach', my: 'နည်းလမ်း ရွေးပါ' },
+  secRun:    { en: 'Watch it run', my: 'အလုပ်လုပ်ပုံ ကြည့်ပါ' },
   load:      { en: 'Load into the stepper ↓', my: 'Stepper ထဲ ထည့်ရန် ↓' },
   copy:      { en: 'Copy', my: 'Copy' },
   copied:    { en: 'Copied', my: 'ကူးပြီး' },
@@ -149,6 +151,8 @@ export function mountLesson(cfg) {
         `<button class="lang" role="tab" data-lang="${l.id}" aria-selected="${l.id === state.lang}">${esc(l.name)}</button>`).join('')}
       </div>`;
 
+    if (root.dataset.layout === 'sections') return sectionsShell({ fields, presets, langBar });
+
     return `
       <div class="mode-pick">
         <span class="pick-label">${esc(pick(UI.pick))}</span>
@@ -204,6 +208,81 @@ export function mountLesson(cfg) {
           <p class="code-sub" data-code-sub hidden></p>
         </div>
       </div>`;
+  }
+
+  /* The sectioned layout (page.js: layout: 'sections'). The same pieces and
+   * the same data-* hooks as shell(), grouped into two sub-sections: the
+   * approach as a tab with its explanation attached, then one player card
+   * holding everything the walkthrough needs, divided by rules rather than
+   * boxed separately. */
+  function sectionsShell({ fields, presets, langBar }) {
+    const tabs = cfg.modes.map((m) => `
+      <button class="atab" role="tab" data-mode="${m.id}" aria-selected="${m.id === state.mode}">
+        <span class="atab-name">${esc(pick(m.name))}${m.sub ? ` <span class="sub-name">&middot; ${esc(pick(m.sub))}</span>` : ''}</span>
+        <span class="atab-desc">${esc(pick(m.desc ?? ''))}</span>
+        <span class="atab-cost">${esc(pick(m.cost ?? ''))}</span>
+      </button>`).join('');
+    const head = (n, label) => `<div class="subsec-head"><span class="subsec-n">${n}</span><h3>${esc(pick(label))}</h3></div>`;
+    return `
+      <section class="subsec">
+        ${head('2·1', UI.secPick)}
+        <div class="atabs">
+          <div class="atab-row" role="tablist" style="--modes:${cfg.modes.length}">${tabs}</div>
+          <div class="atab-panel" role="tabpanel" data-approach></div>
+        </div>
+      </section>
+
+      <section class="subsec">
+        ${head('2·2', UI.secRun)}
+        <div class="player">
+          <div class="player-row controls">${fields}${presets}
+            <p class="warn" data-warn hidden></p>
+          </div>
+          ${cfg.strip ? `
+          <div class="player-row">
+            <div class="strip-head">
+              <h2>${esc(pick(cfg.stripLabel ?? UI.array))}</h2>
+              <span class="op mono" data-op>${esc(pick(UI.ready))}</span>
+            </div>
+            <div class="strip" data-strip></div>
+          </div>` : ''}
+          <div class="player-row player-run">
+            <div class="transport">
+              <button class="btn" data-act="prev">${esc(pick(UI.back))}</button>
+              <button class="btn primary" data-act="play">${esc(pick(UI.play))}</button>
+              <button class="btn" data-act="next">${esc(pick(UI.next))}</button>
+              <input type="range" data-scrub min="0" max="0" value="0" aria-label="${esc(pick(UI.scrub))}">
+              <span class="counter" data-count>0 / 0</span>
+            </div>
+            <div class="narration">
+              <span class="tag" data-tag>${esc(pick(UI.step))}</span>
+              <p class="text" data-note></p>
+            </div>
+          </div>
+          <div class="player-row bench">
+            <div class="col">
+              <div class="panel" data-stage></div>
+              ${cfg.answer ? `
+              <div class="panel answer-card">
+                <div class="strip-head">
+                  <h2>${esc(pick(cfg.answerLabel ?? UI.answer))}</h2>
+                  <span class="note mono" data-ans-note></span>
+                </div>
+                <div class="answer-row" data-answer></div>
+              </div>` : ''}
+            </div>
+            <div class="panel">
+              <div class="panel-head">
+                <h2>${esc(pick(UI.codeLive))}</h2>
+                <span class="note" data-code-label></span>
+              </div>
+              ${langBar(' mini')}
+              <div class="code" data-code></div>
+              <p class="code-sub" data-code-sub hidden></p>
+            </div>
+          </div>
+        </div>
+      </section>`;
   }
 
   function format(c, v) {

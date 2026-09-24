@@ -41,6 +41,9 @@ interface Props {
   footer: T;
   /** A lesson's own style.css, when it has one; inlined on its page only. */
   css?: string;
+  /** 'sections' splits part 2 into 2·1 pick an approach, 2·2 watch it run,
+   *  2·3 going deeper. Being tried on Two Sum before the rest. */
+  layout?: 'sections';
 }
 // Every prop is supplied by the lesson's page.js; scripts/check-lessons.mjs
 // fails a lesson that leaves one out.
@@ -130,34 +133,68 @@ const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
     </div>
   </div>
 
-  <div id="lesson" data-slug={p.slug}>
+  <div id="lesson" data-slug={p.slug} data-layout={p.layout}>
     <noscript><p>The walkthrough needs JavaScript. The whole solution is in part 3 either way.</p></noscript>
   </div>
 
-  {p.notes && (
+  {p.layout === 'sections' ? (
+    <section class="subsec">
+      <div class="subsec-head">
+        <span class="subsec-n">2·3</span>
+        <h3 data-i18n="ပိုနက်နက် သိရန်">Going deeper</h3>
+      </div>
+      <div class="deeper">
+        {p.cost && (
+          <div class="deeper-block">
+            <span class="eyebrow" data-i18n={my(p.cost.eyebrow)} set:html={en(p.cost.eyebrow)} />
+            <h4 data-i18n={my(p.cost.title)} set:html={en(p.cost.title)} />
+            <figure class="cost" data-i18n={my(p.cost.html)} set:html={en(p.cost.html)} />
+          </div>
+        )}
+        {p.notes && (
+          <div class="deeper-block">
+            <span class="eyebrow" data-i18n={my(p.notes.eyebrow)} set:html={en(p.notes.eyebrow)} />
+            <h4 data-i18n={my(p.notes.title)} set:html={en(p.notes.title)} />
+            <div class="notes">
+              {p.notes.items.map((n) => (
+                <details class="disclose">
+                  <summary><span data-i18n={my(n.q)} set:html={en(n.q)} /></summary>
+                  <div class="disclose-body"><p data-i18n={my(n.a)} set:html={en(n.a)} /></div>
+                </details>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  ) : (
     <>
-      <div class="sec-head">
-        <span class="eyebrow" data-i18n={my(p.notes.eyebrow)} set:html={en(p.notes.eyebrow)} />
-        <h2 data-i18n={my(p.notes.title)} set:html={en(p.notes.title)} />
-      </div>
-      <div class="notes">
-        {p.notes.items.map((n) => (
-          <details class="disclose">
-            <summary><span data-i18n={my(n.q)} set:html={en(n.q)} /></summary>
-            <div class="disclose-body"><p data-i18n={my(n.a)} set:html={en(n.a)} /></div>
-          </details>
-        ))}
-      </div>
-    </>
-  )}
+    {p.notes && (
+      <>
+        <div class="sec-head">
+          <span class="eyebrow" data-i18n={my(p.notes.eyebrow)} set:html={en(p.notes.eyebrow)} />
+          <h2 data-i18n={my(p.notes.title)} set:html={en(p.notes.title)} />
+        </div>
+        <div class="notes">
+          {p.notes.items.map((n) => (
+            <details class="disclose">
+              <summary><span data-i18n={my(n.q)} set:html={en(n.q)} /></summary>
+              <div class="disclose-body"><p data-i18n={my(n.a)} set:html={en(n.a)} /></div>
+            </details>
+          ))}
+        </div>
+      </>
+    )}
 
-  {p.cost && (
-    <>
-      <div class="sec-head">
-        <span class="eyebrow" data-i18n={my(p.cost.eyebrow)} set:html={en(p.cost.eyebrow)} />
-        <h2 data-i18n={my(p.cost.title)} set:html={en(p.cost.title)} />
-      </div>
-      <figure class="cost" style="margin:0" data-i18n={my(p.cost.html)} set:html={en(p.cost.html)} />
+    {p.cost && (
+      <>
+        <div class="sec-head">
+          <span class="eyebrow" data-i18n={my(p.cost.eyebrow)} set:html={en(p.cost.eyebrow)} />
+          <h2 data-i18n={my(p.cost.title)} set:html={en(p.cost.title)} />
+        </div>
+        <figure class="cost" style="margin:0" data-i18n={my(p.cost.html)} set:html={en(p.cost.html)} />
+      </>
+    )}
     </>
   )}
 
