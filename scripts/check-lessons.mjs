@@ -13,6 +13,7 @@
 import { readdirSync, existsSync, readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
+import { setLang } from '../src/lib/i18n.js';
 
 const LESSONS = resolve('src/lessons');
 const only = process.argv[2];
@@ -25,11 +26,18 @@ const slugs = readdirSync(LESSONS, { withFileTypes: true })
   .filter((s) => !only || s === only);
 
 // Enough of a DOM for a lesson to reach its mountLesson call and stop there.
-globalThis.document = { getElementById: () => null, addEventListener() {}, querySelector: () => null };
+globalThis.document = {
+  getElementById: () => null, addEventListener() {}, querySelector: () => null, querySelectorAll: () => [],
+  documentElement: { setAttribute() {} },
+};
 globalThis.window = globalThis;
 
 let failures = 0;
 const fail = (slug, msg) => { failures++; console.log(`  FAIL  ${slug}: ${msg}`); };
+// Burmese is welcome but not required: a page without it falls back to
+// English, so a missing translation is reported, not failed.
+let untranslated = 0;
+const warnMy = (slug, msg) => { untranslated++; console.log(`  note  ${slug}: ${msg} (falls back to English)`); };
 
 for (const slug of slugs) {
   const before = failures;
@@ -75,6 +83,17 @@ for (const slug of slugs) {
     }
     if (!steps?.length) { fail(slug, `${mode.id} produced no steps`); continue; }
 
+    // Steps are built once and shown in either language, so building them must
+    // not depend on the language: a pick() inside a generator freezes that
+    // text in whichever language was active. Build again in Burmese and compare.
+    setLang('my');
+    let again;
+    try { again = mode.build(structuredClone(cfg.input)); } finally { setLang('en'); }
+    if (JSON.stringify(again) !== JSON.stringify(steps)) {
+      const i = steps.findIndex((st, j) => JSON.stringify(st) !== JSON.stringify(again[j]));
+      fail(slug, `${mode.id} builds different steps in Burmese (first at step ${i}) — pick() belongs in draw/strip/vars, not in build`);
+    }
+
     const used = new Set(steps.map((s) => s.line).filter(Boolean));
     const unknown = [...used].filter((k) => !base.has(k));
     if (unknown.length) fail(slug, `${mode.id} steps highlight keys no listing has: ${unknown.join(', ')}`);
@@ -113,14 +132,14 @@ for (const slug of slugs) {
   for (const [i, ex] of (cfg.examples || []).entries()) {
     if (!ex.load) fail(slug, `example ${i + 1} has no load input — x-sum's cards load into the stepper`);
     if (!ex.why) fail(slug, `example ${i + 1} has no explanation (why)`);
-    else if (![].concat(ex.why).every(hasMy)) fail(slug, `example ${i + 1}'s explanation has no Burmese side`);
+    else if (![].concat(ex.why).every(hasMy)) warnMy(slug, `example ${i + 1}'s explanation has no Burmese side`);
   }
   if (!cfg.presets?.length) fail(slug, 'no preset chips (cfg.presets)');
   for (const m of cfg.modes) {
     if (!m.desc) fail(slug, `mode "${m.id}" has no desc for its mode card`);
-    else if (!hasMy(m.desc)) fail(slug, `mode "${m.id}" desc has no Burmese side`);
+    else if (!hasMy(m.desc)) warnMy(slug, `mode "${m.id}" desc has no Burmese side`);
     if (!cfg.solutions?.[m.id]?.desc) fail(slug, `mode "${m.id}" has no part 3 caption (cfg.solutions)`);
-    else if (!hasMy(cfg.solutions[m.id].desc)) fail(slug, `mode "${m.id}" part 3 caption has no Burmese side`);
+    else if (!hasMy(cfg.solutions[m.id].desc)) warnMy(slug, `mode "${m.id}" part 3 caption has no Burmese side`);
   }
   if (cfg.strip == null && !cfg.noStrip) fail(slug, 'no strip card — set cfg.strip, or cfg.noStrip: true when the input is not a row');
   if (!cfg.answer) fail(slug, 'no answer card (cfg.answer)');
@@ -159,5 +178,5 @@ for (const slug of slugs) {
   console.log(`${mine ? 'FAIL' : '  ok'}  ${slug.padEnd(34)} ${mine ? `${mine} problem(s)` : notes.join(' · ')}`);
 }
 
-console.log(`\n${slugs.length} lesson(s), ${failures} failure(s)`);
+console.log(`\n${slugs.length} lesson(s), ${failures} failure(s)${untranslated ? `, ${untranslated} untranslated note(s)` : ''}`);
 process.exit(failures ? 1 : 0);
