@@ -43,8 +43,8 @@ const worked = all.filter((p) => WALKTHROUGH[p.id]).length;
       <h1>Algorithms</h1>
       <p class="lede">
         {core} problems, split evenly across easy, medium and hard, chosen where three
-        separate study plans agree. Every problem links to LeetCode; the ones with a
-        walkthrough also link to an interactive answer that runs the algorithm step by
+        separate study plans agree. Every problem links to LeetCode; the ones with an
+        interactive solution also link to a page that runs the algorithm step by
         step, with solutions in Ruby, Python, JavaScript, Go and Rust that were all run
         before they were published.
       </p>
@@ -78,7 +78,9 @@ const worked = all.filter((p) => WALKTHROUGH[p.id]).length;
                   <td class="rate wide">{p.acRate}</td>
                   <td class="links">
                     <a href={`https://leetcode.com/problems/${p.slug}/`} target="_blank" rel="noopener">LeetCode ↗</a>
-                    {WALKTHROUGH[p.id] && <a class="walk" href={WALKTHROUGH[p.id]}>Walkthrough →</a>}
+                    {WALKTHROUGH[p.id]
+                      ? <a class="walk" href={WALKTHROUGH[p.id]}>Interactive solution →</a>
+                      : <span class="soon" title="An interactive solution for this problem is being written">Solution coming soon</span>}
                   </td>
                 </tr>
               ))}
@@ -89,7 +91,7 @@ const worked = all.filter((p) => WALKTHROUGH[p.id]).length;
     ))}
 
     <p class="note" style="color:var(--ink-3);font-size:13px;padding-bottom:50px">
-      {worked} of {all.length} problems have a walkthrough. Metadata pulled from LeetCode and
+      {worked} of {all.length} problems have an interactive solution. Metadata pulled from LeetCode and
       verified problem by problem — difficulty labels here match the site, not folklore.
     </p>
   </div>

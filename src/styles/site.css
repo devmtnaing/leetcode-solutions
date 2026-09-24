@@ -120,11 +120,12 @@ table.problems .tags{color:var(--ink-3);font-size:12px}
 table.problems .title{font-weight:600}
 table.problems .extra{display:block;color:var(--ink-3);font-size:11.5px;margin-top:2px}
 table.problems td.links{white-space:nowrap}
-table.problems td.links a{
+table.problems td.links a,table.problems td.links .soon{
   display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:500;
   padding:3px 9px;border:1px solid var(--line-2);border-radius:999px;color:var(--ink-2);text-decoration:none;
 }
-table.problems td.links a + a{margin-left:6px}
+table.problems td.links > * + *{margin-left:6px}
+table.problems td.links .soon{border-style:dashed;color:var(--ink-3);cursor:default}
 table.problems td.links a:hover{text-decoration:none;border-color:var(--accent);color:var(--accent)}
 table.problems td.links a.walk{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
 /* On a phone the links matter more than the pattern and acceptance rate. */
@@ -132,8 +133,8 @@ table.problems td.links a.walk{background:var(--accent-soft);border-color:var(--
   table.problems{min-width:0}
   table.problems .wide{display:none}
   table.problems th,table.problems td{padding-left:10px;padding-right:10px}
-  table.problems td.links a{display:block;text-align:center}
-  table.problems td.links a + a{margin:6px 0 0}
+  table.problems td.links a,table.problems td.links .soon{display:block;text-align:center}
+  table.problems td.links > * + *{margin:6px 0 0}
 }
 table.problems .rate{font-family:"IBM Plex Mono",monospace;color:var(--ink-2);font-variant-numeric:tabular-nums;text-align:right}
 .diff{

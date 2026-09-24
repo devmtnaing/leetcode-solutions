@@ -57,7 +57,7 @@ src/lessons/<slug>/style.css        optional — styles only this lesson uses
 
 Each lesson's script is its own chunk, and a page loads only its own.
 There is no index to edit: `/leetcode` lists only the problems, and a problem
-gets its Walkthrough link from whichever lesson's `page.js` names it in `links`.
+gets its "Interactive solution" link from whichever lesson's `page.js` names it in `links`.
 `src/lessons/two-sum/` is the worked example to copy.
 
 The shared pieces:
