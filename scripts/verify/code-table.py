@@ -34,7 +34,9 @@ ORDER = ['ruby', 'python', 'javascript', 'go', 'rust']
 
 
 def escape(s):
-    return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('`', '\\`').replace('${', '\\${')
+    # HTML first, then what a JS template literal would otherwise interpret
+    s = s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+    return s.replace('\\', '\\\\').replace('`', '\\`').replace('${', '\\${')
 
 
 def highlight(line, ext):
@@ -44,7 +46,8 @@ def highlight(line, ext):
         code, comment = line[:i], line[i:]
     code = re.sub(r'(?<![\w.:])(' + '|'.join(map(re.escape, KEYWORDS[ext])) + r')(?![\w?])',
                   r"${k('\1')}", escape(code))
-    return code + (f"${{c('{escape(comment)}')}}" if comment else '')
+    # the comment sits inside c('...'), so its quotes need escaping too
+    return code + (f"${{c('{escape(comment).replace(chr(39), chr(92) + chr(39))}')}}" if comment else '')
 
 
 def main():

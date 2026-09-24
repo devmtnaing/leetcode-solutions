@@ -8,12 +8,11 @@ interface Problem {
   paid: boolean; acRate: string; tags: string[]; extra?: boolean;
 }
 
-// A problem gets a walkthrough link when a lesson folder names it: every kit
-// lesson's page.js lists the LeetCode problems it covers. x-sum is built by
-// hand, without a page.js, so it is added here.
+// A problem gets a walkthrough link when a lesson folder names it: every
+// lesson's page.js lists the LeetCode problems it covers.
 const pages = import.meta.glob('../lessons/*/page.js', { eager: true, import: 'default' }) as
   Record<string, { links: { id: number }[] }>;
-const WALKTHROUGH: Record<number, string> = { 3318: '/leetcode/x-sum', 3321: '/leetcode/x-sum' };
+const WALKTHROUGH: Record<number, string> = {};
 for (const [path, page] of Object.entries(pages)) {
   const slug = path.split('/').at(-2);
   for (const { id } of page.links) WALKTHROUGH[id] = `/leetcode/${slug}`;

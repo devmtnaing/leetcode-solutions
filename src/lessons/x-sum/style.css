@@ -1,0 +1,9 @@
+/* The brute-force tally draws a bar per value (a span, so it needs to be a
+   block to take a width), its width in tenths of the
+   most frequent one — as classes, so the lesson carries no inline styles. */
+.bar-fill.w0{width:0}.bar-fill.w1{width:10%}.bar-fill.w2{width:20%}.bar-fill.w3{width:30%}
+.bar-fill.w4{width:40%}.bar-fill.w5{width:50%}.bar-fill.w6{width:60%}.bar-fill.w7{width:70%}
+.bar-fill.w8{width:80%}.bar-fill.w9{width:90%}.bar-fill.w10{width:100%}
+/* the third brute-force step's ledger sits inside a step card, without its own frame */
+.ledger.bare{margin:0;padding:0;border:0}
+.bar-fill{display:block}

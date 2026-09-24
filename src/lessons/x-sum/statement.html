@@ -1,0 +1,13 @@
+<p data-i18n="integer <code>n</code> လုံးပါသော array <code>nums</code> နှင့် integer နှစ်လုံးဖြစ်သည့် <code>k</code> နှင့် <code>x</code> ကို ပေးထားသည်။">You are given an array <code>nums</code> of <code>n</code> integers and two integers <code>k</code> and <code>x</code>.</p>
+
+<p data-i18n="array တစ်ခု၏ <b>x-sum</b> ကို အောက်ပါအဆင့်များဖြင့် တွက်ယူသည် —">The <b>x-sum</b> of an array is calculated by the following procedure:</p>
+
+<ol>
+  <li data-i18n="array ထဲရှိ element အားလုံး ပေါ်သည့်အကြိမ်ရေကို ရေတွက်ပါ။">Count the occurrences of all elements in the array.</li>
+  <li data-i18n="အများဆုံးပေါ်သော element <code>x</code> ခု၏ အကြိမ်များကိုသာ ထားပါ။ element နှစ်ခု၏ အကြိမ်ရေ တူညီနေပါက <b>တန်ဖိုးပိုကြီးသော</b> element ကို ပိုများသည်ဟု သတ်မှတ်သည်။">Keep only the occurrences of the top <code>x</code> most frequent elements. If two elements have the same number of occurrences, the element with the <b>bigger value</b> is considered more frequent.</li>
+  <li data-i18n="ကျန်ရစ်သော array ၏ စုစုပေါင်းကို တွက်ပါ။">Calculate the sum of the resulting array.</li>
+</ol>
+
+<p data-i18n="မှတ်ချက် — array တစ်ခုတွင် ကွဲပြားသော element အရေအတွက်သည် <code>x</code> ထက်နည်းပါက ၎င်း၏ x-sum မှာ array တစ်ခုလုံး၏ ပေါင်းလဒ်ပင် ဖြစ်သည်။">Note that if an array has less than <code>x</code> distinct elements, its x-sum is the sum of the array.</p>
+
+<p data-i18n="အရှည် <code>n - k + 1</code> ရှိသော integer array <code>answer</code> ကို ပြန်ပေးပါ။ <code>answer[i]</code> သည် subarray <code>nums[i..i + k - 1]</code> ၏ x-sum ဖြစ်သည်။">Return an integer array <code>answer</code> of length <code>n - k + 1</code> where <code>answer[i]</code> is the x-sum of the subarray <code>nums[i..i + k - 1]</code>.</p>

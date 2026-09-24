@@ -108,7 +108,7 @@
 /* Uppercased chips mix Burmese and Latin badly — the Latin half shouts and the
    Burmese is untouched — so drop the transform in Burmese. */
 :root[data-ui="my"] .st-label,:root[data-ui="my"] .narration .tag,
-:root[data-ui="my"] .pick-label,:root[data-ui="my"] .field label,
+:root[data-ui="my"] .field label,
 :root[data-ui="my"] .strip-head .op{text-transform:none;letter-spacing:.02em}
 
 /* Stage data stays in the Latin monospace face in both languages. */
@@ -117,12 +117,6 @@
   font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;
 }
 
-/* x-sum has three approaches, so lesson.css fixes .mode-cards at three columns.
-   Kit lessons set --modes to their own count; lesson.css's own breakpoints
-   still collapse it to one column below 980px, because those rules come later
-   in the cascade only for x-sum — here the media query is repeated so it wins. */
-.mode-cards[style*="--modes"]{grid-template-columns:repeat(var(--modes),minmax(0,1fr))}
-@media (max-width:980px){.mode-cards[style*="--modes"]{grid-template-columns:minmax(0,1fr)}}
 
 /* Pointer labels under x-sum strip cells, for lessons that walk pointers. */
 .strip .cell,.q-arr .cell{position:relative}
@@ -130,7 +124,7 @@
   position:absolute;top:100%;margin-top:4px;white-space:nowrap;
   font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;color:var(--accent);
 }
-.strip-card .strip:has(.ptr),.player .strip:has(.ptr),.strip.has-ptr{padding-bottom:24px}
+.player .strip:has(.ptr),.strip.has-ptr{padding-bottom:24px}
 .cell.done{opacity:.45}
 .strip .strip.has-ptr{display:contents}
 

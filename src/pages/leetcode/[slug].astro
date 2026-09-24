@@ -6,8 +6,7 @@
  *   lesson.js        everything interactive
  *   style.css        optional — styles only this lesson uses
  *
- * This route renders all of them, so adding a lesson means adding a folder.
- * x-sum is built by hand and has its own page, x-sum.astro. */
+ * This route renders all of them, so adding a lesson means adding a folder. */
 import Walkthrough from '../../layouts/Walkthrough.astro';
 
 export function getStaticPaths() {
@@ -34,7 +33,7 @@ const { slug } = Astro.params;
 
 <script>
   // Each lesson's script is its own chunk; load the one this page is for.
-  const lessons = import.meta.glob(['../../lessons/*/lesson.js', '!../../lessons/x-sum/lesson.js']);
+  const lessons = import.meta.glob('../../lessons/*/lesson.js');
   const slug = document.getElementById('lesson')?.dataset.slug;
   lessons[`../../lessons/${slug}/lesson.js`]?.();
 </script>

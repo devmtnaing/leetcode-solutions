@@ -4,6 +4,8 @@
     python3 scripts/verify/run.py <slug>              everything
     python3 scripts/verify/run.py <slug> --lang ruby  one language
     python3 scripts/verify/run.py <slug> --no-docker  skip Go and Rust
+    python3 scripts/verify/run.py <slug> --from DIR   run listing files (brute.rb, …)
+                                                      before they are in lesson.js
 
 What it does, in order:
 
@@ -54,6 +56,7 @@ def main():
     ap.add_argument('slug')
     ap.add_argument('--lang', choices=list(EXT))
     ap.add_argument('--no-docker', action='store_true')
+    ap.add_argument('--from', dest='source', help='a folder of <mode>.<ext> listings to run instead of lesson.js')
     args = ap.parse_args()
 
     spec_path = os.path.join(ROOT, 'verify', args.slug, 'spec.py')
@@ -73,9 +76,13 @@ def main():
         f.write(''.join(c + '\n' for c, _ in corpus))
     with open(f'{cache}/expected.txt', 'w') as f:
         f.write(''.join(e + '\n' for _, e in corpus))
-    listings = f'{cache}/listings'
-    modes = subprocess.run(['node', os.path.join(HERE, 'listings.mjs'), args.slug, listings],
-                           check=True, capture_output=True, text=True).stdout.split()
+    if args.source:
+        listings = os.path.abspath(args.source)
+        modes = sorted({f.rsplit('.', 1)[0] for f in os.listdir(listings) if f.rsplit('.', 1)[-1] in EXT.values()})
+    else:
+        listings = f'{cache}/listings'
+        modes = subprocess.run(['node', os.path.join(HERE, 'listings.mjs'), args.slug, listings],
+                               check=True, capture_output=True, text=True).stdout.split()
     print(f'{args.slug}: {len(corpus)} cases, approaches: {" ".join(modes)}')
     if big_stack:
         print('Ruby and Node run with a larger stack (BIG_STACK) — the default one overflows, as the badges say')
@@ -114,9 +121,10 @@ def main():
             else:
                 print(f'ok   {mode}/{lang}: {len(todo)} cases')
 
-    steps = subprocess.run(['node', os.path.join(HERE, 'steps.mjs'), args.slug,
-                            f'{cache}/cases.txt', f'{cache}/expected.txt'])
-    failed += steps.returncode != 0
+    if not args.source:   # the walkthrough lives in lesson.js, which --from bypasses
+        steps = subprocess.run(['node', os.path.join(HERE, 'steps.mjs'), args.slug,
+                                f'{cache}/cases.txt', f'{cache}/expected.txt'])
+        failed += steps.returncode != 0
     print(f'\n{"FAILED" if failed else "passed"}' + (f' ({skipped} skipped — not verified)' if skipped else ''))
     sys.exit(1 if failed else 0)
 
