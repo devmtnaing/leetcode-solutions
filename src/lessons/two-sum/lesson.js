@@ -424,10 +424,40 @@ mountLesson({
   languages: LANGUAGES,
   code: CODE,
   solutions: {
-    brute: { desc: t('Two nested loops, <code>j</code> starting after <code>i</code> so no element pairs with itself. Correct, and quadratic.',
-                     'Loop နှစ်ထပ်၊ element တစ်ခု သူ့ကိုယ်သူ အတွဲမဖြစ်စေရန် <code>j</code> ကို <code>i</code> ၏ နောက်မှ စသည်။ မှန်သည်၊ သို့သော် quadratic ဖြစ်သည်။') },
-    hash: { desc: t('The submission worth writing. Check for the partner first, then store — the order is what keeps <code>[3,3]</code> correct.',
-                    'ရေးသင့်သည့် submission ဖြစ်သည်။ Partner ကို အရင်စစ်ပြီးမှ သိမ်းပါ — ထိုအစီအစဉ်ကြောင့် <code>[3,3]</code> မှန်နေသည်။') },
+    brute: {
+      desc: t('Two nested loops, <code>j</code> starting after <code>i</code> so no element pairs with itself. Correct, and quadratic.',
+              'Loop နှစ်ထပ်၊ element တစ်ခု သူ့ကိုယ်သူ အတွဲမဖြစ်စေရန် <code>j</code> ကို <code>i</code> ၏ နောက်မှ စသည်။ မှန်သည်၊ သို့သော် quadratic ဖြစ်သည်။'),
+      approach: {
+        idea: t('The answer is a pair of indices, so try every pair until one adds up to <code>target</code>.',
+                'အဖြေသည် index အတွဲတစ်တွဲ ဖြစ်သဖြင့် ပေါင်းလျှင် <code>target</code> ရသည့် အတွဲ တွေ့သည်အထိ အတွဲတိုင်းကို စမ်းသည်။'),
+        steps: [
+          t('Take each index <code>i</code>, from the first.', 'ပထမမှ စ၍ index <code>i</code> တစ်ခုစီကို ယူသည်။'),
+          t('Pair it with each <code>j</code> after it. Starting past <code>i</code> means no element pairs with itself and no pair is tried twice.',
+            '၎င်းနောက်ရှိ <code>j</code> တစ်ခုစီနှင့် တွဲသည်။ <code>i</code> ကျော်မှ စသဖြင့် element တစ်ခု သူ့ကိုယ်သူ မတွဲမိ၊ အတွဲတစ်တွဲကို နှစ်ခါ မစမ်းမိပါ။'),
+          t('If <code>nums[i] + nums[j] == target</code>, return <code>[i, j]</code>.', '<code>nums[i] + nums[j] == target</code> ဖြစ်လျှင် <code>[i, j]</code> ကို ပြန်ပေးသည်။'),
+        ],
+        cost: t('up to n(n − 1)/2 pairs, which is 49,995,000 at n = 10⁴; nothing is stored.',
+                'အတွဲ n(n − 1)/2 အထိ — n = 10⁴ တွင် 49,995,000။ ဘာမျှ မသိမ်းပါ။'),
+      },
+    },
+    hash: {
+      desc: t('The submission worth writing. Check for the partner first, then store — the order is what keeps <code>[3,3]</code> correct.',
+              'ရေးသင့်သည့် submission ဖြစ်သည်။ Partner ကို အရင်စစ်ပြီးမှ သိမ်းပါ — ထိုအစီအစဉ်ကြောင့် <code>[3,3]</code> မှန်နေသည်။'),
+      approach: {
+        idea: t('Each number already knows the partner it needs: <code>target − value</code>. Remember every value you pass, with its index, and finding the partner becomes one lookup instead of a second loop.',
+                'ဂဏန်းတစ်ခုစီသည် ၎င်းလိုအပ်သည့် partner ကို သိပြီးသား ဖြစ်သည် — <code>target − value</code>။ ဖြတ်ခဲ့သမျှ value ကို ၎င်း၏ index နှင့်အတူ မှတ်ထားလျှင် partner ရှာခြင်းသည် ဒုတိယ loop အစား lookup တစ်ခုသာ ဖြစ်လာသည်။'),
+        steps: [
+          t('Start with an empty map, <code>seen</code>: value → index.', 'map ဗလာ <code>seen</code> — value → index ဖြင့် စသည်။'),
+          t('For each <code>value</code> at index <code>i</code>, work out <code>want = target − value</code>.',
+            'index <code>i</code> ရှိ <code>value</code> တစ်ခုစီအတွက် <code>want = target − value</code> ကို တွက်သည်။'),
+          t('If <code>want</code> is in <code>seen</code>, return <code>[seen[want], i]</code>.', '<code>want</code> သည် <code>seen</code> ထဲတွင် ရှိလျှင် <code>[seen[want], i]</code> ကို ပြန်ပေးသည်။'),
+          t('Otherwise store <code>seen[value] = i</code> and move on. Check before storing: the other order returns <code>[0,0]</code> on <code>[3,2,4]</code>, pairing the 3 with itself.',
+            'မဟုတ်လျှင် <code>seen[value] = i</code> ကို သိမ်းပြီး ဆက်သွားသည်။ မသိမ်းမီ စစ်ပါ — အစီအစဉ် ပြောင်းပြန်ဆိုလျှင် <code>[3,2,4]</code> တွင် 3 ကို သူ့ကိုယ်သူ တွဲ၍ <code>[0,0]</code> ကို ပြန်ပေးသည်။'),
+        ],
+        cost: t('each element is looked up once and stored once; the map can hold up to n − 1 values.',
+                'element တစ်ခုစီကို တစ်ကြိမ် ရှာပြီး တစ်ကြိမ် သိမ်းသည် — map တွင် value n − 1 ခုအထိ ရှိနိုင်သည်။'),
+      },
+    },
   },
   // How each language was actually checked, printed as the part 3 badges.
   // The corpus: 3 examples, 15,000 small arrays with one pair, 5,000 up to ±10⁹, and one at n = 10⁴ — each against all-pairs search.

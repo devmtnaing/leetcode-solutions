@@ -21,7 +21,9 @@
  *     answer?(step, input),  { html, note } for the answer card
  *     vars(step, input),     [[name, value], ...] — also drives hover-to-inspect
  *     hover?,                { [lang]: { identifier: varName } } extra aliases
- *     solutions?,            { [mode]: { desc, tag? } } part 3 captions
+ *     solutions?,            { [mode]: { desc, tag?, approach? } } part 3 captions;
+ *                            approach = { idea, steps: [..], cost } is the
+ *                            short read above each listing
  *     verification,          { [lang]: how it was checked, or { [mode]: … } } → part 3 badges
  *     caveats?,              { [mode]: { [lang]: note } } → under the code
  *     widget?(host),         part 1's interactive, mounted into #q-widget
@@ -57,6 +59,9 @@ const UI = {
   codeLive:  { en: 'The code, live', my: 'အလုပ်လုပ်နေသော code' },
   input:     { en: 'Input', my: 'Input' },
   output:    { en: 'Output', my: 'Output' },
+  idea:      { en: 'Idea', my: 'စိတ်ကူး' },
+  steps:     { en: 'Steps', my: 'အဆင့်များ' },
+  cost:      { en: 'Cost', my: 'ကုန်ကျမှု' },
   load:      { en: 'Load into the stepper ↓', my: 'Stepper ထဲ ထည့်ရန် ↓' },
   copy:      { en: 'Copy', my: 'Copy' },
   copied:    { en: 'Copied', my: 'ကူးပြီး' },
@@ -468,6 +473,18 @@ function renderExamples(cfg, loadInput) {
 /* Part 3 — the whole solution. Built from the same `code` the stepper
  * highlights, so the listing a reader copies cannot drift from the one they
  * watched run. */
+/* The approach in brief, above its listing: the idea in a sentence or two,
+ * the steps as the code takes them, and the cost with the reason for it. */
+function approachBlock(a, cost) {
+  if (!a) return '';
+  return `<div class="approach">
+    <p><span class="approach-label">${esc(pick(UI.idea))}</span>${pick(a.idea)}</p>
+    <div><span class="approach-label">${esc(pick(UI.steps))}</span>
+      <ol>${a.steps.map((s) => `<li>${pick(s)}</li>`).join('')}</ol></div>
+    <p><span class="approach-label">${esc(pick(UI.cost))}</span><span class="mono">${esc(pick(cost))}</span> — ${pick(a.cost)}</p>
+  </div>`;
+}
+
 function renderSolutions(cfg, activeLang) {
   const host = document.getElementById('solutions');
   if (!host) return;
@@ -500,6 +517,7 @@ function renderSolutions(cfg, activeLang) {
               <button class="btn copy" data-copy>${esc(pick(UI.copy))}</button>
               ${meta.desc ? `<p class="sub">${pick(meta.desc)}</p>` : `<p class="sub mono">${esc(pick(m.cost))}</p>`}
             </div>
+            ${approachBlock(meta.approach, m.cost)}
             <pre class="full" tabindex="0">${lines}</pre>
           </div>`;
         }).join('')}

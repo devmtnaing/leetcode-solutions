@@ -167,3 +167,14 @@
 .q-arr .cell[role="button"]{cursor:pointer}
 .q-arr .cell[role="button"]:hover{border-color:var(--accent)}
 .q-arr .cell[role="button"]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Part 3: the approach in brief, between a solution's heading and its code. */
+.approach{display:flex;flex-direction:column;gap:9px;margin:4px 0 14px;padding:12px 14px;
+  background:var(--sunk);border:1px solid var(--line);border-radius:var(--radius);font-size:13.5px;line-height:1.6;color:var(--ink-2)}
+.approach p{margin:0}
+.approach ol{margin:4px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:3px}
+.approach li::marker{color:var(--accent);font-weight:600}
+.approach .mono{color:var(--ink)}
+.approach-label{display:inline-block;min-width:52px;margin-right:8px;font-family:"IBM Plex Mono",monospace;
+  font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+:root[data-ui="my"] .approach{line-height:1.85;overflow-wrap:break-word}
