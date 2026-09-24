@@ -6,10 +6,10 @@
  * you already hold — the cheapest price so far — so nothing to the left has to
  * be looked at again.
  *
- * Part 1 carries a small widget of its own: pick a buy day and a sell day on the
- * chart. It exists to make one thing physical before the walkthrough starts —
- * the sell has to come after the buy, which is the whole reason the answer is
- * not max(prices) - min(prices).
+ * Part 1's widget lets the reader drag a buy day and a sell day. It exists to
+ * make one thing physical before the walkthrough starts — the sell has to come
+ * after the buy, which is the whole reason the answer is not
+ * max(prices) - min(prices).
  */
 import { t, plural, exampleTitle, LANGUAGES, k, c } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
@@ -400,6 +400,148 @@ const CODE = {
   },
 };
 
+/* ---------------- part 1: the "pick a trade" widget ----------------
+ *
+ * The statement hides two rules in one sentence: the sell has to come on a
+ * later day than the buy, and "no transaction" is allowed, so the answer is
+ * never negative. Drag the buy day and the sell day: an illegal pair, a loss
+ * and the best trade each get their own line. At the answer, the line also
+ * names the tempting shortcut, max − min, when the cheapest day comes after
+ * the dearest one and the shortcut is wrong.
+ *
+ * Built from x-sum's widget vocabulary: .q-arr cells (kept / cut), the
+ * .q-slider, the amber .q-tie line and the .ledger.
+ */
+
+const QW_SETS = [
+  { label: exampleTitle(1), prices: [7, 1, 5, 3, 6, 4] },
+  { label: exampleTitle(2), prices: [7, 6, 4, 3, 1] },
+  { label: t('a late low', 'နောက်ကျ အနိမ့်'), prices: [3, 8, 2, 5, 1] },
+];
+
+function bestTrade(prices) {
+  let best = 0, cheapest = Infinity, minIdx = 0, pair = null;
+  for (let i = 0; i < prices.length; i++) {
+    if (prices[i] < cheapest) { cheapest = prices[i]; minIdx = i; }
+    else if (prices[i] - cheapest > best) { best = prices[i] - cheapest; pair = [minIdx, i]; }
+  }
+  return { best, pair };
+}
+
+function mountTradeWidget(host) {
+  const state = { set: 0, buy: 1, sell: 4 };
+
+  host.innerHTML = `
+    <div class="q-arr" data-arr></div>
+    <div class="q-slider">
+      <label for="qw-buy" data-lbl-buy></label>
+      <input type="range" id="qw-buy" min="0" max="1" value="0">
+      <output data-out-buy>0</output>
+    </div>
+    <div class="q-slider">
+      <label for="qw-sell" data-lbl-sell></label>
+      <input type="range" id="qw-sell" min="0" max="1" value="0">
+      <output data-out-sell>0</output>
+      <span class="q-presets" data-presets></span>
+    </div>
+    <p class="q-tie" data-line></p>
+    <div class="ledger">
+      <span class="expr" data-expr></span>
+      <span class="total" data-total></span>
+    </div>`;
+
+  const q = (sel) => host.querySelector(sel);
+
+  function verdict(p, buy, sell, best) {
+    if (sell < buy) {
+      return t(`Not allowed: that sells on day ${sell} a stock you only buy on day ${buy}. The sell has to come <b>after</b> the buy.`,
+               `ခွင့်မပြုပါ — နေ့ ${buy} ကျမှ ဝယ်မည့် stock ကို နေ့ ${sell} တွင် ရောင်းနေသည်။ ရောင်းသည့်နေ့က ဝယ်သည့်နေ့ <b>နောက်မှ</b> ဖြစ်ရမည်။`);
+    }
+    if (sell === buy) {
+      return t(`Not allowed: buying and selling on day ${buy} is not a trade. The statement asks for a <b>different day in the future</b>.`,
+               `ခွင့်မပြုပါ — နေ့ ${buy} တစ်နေ့တည်းမှာ ဝယ်ပြီး ရောင်းတာ အရောင်းအဝယ် မဟုတ်ပါ။ မေးခွန်းက <b>နောက်ပိုင်းက အခြားနေ့တစ်ရက်</b> ကို တောင်းထားသည်။`);
+    }
+    const gain = p[sell] - p[buy];
+    if (gain < 0) {
+      return t(`A loss of ${-gain}, so you would not trade at all: it counts as <b>0</b>, never a negative number.`,
+               `${-gain} ရှုံးသဖြင့် ဘာမှ မလုပ်ဘဲ နေလိုက်မည် — <b>0</b> အဖြစ် ရေတွက်ပြီး အနုတ်ကိန်း ဘယ်တော့မှ မဖြစ်ပါ။`);
+    }
+    if (gain === best && gain > 0) {
+      return t('That is the most this list allows.', 'ဤစာရင်းတွင် ရနိုင်သည့် အများဆုံးပင် ဖြစ်သည်။');
+    }
+    return t(`Legal, but the most this list allows is ${best}.`, `တရားဝင် ဖြစ်သည်၊ သို့သော် ဤစာရင်းတွင် ရနိုင်သည့် အများဆုံးမှာ ${best} ဖြစ်သည်။`);
+  }
+
+  function shortcut(p, best) {
+    const hi = Math.max(...p);
+    const lo = Math.min(...p);
+    if (hi - lo === best) return null;
+    const hiAt = p.indexOf(hi);
+    const loAt = p.lastIndexOf(lo);
+    return t(` Beware <code>max − min</code> = ${hi} − ${lo} = ${hi - lo}: the cheapest day (${loAt}) comes after the dearest (${hiAt}).`,
+             ` <code>max − min</code> = ${hi} − ${lo} = ${hi - lo} ကို သတိထားပါ — ဈေးအသက်သာဆုံးနေ့ (${loAt}) သည် ဈေးအကြီးဆုံးနေ့ (${hiAt}) ၏ နောက်မှ ကျသည်။`);
+  }
+
+  function render() {
+    const p = QW_SETS[state.set].prices;
+    const { buy, sell } = state;
+    const { best } = bestTrade(p);
+    const legal = sell > buy;
+
+    q('[data-lbl-buy]').textContent = pick(L.buy);
+    q('[data-lbl-sell]').textContent = pick(L.sell);
+    for (const [id, v] of [['#qw-buy', buy], ['#qw-sell', sell]]) {
+      const el = q(id);
+      el.max = String(p.length - 1);
+      el.value = String(v);
+    }
+    q('[data-out-buy]').textContent = String(buy);
+    q('[data-out-sell]').textContent = String(sell);
+    q('[data-presets]').innerHTML = QW_SETS.map((x, i) =>
+      `<button class="chip" data-set="${i}"${i === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+
+    // kept = the days you hold the stock, a legal trade · cut = an illegal pair
+    q('[data-arr]').innerHTML = p.map((v, i) => {
+      const held = legal && i >= buy && i <= sell;
+      const cls = (i === buy || i === sell) ? (legal ? ' kept picked' : ' cut picked amber') : held ? ' kept' : '';
+      return `<div class="cell${cls}"><span>${v}</span><span class="idx">${i}</span></div>`;
+    }).join('');
+
+    const label = document.getElementById('q-label');
+    if (label) label.textContent = pick(t(`${p.length} days, best ${best}`, `${p.length} ရက်၊ အကောင်းဆုံး ${best}`));
+
+    const line = verdict(p, buy, sell, best);
+    // The max − min shortcut is worth naming once the reader is looking at
+    // the real answer: the best trade, or a list where no trade pays.
+    const atAnswer = best === 0 || (legal && p[sell] - p[buy] === best);
+    const warn = atAnswer ? shortcut(p, best) : null;
+    q('[data-line]').innerHTML = pick(line) + (warn ? pick(warn) : '');
+
+    // the ledger is a formula, as on x-sum
+    q('[data-expr]').innerHTML = legal
+      ? `prices[${sell}] − prices[${buy}] = ${p[sell]} − ${p[buy]} = ${p[sell] - p[buy]}`
+      : `sell ${sell} ≤ buy ${buy} · no trade`;
+    q('[data-total]').innerHTML = `${best}<small>${pick(t('max profit', 'အများဆုံး အမြတ်'))}</small>`;
+  }
+
+  host.addEventListener('input', (ev) => {
+    if (ev.target.id === 'qw-buy') state.buy = Number(ev.target.value);
+    else if (ev.target.id === 'qw-sell') state.sell = Number(ev.target.value);
+    else return;
+    render();
+  });
+  host.addEventListener('click', (ev) => {
+    const chip = ev.target.closest('[data-set]');
+    if (!chip) return;
+    state.set = Number(chip.dataset.set);
+    const { pair } = bestTrade(QW_SETS[state.set].prices);
+    [state.buy, state.sell] = pair ?? [0, 1];
+    render();
+  });
+  onLangChange(render);
+  render();
+}
+
 /* ---------------- mount ----------------
  *
  * Last in the file on purpose: mountLesson runs the widget immediately, so
@@ -471,173 +613,5 @@ mountLesson({
   draw,
   answer,
   vars,
-  widget: (host) => {
-    const state = { ex: 0, buy: null, sell: null };
-
-    const WIDGET_EXAMPLES = [
-      { prices: [7, 1, 5, 3, 6, 4], label: exampleTitle(1) },
-      { prices: [7, 6, 4, 3, 1], label: exampleTitle(2) },
-    ];
-
-    const prices = () => WIDGET_EXAMPLES[state.ex].prices;
-
-    function bestTrade(prices) {
-      let best = 0, cheapest = Infinity, minIdx = 0, pair = null;
-      for (let i = 0; i < prices.length; i++) {
-        if (prices[i] < cheapest) { cheapest = prices[i]; minIdx = i; }
-        else if (prices[i] - cheapest > best) { best = prices[i] - cheapest; pair = [minIdx, i]; }
-      }
-      return { best, pair };
-    }
-
-    function verdict() {
-      const p = prices();
-      const { buy, sell } = state;
-      const { best } = bestTrade(p);
-
-      if (buy === null) {
-        return { kind: '', say: t(
-          'Click a bar to choose the day you <b>buy</b>.',
-          '<b>ဝယ်</b>မည့်နေ့ကို ရွေးရန် bar တစ်ခုကို နှိပ်ပါ။') };
-      }
-      if (sell === null) {
-        return { kind: '', say: t(
-          `Bought on day ${buy} at ${p[buy]}. Now click the day you <b>sell</b> — try one before day ${buy} and see what happens.`,
-          `နေ့ ${buy} တွင် ${p[buy]} နှင့် ဝယ်ပြီးပြီ။ ယခု <b>ရောင်း</b>မည့်နေ့ကို နှိပ်ပါ — နေ့ ${buy} ထက် စောသော နေ့တစ်ခုကို ရွေးကြည့်ပြီး ဘာဖြစ်သွားသလဲ ကြည့်ပါ။`) };
-      }
-      if (sell < buy) {
-        return { kind: 'bad', say: t(
-          `Not allowed. That sells on day ${sell} a stock you do not own until day ${buy} — the sell has to come <b>after</b> the buy. No profit, not even a negative one.`,
-          `ခွင့်မပြုပါ။ နေ့ ${buy} ကျမှ ပိုင်မည့် stock ကို နေ့ ${sell} တွင် ရောင်းနေခြင်း ဖြစ်သည် — ရောင်းသည့်နေ့က ဝယ်သည့်နေ့ <b>နောက်မှ</b> ဖြစ်ရမည်။ အမြတ်လည်း မရ၊ အနုတ်တောင် မဟုတ်ပါ။`) };
-      }
-      if (sell === buy) {
-        return { kind: 'bad', say: t(
-          `Not allowed. Buying and selling on day ${buy} is not a trade at all — the statement asks for a <b>different day in the future</b>.`,
-          `ခွင့်မပြုပါ။ နေ့ ${buy} တစ်နေ့တည်းမှာ ဝယ်ပြီး ရောင်းတာ အရောင်းအဝယ် မဟုတ်ပါ — မေးခွန်းက <b>နောက်ပိုင်းက အခြားနေ့တစ်ရက်</b> ကို တောင်းထားသည်။`) };
-      }
-
-      const gain = p[sell] - p[buy];
-      const head = t(
-        `Buy day ${buy} at ${p[buy]}, sell day ${sell} at ${p[sell]}: <b>${p[sell]} - ${p[buy]} = ${gain}</b>.`,
-        `နေ့ ${buy} တွင် ${p[buy]} နှင့် ဝယ်၊ နေ့ ${sell} တွင် ${p[sell]} နှင့် ရောင်း — <b>${p[sell]} - ${p[buy]} = ${gain}</b>။`);
-
-      if (gain > 0) {
-        const tail = gain === best
-          ? t(' That is the most this list allows.', ' ဤစာရင်းတွင် ရနိုင်သည့် အများဆုံးပင် ဖြစ်သည်။')
-          : t(` Legal, but the most this list allows is ${best}.`, ` တရားဝင် ဖြစ်သည်၊ သို့သော် ဤစာရင်းတွင် ရနိုင်သည့် အများဆုံးမှာ ${best} ဖြစ်သည်။`);
-        return { kind: 'good', say: t(head.en + tail.en, head.my + tail.my) };
-      }
-      if (gain === 0) {
-        const tail = t(' Legal, and worth exactly as much as not trading at all.',
-                       ' တရားဝင် ဖြစ်ပြီး ဘာမှ မလုပ်ဘဲ နေလိုက်တာနှင့် တန်ဖိုး အတူတူပင်။');
-        return { kind: 'meh', say: t(head.en + tail.en, head.my + tail.my) };
-      }
-      const tail = t(
-        ' Legal, but a loss — so you would take no trade, and it contributes <b>0</b>, never a negative number.',
-        ' တရားဝင် ဖြစ်သော်လည်း အရှုံး — ထို့ကြောင့် ဘာမှ မလုပ်ဘဲ နေလိုက်မည်။ ရလဒ်သည် အနုတ် မဟုတ်၊ <b>0</b> ဖြစ်သည်။');
-      return { kind: 'meh', say: t(head.en + tail.en, head.my + tail.my) };
-    }
-
-    function point() {
-      const p = prices();
-      const { best } = bestTrade(p);
-      const hi = Math.max(...p);
-      const lo = Math.min(...p);
-      const hiAt = p.indexOf(hi);
-      const loAt = p.indexOf(lo);
-      const naive = hi - lo;
-      if (naive > best) {
-        return t(
-          `<code>max - min</code> here is <code>${hi} - ${lo} = ${naive}</code>. But the cheapest day (day ${loAt}) falls <b>after</b> the dearest (day ${hiAt}), so that trade cannot be made in this direction. The answer is <b>${best}</b>.`,
-          `ဤနေရာတွင် <code>max - min</code> က <code>${hi} - ${lo} = ${naive}</code> ဖြစ်သည်။ သို့သော် ဈေးအသက်သာဆုံးနေ့ (နေ့ ${loAt}) သည် ဈေးအကြီးဆုံးနေ့ (နေ့ ${hiAt}) ၏ <b>နောက်မှ</b> ကျရောက်နေသဖြင့် ထိုအရောင်းအဝယ်ကို ဤအစီအစဉ်အတိုင်း လုပ်၍ မရပါ။ အဖြေမှာ <b>${best}</b> ဖြစ်သည်။`);
-      }
-      return t(
-        `<code>max - min</code> happens to give the right answer here, <b>${best}</b> — only because a cheapest day sits before a dearest one. Swap to the other example and it stops being true.`,
-        `ဤနေရာတွင် <code>max - min</code> က အဖြေမှန် <b>${best}</b> ကို ပေးနေသည် — ဈေးအသက်သာဆုံးနေ့က ဈေးအကြီးဆုံးနေ့၏ ရှေ့မှာ ရှိနေလို့သာ ဖြစ်သည်။ နောက်ဥပမာကို ပြောင်းကြည့်လိုက်ပါ၊ မမှန်တော့ပါ။`);
-    }
-
-    function render() {
-      const p = prices();
-      const { buy, sell } = state;
-      const v = verdict();
-
-      const marks = {};
-      const tone = {};
-      if (buy !== null) marks[buy] = pick(L.buy);
-      if (sell !== null) {
-        marks[sell] = buy === sell ? `${pick(L.buy)} · ${pick(L.sell)}` : pick(L.sell);
-        if (v.kind === 'bad') { tone[buy] = 'down'; tone[sell] = 'down'; }
-        else if (v.kind === 'good') { tone[buy] = 'up'; tone[sell] = 'up'; }
-        else { tone[buy] = 'warn'; tone[sell] = 'warn'; }
-      }
-
-      topEl.innerHTML = `
-        <div class="qw-head">
-          <p class="qw-title">${pick(t(
-            'Pick a day to buy, then a day to sell.',
-            'ဝယ်မည့်နေ့ တစ်ရက်၊ ပြီးလျှင် ရောင်းမည့်နေ့ တစ်ရက် ရွေးကြည့်ပါ။'))}</p>
-          <div class="qw-tabs">
-            ${WIDGET_EXAMPLES.map((e, i) => `<button class="qw-tab" type="button" data-ex="${i}"
-                aria-pressed="${i === state.ex}">${pick(e.label)} · [${e.prices.join(',')}]</button>`).join('')}
-          </div>
-        </div>
-        <div class="qw-chart">${bars(p, { marks, tone, label: pick(L.prices) })}</div>`;
-
-      sayEl.className = 'qw-say';
-      void sayEl.offsetWidth;
-      sayEl.className = `qw-say ${v.kind}`;
-      sayEl.innerHTML = pick(v.say);
-
-      bottomEl.innerHTML = `
-        <button class="qw-clear" type="button" data-clear>${pick(t('Start over', 'အစက ပြန်စ'))}</button>
-        <p class="qw-point">${pick(point())}</p>`;
-
-      topEl.querySelectorAll('.st-bar').forEach((el, i) => {
-        el.classList.add('qw-pick');
-        el.tabIndex = 0;
-        el.setAttribute('role', 'button');
-        el.dataset.day = String(i);
-        el.setAttribute('aria-label', `${pick(L.day)} ${i}, ${pick(L.prices)} ${p[i]}`);
-      });
-    }
-
-    function choose(day) {
-      if (state.buy === null) { state.buy = day; state.sell = null; }
-      else if (state.sell === null) { state.sell = day; }
-      else { state.buy = day; state.sell = null; }
-      const hadFocus = document.activeElement && document.activeElement.dataset?.day === String(day);
-      render();
-      if (hadFocus) topEl.querySelector(`[data-day="${day}"]`)?.focus();
-    }
-
-    host.innerHTML = `
-      <div class="qw" data-qw>
-        <div data-qw-top></div>
-        <p class="qw-say" role="status" aria-live="polite" data-qw-say></p>
-        <div data-qw-bottom></div>
-      </div>`;
-    const box = host.querySelector('[data-qw]');
-    const topEl = box.querySelector('[data-qw-top]');
-    const sayEl = box.querySelector('[data-qw-say]');
-    const bottomEl = box.querySelector('[data-qw-bottom]');
-
-    box.addEventListener('click', (e) => {
-      const tab = e.target.closest('[data-ex]');
-      if (tab) { state.ex = Number(tab.dataset.ex); state.buy = state.sell = null; return render(); }
-      if (e.target.closest('[data-clear]')) { state.buy = state.sell = null; return render(); }
-      const bar = e.target.closest('[data-day]');
-      if (bar) choose(Number(bar.dataset.day));
-    });
-
-    box.addEventListener('keydown', (e) => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      const bar = e.target.closest('[data-day]');
-      if (!bar) return;
-      e.preventDefault();
-      choose(Number(bar.dataset.day));
-    });
-
-    onLangChange(render);
-    render();
-  },
+  widget: mountTradeWidget,
 });

@@ -72,11 +72,30 @@ def level(nodes):
     return ','.join(out)
 
 
-def drivers(ruby, python, javascript, go, rust):
-    """DRIVERS for a function that takes a tree root and returns something
-    printable. Pass the function name as each language spells it."""
+# Where each driver calls the solution, so the result can be serialized.
+_CALLS = {
+    'ruby': '{CALL}(build(l.chomp))',
+    'python': 'Solution().{CALL}(build(l))',
+    'javascript': '{CALL}(build(l))',
+    'go': '{CALL}(build(sc.Text()))',
+    'rust': 'Solution::{CALL}(build(&l))',
+}
+
+
+def drivers(ruby, python, javascript, go, rust, returns_tree=False):
+    """DRIVERS for a function that takes a tree root. Pass the function name as
+    each language spells it. By default the result is printed as is (a number,
+    a bool); with returns_tree=True it is printed in level order, like the
+    corpus."""
     names = dict(ruby=ruby, python=python, javascript=javascript, go=go, rust=rust)
-    return {lang: _DRIVERS[lang].replace('{CALL}', name) for lang, name in names.items()}
+    out = {}
+    for lang, name in names.items():
+        text = _DRIVERS[lang]
+        if returns_tree:
+            assert text.count(_CALLS[lang]) == 1, lang
+            text = text.replace(_CALLS[lang], f'ser({_CALLS[lang]})')
+        out[lang] = text.replace('{CALL}', name)
+    return out
 
 
 _DRIVERS = {

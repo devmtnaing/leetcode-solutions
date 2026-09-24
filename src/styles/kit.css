@@ -163,3 +163,7 @@
 /* The widget cell the reader has picked. */
 .q-arr .cell.picked{outline:2px solid var(--accent);outline-offset:2px}
 .q-arr .cell.picked.amber{outline-color:var(--amber)}
+/* A widget cell the reader can click (Valid Anagram swaps letters). */
+.q-arr .cell[role="button"]{cursor:pointer}
+.q-arr .cell[role="button"]:hover{border-color:var(--accent)}
+.q-arr .cell[role="button"]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}

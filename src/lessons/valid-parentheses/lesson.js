@@ -596,9 +596,10 @@ mountLesson({
                      'ရေးသင့်သည့် submission ဖြစ်သည်။ နှိုင်းယှဉ်ခြင်းမပြုမီ pop လုပ်ပါ၊ ဗလာ pop ကို မကိုက်ဟု သတ်မှတ်ပါ — ထိုတစ်ကြောင်းက ဖွင့်ထားခြင်းမရှိဘဲ ရောက်လာသော ပိတ်ကွင်းကို ကိုင်တွယ်ပေးသည်။') },
   },
   // How each language was actually checked. Printed as a badge on every
-  // listing in part 3. The case corpus: the 5 examples, 12,000 random strings
-  // of length 1–10, 8,000 valid strings (half with one character flipped), and
-  // six at n = 10⁴ — checked against a separate recursive-descent parser.
+  // listing in part 3. The case corpus: the 5 examples, 9 hand-picked edges,
+  // 12,000 random strings of length 1–10, 8,000 valid strings (half with one
+  // character flipped), and six at n = 10⁴ — checked against a separate
+  // recursive-descent parser. verify/valid-parentheses/spec.py rebuilds it.
   // Go and Rust ran in Docker (golang:1.23-alpine, rust:1-slim).
   verification: {
     ruby: 'ran here · 20,020 cases vs a parser',

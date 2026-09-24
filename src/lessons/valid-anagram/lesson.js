@@ -11,7 +11,7 @@
  * time" is notation, not prose.
  */
 import { t, plural, exampleTitle, LANGUAGES, k, c, verdictAnswer, labelledRows } from '../../lib/kit.js';
-import { mountLesson, esc } from '../../lib/stepper.js';
+import { mountLesson } from '../../lib/stepper.js';
 import { cells, strip, kv, panels } from '../../lib/stage.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 
@@ -332,92 +332,46 @@ const CODE = {
   },
 };
 
-/* ---------------- part 1: the question widget ----------------
+/* ---------------- part 1: the "order or count" widget ----------------
  *
  * The one idea the statement hinges on is that an anagram is a multiset, not a
- * sequence. So: let the reader move the letters of t around as much as they
- * like — click a tile to swap it with its neighbour, or shuffle the whole word
- * — and keep the two count tables on screen while they do it. The string in t
- * changes every single time; not one row of the counts ever moves, and the
- * verdict never budges. Then "Change one letter" moves exactly one row, and
- * the verdict flips instantly. Order carries no information; the counts carry
- * all of it.
+ * sequence. Rotate t with the slider, click a letter to swap it with the next
+ * one, or shuffle it: t reads differently every time, the letter counts in the
+ * ledger never move, and the verdict never budges. Then change one letter —
+ * exactly one count moves, and the verdict flips. Order carries no
+ * information; the counts carry all of it.
+ *
+ * Built from x-sum's widget vocabulary: .q-arr cells (kept / cut), the
+ * .q-slider, the amber .q-tie line and the .ledger.
  */
 
 const W = {
-  title: { en: 'Order or count — which one decides?', my: 'အစီအစဉ်လား၊ အရေအတွက်လား — ဘယ်ဟာက ဆုံးဖြတ်သလဲ။' },
-  sub: { en: 'Rearrange <b>t</b> as much as you like — click a tile to swap it with the one after it, or shuffle the whole word. Watch the two count tables while you do. Then change a single letter.',
-         my: '<b>t</b> ကို ကြိုက်သလောက် ပြန်စီကြည့်ပါ — tile တစ်ခုကို နှိပ်လျှင် သူ့နောက်က တစ်ခုနှင့် နေရာလဲသည်၊ သို့မဟုတ် စကားလုံးတစ်ခုလုံးကို shuffle လုပ်နိုင်သည်။ လုပ်ရင်း အရေအတွက်ဇယား နှစ်ခုကို စောင့်ကြည့်ပါ။ ပြီးမှ စာလုံးတစ်လုံးကို လဲကြည့်ပါ။' },
-  labS: { en: 's — fixed', my: 's — မပြောင်း' },
-  labT: { en: 't — click to swap', my: 't — နေရာလဲရန် နှိပ်ပါ' },
-  cntS: { en: 'counts in s', my: 's ထဲက အရေအတွက်' },
-  cntT: { en: 'counts in t', my: 't ထဲက အရေအတွက်' },
-  letter: { en: 'letter', my: 'စာလုံး' },
-  isAna: { en: 'anagram', my: 'anagram ဖြစ်သည်' },
-  notAna: { en: 'not an anagram', my: 'anagram မဟုတ်' },
   start: { en: '<b>s</b> and <b>t</b> hold exactly the same letters, so <b>t</b> is an anagram of <b>s</b>. Now move the letters of <b>t</b> and watch what does — and does not — change.',
            my: '<b>s</b> နှင့် <b>t</b> တွင် စာလုံးများ အတိအကျ တူညီသဖြင့် <b>t</b> သည် <b>s</b> ၏ anagram ဖြစ်သည်။ ယခု <b>t</b> ၏ စာလုံးများကို ရွှေ့ကြည့်ပြီး ဘာပြောင်းသည်၊ ဘာ မပြောင်းသည်ကို ကြည့်ပါ။' },
   held: {
-    en: (n) => `Rearranged ${n} time${n === 1 ? '' : 's'}. <b>t</b> reads differently every time and not one row of the counts has moved. Order carries no information here — the counts carry all of it.`,
-    my: (n) => `${n} ကြိမ် ပြန်စီပြီးပြီ။ <b>t</b> သည် အကြိမ်တိုင်း ပုံစံ မတူတော့သော်လည်း အရေအတွက်ဇယားမှ အတန်းတစ်ကြောင်းမှ မရွေ့ခဲ့ပါ။ ဤနေရာတွင် အစီအစဉ်က သတင်းအချက်အလက် ဘာမှ မသယ်ဆောင်ဘဲ အရေအတွက်များကသာ အကုန် သယ်ဆောင်ထားသည်။`,
+    en: (n) => `Rearranged ${n} time${n === 1 ? '' : 's'}. <b>t</b> reads differently every time and not one count has moved. Order carries no information here — the counts carry all of it.`,
+    my: (n) => `${n} ကြိမ် ပြန်စီပြီးပြီ။ <b>t</b> သည် အကြိမ်တိုင်း ပုံစံ မတူတော့သော်လည်း အရေအတွက် တစ်ခုမှ မရွေ့ခဲ့ပါ။ ဤနေရာတွင် အစီအစဉ်က သတင်းအချက်အလက် ဘာမှ မသယ်ဆောင်ဘဲ အရေအတွက်များကသာ အကုန် သယ်ဆောင်ထားသည်။`,
   },
   broke: {
-    en: (d) => `Not an anagram any more — and no amount of shuffling will bring it back, because rearranging never changes a count. What changed is a count: ${d}.`,
-    my: (d) => `anagram မဟုတ်တော့ပါ — shuffle ဘယ်လောက် လုပ်လုပ် ပြန်မရတော့ပါ၊ အဘယ်ကြောင့်ဆိုသော် ပြန်စီခြင်းသည် အရေအတွက်ကို ဘယ်တော့မှ မပြောင်းလဲစေသောကြောင့် ဖြစ်သည်။ ပြောင်းသွားသည်မှာ အရေအတွက် ဖြစ်သည် — ${d}။`,
+    en: (d) => `Not an anagram — and no amount of rearranging will fix it, because rearranging never changes a count. What differs is a count: ${d}.`,
+    my: (d) => `anagram မဟုတ်ပါ — ဘယ်လောက် ပြန်စီစီ ပြန်မရနိုင်ပါ၊ အဘယ်ကြောင့်ဆိုသော် ပြန်စီခြင်းသည် အရေအတွက်ကို ဘယ်တော့မှ မပြောင်းလဲစေသောကြောင့် ဖြစ်သည်။ ကွာနေသည်မှာ အရေအတွက် ဖြစ်သည် — ${d}။`,
   },
   row: {
     en: (l, a, b) => `<b>${l}</b>: s has ${a}, t has ${b}`,
     my: (l, a, b) => `<b>${l}</b>: s တွင် ${a}၊ t တွင် ${b}`,
   },
-  bShuffle: { en: 'Shuffle t', my: 't ကို shuffle လုပ်' },
-  bMutate: { en: 'Change one letter', my: 'စာလုံးတစ်လုံး လဲကြည့်' },
-  bReset: { en: 'Reset', my: 'အစသို့ ပြန်' },
+  rotate: { en: 'rotate t', my: 't ကို လှည့်' },
+  shuffle: { en: 'shuffle t', my: 't ကို shuffle' },
+  mutate: { en: 'change one letter', my: 'စာလုံးတစ်လုံး လဲ' },
+  isAna: { en: 'anagram', my: 'anagram ဖြစ်သည်' },
+  notAna: { en: 'not an anagram', my: 'anagram မဟုတ်' },
+  differ: { en: 'counts differ', my: 'ကွာသော အရေအတွက်' },
 };
 
-const WIDGET_CSS = `
-#question-widget{margin-top:16px}
-.vaw{
-  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-  padding:18px 20px;max-width:74ch;display:flex;flex-direction:column;gap:14px;
-}
-.vaw-h{font-size:14.5px;color:var(--ink);margin:0}
-.vaw-sub{font-size:13.5px;color:var(--ink-2);line-height:1.65;margin:5px 0 0}
-.vaw-words{
-  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;color:var(--ink-2);
-  background:var(--sunk);border:1px solid var(--line);border-radius:7px;padding:7px 11px;
-  overflow-x:auto;white-space:nowrap;
-}
-.vaw-words b{color:var(--ink)}
-.vaw-rows{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:flex-start}
-.vaw-t .st-cell{cursor:pointer}
-.vaw-t .st-cell:hover{border-color:var(--accent)}
-.vaw-t .st-cell:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.vaw-verdict{
-  display:flex;flex-wrap:wrap;gap:9px;align-items:baseline;font-size:13.5px;line-height:1.6;
-  color:var(--ink-2);background:var(--up-soft);border-left:3px solid var(--up);
-  border-radius:0 7px 7px 0;padding:10px 13px;margin:0;
-}
-.vaw-verdict.bad{background:var(--down-soft);border-left-color:var(--down)}
-.vaw-verdict > span:last-child{flex:1;min-width:190px}
-.vaw-chip{
-  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
-  font-weight:600;background:var(--surface);color:var(--up);padding:2px 8px;border-radius:999px;white-space:nowrap;
-}
-.vaw-verdict.bad .vaw-chip{color:var(--down)}
-.vaw-acts{display:flex;flex-wrap:wrap;gap:8px}
-.vaw-btn{
-  background:var(--sunk);border:1px solid var(--line);border-radius:7px;color:var(--ink-2);
-  font:inherit;font-size:12.5px;padding:6px 12px;cursor:pointer;
-}
-.vaw-btn:hover{border-color:var(--line-2);color:var(--ink)}
-.vaw-btn.primary{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
-:root[data-ui="my"] .vaw-sub,:root[data-ui="my"] .vaw-verdict,:root[data-ui="my"] .vaw-h{
-  overflow-wrap:break-word;word-break:break-word;line-height:1.75;
-}
-`;
-
-const START_S = 'anagram';
-const START_T = 'nagaram';
+const QW_SETS = [
+  { label: exampleTitle(1), s: 'anagram', t: 'nagaram' },
+  { label: exampleTitle(2), s: 'rat', t: 'car' },
+];
 
 function tally(letters) {
   const out = {};
@@ -426,146 +380,137 @@ function tally(letters) {
 }
 
 function mountWidget(host) {
-  const style = document.createElement('style');
-  style.textContent = WIDGET_CSS;
-  document.head.appendChild(style);
+  const state = { set: 0, t: [...QW_SETS[0].t], turn: 0, moves: 0 };
+  const shown = () => [...state.t.slice(state.turn), ...state.t.slice(0, state.turn)];
+  // swapping, shuffling or changing a letter acts on what is on screen
+  const settle = (next) => { state.t = next; state.turn = 0; };
 
-  const sArr = [...START_S];
-  let t = [...START_T];
-  let moves = 0;
-  let at = null;
-  let refocus = false;
+  host.innerHTML = `
+    <div data-rows></div>
+    <div class="q-slider">
+      <label for="qw-turn" data-lbl></label>
+      <input type="range" id="qw-turn" min="0" max="1" value="0">
+      <output data-out>0</output>
+      <span class="q-presets" data-presets></span>
+    </div>
+    <p class="q-tie" data-line></p>
+    <div class="ledger">
+      <span class="expr" data-expr></span>
+      <span class="total" data-total></span>
+    </div>`;
 
-  const cells = () => host.querySelectorAll('[data-vaw-t] .st-cell');
+  const q = (sel) => host.querySelector(sel);
 
-  function render() {
-    const cs = tally(sArr);
-    const ct = tally(t);
-    // One shared, sorted row order so the two tables line up cell for cell —
-    // seeing them stay identical is the entire point of the widget.
-    const letters = [...new Set([...sArr, ...t])].sort();
-    const rowsS = {};
-    const rowsT = {};
-    for (const l of letters) { rowsS[l] = cs[l] || 0; rowsT[l] = ct[l] || 0; }
-
-    const off = letters.filter((l) => rowsS[l] !== rowsT[l]);
+  function render(focus = null) {
+    const sWord = [...QW_SETS[state.set].s];
+    const tWord = shown();
+    const cs = tally(sWord);
+    const ct = tally(tWord);
+    const letters = [...new Set([...sWord, ...tWord])].sort();
+    const off = letters.filter((l) => (cs[l] || 0) !== (ct[l] || 0));
     const ok = off.length === 0;
-    const tone = {};
-    for (const l of off) tone[l] = 'down';
 
-    // Mark the letters of t that are in surplus, left to right.
-    const spare = {};
-    for (const l of off) if (rowsT[l] > rowsS[l]) spare[l] = rowsT[l] - rowsS[l];
-    const tTone = {};
-    t.forEach((ch, i) => { if (spare[ch] > 0) { tTone[i] = 'down'; spare[ch] -= 1; } });
+    // cut = a letter the other word has fewer of; kept = accounted for
+    const row = (word, mine, other, clickable) => {
+      const spare = {};
+      for (const l of off) if ((mine[l] || 0) > (other[l] || 0)) spare[l] = (mine[l] || 0) - (other[l] || 0);
+      return word.map((ch, i) => {
+        const cut = spare[ch] > 0 && (spare[ch] -= 1, true);
+        return `<div class="cell ${cut ? 'cut' : 'kept'}"${clickable ? ` role="button" tabindex="0" data-i="${i}"` : ''}><span>${ch}</span><span class="idx">${i}</span></div>`;
+      }).join('');
+    };
+    q('[data-rows]').innerHTML =
+      `<div class="q-arr"><span class="q-row-label">s</span>${row(sWord, cs, ct, false)}</div>`
+      + `<div class="q-arr"><span class="q-row-label">t</span>${row(tWord, ct, cs, true)}</div>`;
+    if (focus != null) q(`[data-i="${focus}"]`)?.focus();
 
-    const detail = off.map((l) => pick(W.row)(l, rowsS[l], rowsT[l])).join(' · ');
-    const body = ok
-      ? (moves === 0 ? pick(W.start) : pick(W.held)(moves))
-      : pick(W.broke)(detail);
+    q('[data-lbl]').textContent = pick(W.rotate);
+    const slider = q('#qw-turn');
+    slider.max = String(tWord.length - 1);
+    slider.value = String(state.turn);
+    q('[data-out]').textContent = String(state.turn);
+    q('[data-presets]').innerHTML = QW_SETS.map((x, i) =>
+      `<button class="chip" data-set="${i}"${i === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('')
+      + `<button class="chip" data-act="shuffle">${pick(W.shuffle)}</button>`
+      + `<button class="chip" data-act="mutate">${pick(W.mutate)}</button>`;
 
-    host.innerHTML = `
-      <div class="vaw">
-        <div>
-          <h3 class="vaw-h">${esc(pick(W.title))}</h3>
-          <p class="vaw-sub">${pick(W.sub)}</p>
-        </div>
-        <div class="vaw-words">s = <b>${esc(sArr.join(''))}</b> &nbsp;·&nbsp; t = <b>${esc(t.join(''))}</b></div>
-        <div class="vaw-rows">
-          ${strip(sArr, { label: pick(W.labS) })}
-          <div class="vaw-t" data-vaw-t>${strip(t, { at, tone: tTone, label: pick(W.labT) })}</div>
-        </div>
-        <div class="vaw-rows">
-          ${kv(rowsS, { tone, label: pick(W.cntS), keyName: pick(W.letter), valName: 'count' })}
-          ${kv(rowsT, { tone, label: pick(W.cntT), keyName: pick(W.letter), valName: 'count' })}
-        </div>
-        <p class="vaw-verdict${ok ? '' : ' bad'}">
-          <span class="vaw-chip">${esc(pick(ok ? W.isAna : W.notAna))}</span>
-          <span>${body}</span>
-        </p>
-        <div class="vaw-acts">
-          <button class="vaw-btn primary" type="button" data-vaw="shuffle">${esc(pick(W.bShuffle))}</button>
-          <button class="vaw-btn" type="button" data-vaw="mutate">${esc(pick(W.bMutate))}</button>
-          <button class="vaw-btn" type="button" data-vaw="reset">${esc(pick(W.bReset))}</button>
-        </div>
-      </div>`;
+    const label = document.getElementById('q-label');
+    if (label) label.textContent = pick(ok ? W.isAna : W.notAna);
 
-    cells().forEach((cell, i) => {
-      cell.tabIndex = 0;
-      cell.setAttribute('role', 'button');
-      if (refocus && i === at) cell.focus();
-    });
-    refocus = false;
+    const detail = off.map((l) => pick(W.row)(l, cs[l] || 0, ct[l] || 0)).join(' · ');
+    q('[data-line]').innerHTML = ok ? (state.moves ? pick(W.held)(state.moves) : pick(W.start)) : pick(W.broke)(detail);
+
+    // the ledger is a formula, as on x-sum: the two multisets side by side
+    const counts = (c) => Object.keys(c).sort().map((l) => `${l}${c[l]}`).join(' ');
+    q('[data-expr]').innerHTML = `s: ${counts(cs)} &nbsp;·&nbsp; t: ${counts(ct)}`;
+    q('[data-total]').innerHTML = `${off.length}<small>${pick(W.differ)}</small>`;
   }
 
-  /* swap position i with the one after it, wrapping at the end */
+  function rearranged(before) { if (shown().join('') !== before) state.moves += 1; }
+
+  host.addEventListener('input', (ev) => {
+    if (ev.target.id !== 'qw-turn') return;
+    const before = shown().join('');
+    state.turn = Number(ev.target.value);
+    rearranged(before);
+    render();
+  });
+
   function swap(i, viaKey) {
-    const j = (i + 1) % t.length;
+    const word = shown();
+    const j = (i + 1) % word.length;
     if (i === j) return;
-    const before = t.join('');
-    [t[i], t[j]] = [t[j], t[i]];
-    if (t.join('') !== before) moves += 1;
-    at = j;
-    refocus = viaKey;
-    render();
+    const before = word.join('');
+    [word[i], word[j]] = [word[j], word[i]];
+    settle(word);
+    rearranged(before);
+    render(viaKey ? j : null);
   }
 
-  function shuffle() {
-    const before = t.join('');
-    for (let tries = 0; tries < 40 && t.join('') === before; tries++) {
-      for (let i = t.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [t[i], t[j]] = [t[j], t[i]];
+  host.addEventListener('click', (ev) => {
+    const cell = ev.target.closest('[data-i]');
+    if (cell) return swap(Number(cell.dataset.i), false);
+    const chip = ev.target.closest('[data-set], [data-act]');
+    if (!chip) return;
+    if (chip.dataset.set != null) {
+      state.set = Number(chip.dataset.set);
+      settle([...QW_SETS[state.set].t]);
+      state.moves = 0;
+    } else if (chip.dataset.act === 'shuffle') {
+      const word = shown();
+      const before = word.join('');
+      for (let tries = 0; tries < 40 && word.join('') === before; tries++) {
+        for (let i = word.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [word[i], word[j]] = [word[j], word[i]];
+        }
       }
+      settle(word);
+      rearranged(before);
+    } else {
+      const word = shown();
+      const i = Math.floor(Math.random() * word.length);
+      let ch = word[i];
+      while (ch === word[i]) ch = String.fromCharCode(97 + Math.floor(Math.random() * 26));
+      word[i] = ch;
+      settle(word);
     }
-    if (t.join('') !== before) moves += 1;
-    at = null;
     render();
-  }
-
-  function mutate() {
-    const i = Math.floor(Math.random() * t.length);
-    let ch = t[i];
-    while (ch === t[i]) ch = String.fromCharCode(97 + Math.floor(Math.random() * 26));
-    t[i] = ch;
-    at = i;
-    render();
-  }
-
-  function reset() {
-    t = [...START_T];
-    moves = 0;
-    at = null;
-    render();
-  }
-
-  const indexOf = (cell) => [...cell.parentElement.children].indexOf(cell);
-
-  host.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-vaw]');
-    if (btn) {
-      if (btn.dataset.vaw === 'shuffle') shuffle();
-      else if (btn.dataset.vaw === 'mutate') mutate();
-      else reset();
-      return;
-    }
-    const cell = e.target.closest('[data-vaw-t] .st-cell');
-    if (cell) swap(indexOf(cell), false);
   });
 
-  // Enter and space on a focused tile. The stepper listens for space on the
+  // Enter and space on a focused letter. The stepper listens for space on the
   // document to play/pause, so stop this one before it gets there.
-  host.addEventListener('keydown', (e) => {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    const cell = e.target.closest && e.target.closest('[data-vaw-t] .st-cell');
+  host.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Enter' && ev.key !== ' ') return;
+    const cell = ev.target.closest && ev.target.closest('[data-i]');
     if (!cell) return;
-    e.preventDefault();
-    e.stopPropagation();
-    swap(indexOf(cell), true);
+    ev.preventDefault();
+    ev.stopPropagation();
+    swap(Number(cell.dataset.i), true);
   });
 
+  onLangChange(() => render());
   render();
-  onLangChange(render);
 }
 
 /* ---------------- mount ---------------- */
@@ -671,8 +616,3 @@ mountLesson({
   vars,
   widget: mountWidget,
 });
-
-/* Exported so the verification script can assert every widget string has a
-   Burmese side; nothing on the page imports it. */
-export { W as WIDGET_STRINGS };
-

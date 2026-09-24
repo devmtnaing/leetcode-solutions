@@ -52,7 +52,10 @@ The site is fully static: every page is prerendered and served as a file, so
 there's no backend. A solution page is a folder of data and one step generator
 per approach. The kit supplies the transport, code panel, language switching
 and layout. `src/lessons/x-sum/` is older than the kit, built by hand as the
-reference design the kit reproduces, and has its own page file.
+reference design the kit reproduces, and has its own page file. Every kit
+lesson has a spec in `verify/`, so `npm run verify -- <slug>` reruns what its
+badges claim. x-sum doesn't yet: its listings live in hand-written HTML rather
+than a `CODE` table, and were verified before the harness existed.
 
 ## Deploying
 
