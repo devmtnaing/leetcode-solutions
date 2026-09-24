@@ -454,6 +454,40 @@ function mountFoldWidget(host) {
   render();
 }
 
+/* ---------------- the approach, in brief ----------------
+ *
+ * Shown in part 2 under the approach tabs: the idea, the steps as the code
+ * takes them (named after its identifiers), and the cost with its reason. */
+
+const APPROACH = {
+  count: {
+    idea: t("Count how many times each value appears, then return the one seen once.",
+        "value တစ်ခုစီ ပါဝင်သည့် အကြိမ်ကို ရေတွက်ပြီး တစ်ကြိမ်တည်း တွေ့ရသည့်တစ်ခုကို ပြန်ပေးသည်။"),
+    steps: [
+      t("Walk <code>nums</code>, adding one to <code>counts[v]</code> for each value.",
+        "<code>nums</code> ကို လျှောက်ပြီး value တစ်ခုစီအတွက် <code>counts[v]</code> ကို တစ်ပေါင်းသည်။"),
+      t("Walk the table and return the value whose count is 1.",
+        "table ကို လျှောက်ပြီး count 1 ရှိသော value ကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("two passes and a table of (n + 1)/2 rows — 15,000 at the largest n — which the constant-space rule does not allow.",
+        "နှစ်ကြိမ် ဖြတ်ခြင်းနှင့် row (n + 1)/2 ခုရှိ table — အကြီးဆုံး n တွင် 15,000 — constant space စည်းကမ်းက ခွင့်မပြုပါ။"),
+  },
+  xor: {
+    idea: t("XOR cancels pairs: <code>x ^ x</code> is 0, <code>x ^ 0</code> is <code>x</code>, and order does not matter. XOR every value together and each pair vanishes, leaving the single one.",
+        "XOR က အတွဲများကို ချေဖျက်သည် — <code>x ^ x</code> သည် 0၊ <code>x ^ 0</code> သည် <code>x</code> ဖြစ်ပြီး အစီအစဉ် အရေးမကြီးပါ။ value အားလုံးကို XOR လုပ်လျှင် အတွဲတိုင်း ပျောက်ပြီး တစ်ခုတည်းသော value သာ ကျန်သည်။"),
+    steps: [
+      t("Start with <code>acc = 0</code>.",
+        "<code>acc = 0</code> ဖြင့် စသည်။"),
+      t("For each value, <code>acc ^= v</code>.",
+        "value တစ်ခုစီအတွက် <code>acc ^= v</code>။"),
+      t("Return <code>acc</code>.",
+        "<code>acc</code> ကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("one pass and one integer.",
+        "တစ်ကြိမ် ဖြတ်ခြင်းနှင့် integer တစ်ခု။"),
+  },
+};
+
 /* ---------------- mount ----------------
  *
  * Last in the file on purpose: mountLesson runs the widget immediately, so
@@ -505,9 +539,9 @@ mountLesson({
   languages: LANGUAGES,
   code: CODE,
   solutions: {
-    count: { desc: t('What to write first: obvious, hard to get wrong, and it survives a change to the premise. It fails only the constant-space clause — the table grows to about <code>n/2</code> rows.',
+    count: { approach: APPROACH.count, desc: t('What to write first: obvious, hard to get wrong, and it survives a change to the premise. It fails only the constant-space clause — the table grows to about <code>n/2</code> rows.',
                      'ပထမဆုံး ရေးသင့်သည်မှာ ဤပုံစံ — ရှင်းလင်းသည်၊ မှားရန်ခက်သည်၊ premise ပြောင်းသွားလည်း အလုပ်လုပ်ဆဲ။ constant-space စည်းကမ်းတစ်ခုတည်းကိုသာ မကိုက်ပါ — table သည် row <code>n/2</code> ခုခန့်အထိ ကြီးလာသည်။') },
-    xor: { desc: t('The submission the statement asks for: one integer, one pass. It never counts anything — only whether each bit was set an odd number of times.',
+    xor: { approach: APPROACH.xor, desc: t('The submission the statement asks for: one integer, one pass. It never counts anything — only whether each bit was set an odd number of times.',
                    'မေးခွန်း တောင်းထားသည့် submission — integer တစ်ခု၊ တစ်ခေါက်တည်း။ ဘာမျှ မရေတွက်ပါ — bit တစ်ခုစီကို မကိန်းအကြိမ် set လုပ်ခဲ့သလား ဆိုသည်ကိုသာ သိသည်။') },
   },
   // How each language was actually checked. Printed as a badge on every

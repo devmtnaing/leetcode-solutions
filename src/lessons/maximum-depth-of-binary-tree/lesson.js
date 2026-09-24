@@ -447,6 +447,44 @@ function mountPathWidget(host) {
   render();
 }
 
+/* ---------------- the approach, in brief ----------------
+ *
+ * Shown in part 2 under the approach tabs: the idea, the steps as the code
+ * takes them (named after its identifiers), and the cost with its reason. */
+
+const APPROACH = {
+  dfs: {
+    idea: t("A tree's depth is 1 for its root plus the depth of its deeper subtree, and an empty tree has depth 0.",
+        "tree တစ်ခု၏ depth သည် root အတွက် 1 နှင့် ပိုနက်သော subtree ၏ depth ပေါင်းလဒ် ဖြစ်ပြီး ဗလာ tree ၏ depth မှာ 0 ဖြစ်သည်။"),
+    steps: [
+      t("If <code>root</code> is nil, return 0.",
+        "<code>root</code> သည် nil ဖြစ်လျှင် 0 ကို ပြန်ပေးသည်။"),
+      t("Get <code>left</code>, the depth of the left subtree, and <code>right</code>, the depth of the right.",
+        "ဘယ် subtree ၏ depth <code>left</code> နှင့် ညာ subtree ၏ depth <code>right</code> ကို ရယူသည်။"),
+      t("Return 1 plus the larger of the two.",
+        "နှစ်ခုအနက် ကြီးသည့်တစ်ခုကို 1 ပေါင်း၍ ပြန်ပေးသည်။"),
+    ],
+    cost: t("one visit per node; the stack grows with the height — 10,001 frames for a 10⁴-node chain.",
+        "node တစ်ခုလျှင် တစ်ကြိမ် ရောက်သည် — stack သည် အမြင့်နှင့်အမျှ ကြီးသည်၊ node 10⁴ ကွင်းဆက်အတွက် frame 10,001။"),
+  },
+  bfs: {
+    idea: t("Depth is the number of levels. Hold one level at a time, count it, and replace it with its children until there are none.",
+        "depth သည် အဆင့် အရေအတွက် ဖြစ်သည်။ တစ်ကြိမ်လျှင် အဆင့်တစ်ဆင့်ကို ကိုင်၊ ရေတွက်၊ ကလေးများ မကျန်မချင်း ၎င်းကို ၎င်း၏ ကလေးများဖြင့် အစားထိုးသည်။"),
+    steps: [
+      t("Start with <code>level</code> holding the root, or empty, and <code>depth = 0</code>.",
+        "root ပါသော (သို့မဟုတ် ဗလာ) <code>level</code> နှင့် <code>depth = 0</code> ဖြင့် စသည်။"),
+      t("While <code>level</code> is not empty, add one to <code>depth</code>.",
+        "<code>level</code> ဗလာ မဟုတ်သမျှ <code>depth</code> ကို တစ်ပေါင်းသည်။"),
+      t("Replace <code>level</code> with all the children of its nodes.",
+        "<code>level</code> ကို ၎င်း၏ node များ၏ ကလေးအားလုံးဖြင့် အစားထိုးသည်။"),
+      t("Return <code>depth</code>.",
+        "<code>depth</code> ကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("one visit per node; memory grows with the widest level, and nothing recurses.",
+        "node တစ်ခုလျှင် တစ်ကြိမ် ရောက်သည် — memory သည် အကျယ်ဆုံး အဆင့်နှင့်အမျှ ကြီးပြီး recursion မရှိပါ။"),
+  },
+};
+
 /* ---------------- mount ----------------
  *
  * Last in the file on purpose: mountLesson runs the widget immediately, so
@@ -487,9 +525,9 @@ mountLesson({
   languages: LANGUAGES,
   code: CODE,
   solutions: {
-    dfs: { desc: t('The definition, written as code: an empty tree is 0 deep, and anything else is 1 plus its deeper side. The stack grows with the height — up to 10⁴ frames here, which is where some languages run out.',
+    dfs: { approach: APPROACH.dfs, desc: t('The definition, written as code: an empty tree is 0 deep, and anything else is 1 plus its deeper side. The stack grows with the height — up to 10⁴ frames here, which is where some languages run out.',
                    'အဓိပ္ပာယ်ကို code အဖြစ် ရေးထားခြင်း — ဗလာ tree သည် 0 နက်ပြီး အခြား မည်သည့်အရာမဆို ၎င်း၏ ပိုနက်သော ဘက်ကို 1 ပေါင်းခြင်း ဖြစ်သည်။ stack သည် အမြင့်နှင့်အမျှ ကြီးသည် — ဤနေရာတွင် frame 10⁴ အထိ၊ ဘာသာစကားအချို့ ကုန်သွားသည့်နေရာ ဖြစ်သည်။') },
-    bfs: { desc: t('No recursion, so no stack to run out of: hold one level, count it, replace it with its children. Memory grows with the widest level instead.',
+    bfs: { approach: APPROACH.bfs, desc: t('No recursion, so no stack to run out of: hold one level, count it, replace it with its children. Memory grows with the widest level instead.',
                    'recursion မရှိသဖြင့် ကုန်သွားစရာ stack မရှိပါ — အဆင့်တစ်ဆင့် ကိုင်၊ ရေတွက်၊ ၎င်း၏ ကလေးများဖြင့် အစားထိုး။ memory သည် အကျယ်ဆုံး အဆင့်နှင့်အမျှ ကြီးသည်။') },
   },
   // How each language was actually checked, printed as the part 3 badges.

@@ -418,6 +418,44 @@ function mountPairWidget(host) {
   render();
 }
 
+/* ---------------- the approach, in brief ----------------
+ *
+ * Shown in part 2 under the approach tabs: the idea, the steps as the code
+ * takes them (named after its identifiers), and the cost with its reason. */
+
+const APPROACH = {
+  count: {
+    idea: t("Count every value. The first one whose count passes half the array is the majority, and nothing can overtake it after that.",
+        "value တိုင်းကို ရေတွက်သည်။ count က array ၏ တစ်ဝက်ကို ပထမဆုံး ကျော်သောတစ်ခုသည် majority ဖြစ်ပြီး ထို့နောက် မည်သည့်အရာကမျှ ၎င်းကို မကျော်နိုင်ပါ။"),
+    steps: [
+      t("Start with an empty map, <code>counts</code>.",
+        "map ဗလာ <code>counts</code> ဖြင့် စသည်။"),
+      t("For each <code>x</code>, add one to <code>counts[x]</code>.",
+        "<code>x</code> တစ်ခုစီအတွက် <code>counts[x]</code> ကို တစ်ပေါင်းသည်။"),
+      t("Return <code>x</code> as soon as <code>counts[x]</code> passes ⌊n/2⌋.",
+        "<code>counts[x]</code> က ⌊n/2⌋ ကို ကျော်သည်နှင့် <code>x</code> ကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("one pass at most, but up to 25,000 rows at n = 5 × 10⁴.",
+        "အများဆုံး တစ်ကြိမ် ဖြတ်ခြင်း၊ သို့သော် n = 5 × 10⁴ တွင် row 25,000 အထိ။"),
+  },
+  vote: {
+    idea: t("Pair each vote with a vote for something else and cross both out. A majority has more copies than every other value put together, so some of it always survives.",
+        "မဲတစ်ခုစီကို အခြားတစ်ခုအတွက် မဲနှင့် အတွဲချပြီး နှစ်ခုလုံး ဖျက်သည်။ majority တွင် အခြား value အားလုံး ပေါင်းထက် copy ပိုများသဖြင့် ၎င်း၏ တစ်စိတ်တစ်ပိုင်း အမြဲ ကျန်ရစ်သည်။"),
+    steps: [
+      t("Start with no <code>candidate</code> and <code>count = 0</code>.",
+        "<code>candidate</code> မရှိဘဲ <code>count = 0</code> ဖြင့် စသည်။"),
+      t("For each <code>x</code>: if <code>count</code> is 0, <code>x</code> becomes the <code>candidate</code>.",
+        "<code>x</code> တစ်ခုစီအတွက် — <code>count</code> သည် 0 ဖြစ်လျှင် <code>x</code> သည် <code>candidate</code> ဖြစ်လာသည်။"),
+      t("Add one to <code>count</code> if <code>x</code> is the candidate; subtract one otherwise.",
+        "<code>x</code> သည် candidate ဖြစ်လျှင် <code>count</code> ကို တစ်ပေါင်း၊ မဟုတ်လျှင် တစ်နုတ်သည်။"),
+      t("Return <code>candidate</code>.",
+        "<code>candidate</code> ကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("one pass and two variables — correct only because the statement guarantees a majority.",
+        "တစ်ကြိမ် ဖြတ်ခြင်းနှင့် variable နှစ်ခု — မေးခွန်းက majority ရှိကြောင်း အာမခံထားသောကြောင့်သာ မှန်သည်။"),
+  },
+};
+
 /* ---------------- mount ----------------
  *
  * Last in the file on purpose: mountLesson runs the widget immediately, so
@@ -456,9 +494,9 @@ mountLesson({
   languages: LANGUAGES,
   code: CODE,
   solutions: {
-    count: { desc: t('The direct reading of the statement: count, and return the first value whose count passes ⌊n/2⌋. Linear, but the map can grow to 25,000 rows at the constraint — the follow-up asks for O(1) space.',
+    count: { approach: APPROACH.count, desc: t('The direct reading of the statement: count, and return the first value whose count passes ⌊n/2⌋. Linear, but the map can grow to 25,000 rows at the constraint — the follow-up asks for O(1) space.',
                      'မေးခွန်းကို တိုက်ရိုက် ဖတ်ခြင်း — ရေတွက်ပြီး count က ⌊n/2⌋ ကျော်သော ပထမ value ကို ပြန်ပေးသည်။ linear ဖြစ်သော်လည်း ကန့်သတ်ချက်အထိ map သည် row 25,000 အထိ ကြီးနိုင်သည် — follow-up က O(1) space ကို တောင်းသည်။') },
-    vote: { desc: t('Pairs of different values cancel, and a majority cannot be cancelled away. Two variables, one pass — and only correct because the statement guarantees a majority exists.',
+    vote: { approach: APPROACH.vote, desc: t('Pairs of different values cancel, and a majority cannot be cancelled away. Two variables, one pass — and only correct because the statement guarantees a majority exists.',
                     'မတူသော value အတွဲများ ချေဖျက်ကြပြီး majority ကို ချေဖျက်၍ မကုန်နိုင်ပါ။ variable နှစ်ခု၊ တစ်ကြိမ်တည်း ဖြတ်သည် — မေးခွန်းက majority ရှိကြောင်း အာမခံထားသောကြောင့်သာ မှန်သည်။') },
   },
   // How each language was actually checked, printed as the part 3 badges.

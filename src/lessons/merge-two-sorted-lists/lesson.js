@@ -559,6 +559,44 @@ function mountFrontsWidget(host) {
   render();
 }
 
+/* ---------------- the approach, in brief ----------------
+ *
+ * Shown in part 2 under the approach tabs: the idea, the steps as the code
+ * takes them (named after its identifiers), and the cost with its reason. */
+
+const APPROACH = {
+  iterative: {
+    idea: t("Both lists are sorted, so the next node of the answer is always the smaller of the two heads. Splice it on and move that list forward.",
+        "list နှစ်ခုလုံး sort လုပ်ထားပြီးဖြစ်သဖြင့် အဖြေ၏ နောက် node သည် head နှစ်ခုအနက် ငယ်သည့်တစ်ခု အမြဲ ဖြစ်သည်။ ၎င်းကို ဆက်ပြီး ထို list ကို ရှေ့တိုးသည်။"),
+    steps: [
+      t("Start with a <code>dummy</code> node and <code>tail = dummy</code>, so the first splice needs no special case.",
+        "<code>dummy</code> node နှင့် <code>tail = dummy</code> ဖြင့် စသဖြင့် ပထမဆုံး ဆက်ခြင်းအတွက် သီးသန့် မစစ်ရပါ။"),
+      t("While both lists have nodes, splice the smaller head after <code>tail</code> — <code>list1</code> on a tie — and advance that list.",
+        "list နှစ်ခုလုံးတွင် node ရှိနေသမျှ ငယ်သော head ကို <code>tail</code> နောက်တွင် ဆက်ပြီး (တူလျှင် <code>list1</code>) ထို list ကို ရှေ့တိုးသည်။"),
+      t("Move <code>tail</code> forward.",
+        "<code>tail</code> ကို ရှေ့တိုးသည်။"),
+      t("Attach whatever is left of either list, and return <code>dummy.next</code>.",
+        "list တစ်ခုခုတွင် ကျန်သည့်အရာကို တပ်ပြီး <code>dummy.next</code> ကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("one step per node and a single dummy; no node is copied.",
+        "node တစ်ခုလျှင် အဆင့်တစ်ဆင့်နှင့် dummy တစ်ခုတည်း — node တစ်ခုမျှ မကူးပါ။"),
+  },
+  recursive: {
+    idea: t("The merged list is the smaller head followed by the merge of everything else — the same problem, one node smaller.",
+        "ပေါင်းထားသော list သည် ငယ်သော head နောက်တွင် ကျန်အရာအားလုံးကို ပေါင်းထားခြင်း ဖြစ်သည် — node တစ်ခု လျော့သော ပြဿနာ အတူတူပင်။"),
+    steps: [
+      t("If either list is empty, the answer is the other one.",
+        "list တစ်ခုခု ဗလာဖြစ်လျှင် အဖြေမှာ ကျန်တစ်ခု ဖြစ်သည်။"),
+      t("If <code>list1.val &lt;= list2.val</code>, set <code>list1.next</code> to the merge of <code>list1.next</code> and <code>list2</code>, and return <code>list1</code>.",
+        "<code>list1.val &lt;= list2.val</code> ဖြစ်လျှင် <code>list1.next</code> ကို <code>list1.next</code> နှင့် <code>list2</code> ပေါင်းထားခြင်းအဖြစ် သတ်မှတ်ပြီး <code>list1</code> ကို ပြန်ပေးသည်။"),
+      t("Otherwise do the same with <code>list2</code>.",
+        "မဟုတ်လျှင် <code>list2</code> ဖြင့် အလားတူ လုပ်သည်။"),
+    ],
+    cost: t("the same steps, plus one stack frame per node — at most 100 here, from two 50-node lists.",
+        "အဆင့်များ အတူတူ၊ node တစ်ခုလျှင် stack frame တစ်ခု ထပ်လိုသည် — ဤနေရာတွင် node 50 ပါ list နှစ်ခုမှ အများဆုံး 100။"),
+  },
+};
+
 /* ---------------- mount ----------------
  *
  * Last in the file on purpose: mountLesson runs the widget immediately, so
@@ -615,9 +653,9 @@ mountLesson({
   languages: LANGUAGES,
   code: CODE,
   solutions: {
-    iterative: { desc: t('The submission worth writing. The dummy removes the first-node special case, and no node is ever created — every node in the answer was already in an input.',
+    iterative: { approach: APPROACH.iterative, desc: t('The submission worth writing. The dummy removes the first-node special case, and no node is ever created — every node in the answer was already in an input.',
                          'ရေးသင့်သည့် submission ဖြစ်သည်။ dummy က ပထမ node အတွက် သီးခြား case ကို ဖယ်ရှားပေးပြီး node အသစ် တစ်ခုမျှ မဖန်တီးပါ — အဖြေထဲရှိ node တိုင်းသည် input ထဲတွင် ရှိပြီးသား ဖြစ်သည်။') },
-    recursive: { desc: t('The same decisions, written as "the smaller head, followed by the merge of the rest". It reads better and costs a stack frame per node — free at 50 nodes, a stack overflow at 10⁵.',
+    recursive: { approach: APPROACH.recursive, desc: t('The same decisions, written as "the smaller head, followed by the merge of the rest". It reads better and costs a stack frame per node — free at 50 nodes, a stack overflow at 10⁵.',
                          'ဆုံးဖြတ်ချက် အတူတူကို "ငယ်သည့် head၊ နောက်တွင် ကျန်တာကို ပေါင်းခြင်း" ဟု ရေးထားသည်။ ဖတ်ရ ပိုကောင်းပြီး node တစ်ခုလျှင် stack frame တစ်ခု ကုန်သည် — node 50 တွင် အခမဲ့၊ 10⁵ တွင် stack overflow။') },
   },
   // How each language was actually checked. Printed as a badge on every

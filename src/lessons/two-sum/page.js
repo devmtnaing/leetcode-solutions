@@ -2,8 +2,6 @@
  * interactive. Rendered by src/pages/leetcode/[slug].astro through the
  * Walkthrough layout; each value is a string or an { en, my } pair. */
 export default {
-  // part 2 split into 2·1 / 2·2 / 2·3 — being tried here before the other pages
-  layout: 'sections',
   title: 'Two Sum',
   summary: 'Every pair, or one pass with a hash map. The difference is what question you ask.',
   eyebrow: 'LeetCode 1 &nbsp;·&nbsp; Easy',

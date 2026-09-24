@@ -138,6 +138,10 @@ for (const slug of slugs) {
   for (const m of cfg.modes) {
     if (!m.desc) fail(slug, `mode "${m.id}" has no desc for its mode card`);
     else if (!hasMy(m.desc)) warnMy(slug, `mode "${m.id}" desc has no Burmese side`);
+    // 2·1 shows the chosen approach in brief under its tab
+    const ap = cfg.solutions?.[m.id]?.approach;
+    if (!ap?.idea || !ap?.steps?.length || !ap?.cost) fail(slug, `mode "${m.id}" has no approach { idea, steps, cost } for 2·1 (cfg.solutions)`);
+    else if (![ap.idea, ap.cost, ...ap.steps].every(hasMy)) warnMy(slug, `mode "${m.id}" approach has no Burmese side`);
     if (!cfg.solutions?.[m.id]?.desc) fail(slug, `mode "${m.id}" has no part 3 caption (cfg.solutions)`);
     else if (!hasMy(cfg.solutions[m.id].desc)) warnMy(slug, `mode "${m.id}" part 3 caption has no Burmese side`);
   }

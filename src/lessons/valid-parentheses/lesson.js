@@ -529,6 +529,44 @@ function mountStackWidget(host) {
   render();
 }
 
+/* ---------------- the approach, in brief ----------------
+ *
+ * Shown in part 2 under the approach tabs: the idea, the steps as the code
+ * takes them (named after its identifiers), and the cost with its reason. */
+
+const APPROACH = {
+  strip: {
+    idea: t("A valid string always contains an adjacent matched pair like <code>()</code>. Delete one, and the string is valid exactly when what is left is. Repeat until nothing matches.",
+        "မှန်ကန်သော string တွင် <code>()</code> ကဲ့သို့ ကပ်လျက် ကိုက်ညီသော အတွဲ အမြဲ ပါသည်။ တစ်တွဲ ဖျက်လိုက်လျှင် ကျန်သည့်အရာ မှန်မှသာ string မှန်သည်။ ကိုက်သည့်အတွဲ မကျန်မချင်း ထပ်လုပ်သည်။"),
+    steps: [
+      t("Find the first <code>i</code> where <code>chars[i]</code> and <code>chars[i + 1]</code> are an opener and its closer.",
+        "<code>chars[i]</code> နှင့် <code>chars[i + 1]</code> သည် opener နှင့် ၎င်း၏ closer ဖြစ်သော ပထမဆုံး <code>i</code> ကို ရှာသည်။"),
+      t("If there is none, stop.",
+        "မရှိလျှင် ရပ်သည်။"),
+      t("Otherwise delete that pair and search again from the start.",
+        "ရှိလျှင် ထိုအတွဲကို ဖျက်ပြီး အစမှ ပြန်ရှာသည်။"),
+      t("The string was valid if nothing is left.",
+        "ဘာမျှ မကျန်လျှင် string မှန်ကန်သည်။"),
+    ],
+    cost: t("every deletion restarts the search, so up to n/2 passes of up to n characters each.",
+        "ဖျက်တိုင်း အစမှ ပြန်ရှာသဖြင့် စာလုံး n လုံးအထိ ဖြတ်ခြင်း n/2 ကြိမ်အထိ။"),
+  },
+  stack: {
+    idea: t("A closer has to match the most recent opener that is still open, and \"most recent\" is exactly what a stack gives you.",
+        "closer တစ်ခုသည် ဖွင့်ထားဆဲ opener များအနက် နောက်ဆုံးတစ်ခုနှင့် ကိုက်ရမည်ဖြစ်ပြီး \"နောက်ဆုံး\" ကို stack က အတိအကျ ပေးသည်။"),
+    steps: [
+      t("Push every opener onto <code>stack</code>.",
+        "opener တိုင်းကို <code>stack</code> ပေါ် push လုပ်သည်။"),
+      t("On a closer, pop the top; if it is not the matching opener — or the stack was empty — return <code>false</code>.",
+        "closer တွေ့လျှင် top ကို pop လုပ်သည် — ကိုက်ညီသော opener မဟုတ်လျှင် (သို့မဟုတ် stack ဗလာဖြစ်လျှင်) <code>false</code> ကို ပြန်ပေးသည်။"),
+      t("At the end, the string is valid only if <code>stack</code> is empty.",
+        "အဆုံးတွင် <code>stack</code> ဗလာဖြစ်မှသာ string မှန်ကန်သည်။"),
+    ],
+    cost: t("one pass; the stack holds up to n openers.",
+        "တစ်ကြိမ် ဖြတ်ခြင်း — stack တွင် opener n ခုအထိ ရှိနိုင်သည်။"),
+  },
+};
+
 /* ---------------- mount ----------------
  *
  * Last in the file on purpose: mountLesson runs the widget immediately, so
@@ -590,9 +628,9 @@ mountLesson({
   languages: LANGUAGES,
   code: CODE,
   solutions: {
-    strip: { desc: t('Correct, and worth seeing work — but every deletion restarts the scan from the left, a pass per cut. Quadratic, and it passes LeetCode only because <code>n ≤ 10⁴</code>.',
+    strip: { approach: APPROACH.strip, desc: t('Correct, and worth seeing work — but every deletion restarts the scan from the left, a pass per cut. Quadratic, and it passes LeetCode only because <code>n ≤ 10⁴</code>.',
                      'မှန်သည်၊ အလုပ်လုပ်ပုံကိုလည်း မြင်ထိုက်သည် — သို့သော် ဖျက်လိုက်တိုင်း ဘယ်ဘက်မှ ပြန်စရှာရသဖြင့် ဖြတ်တိုင်း တစ်ခေါက်။ Quadratic ဖြစ်ပြီး <code>n ≤ 10⁴</code> ဖြစ်၍သာ LeetCode တွင် အောင်သည်။') },
-    stack: { desc: t('The submission worth writing. Pop before comparing, and count an empty pop as a mismatch — that one line handles a closer with nothing open.',
+    stack: { approach: APPROACH.stack, desc: t('The submission worth writing. Pop before comparing, and count an empty pop as a mismatch — that one line handles a closer with nothing open.',
                      'ရေးသင့်သည့် submission ဖြစ်သည်။ နှိုင်းယှဉ်ခြင်းမပြုမီ pop လုပ်ပါ၊ ဗလာ pop ကို မကိုက်ဟု သတ်မှတ်ပါ — ထိုတစ်ကြောင်းက ဖွင့်ထားခြင်းမရှိဘဲ ရောက်လာသော ပိတ်ကွင်းကို ကိုင်တွယ်ပေးသည်။') },
   },
   // How each language was actually checked. Printed as a badge on every

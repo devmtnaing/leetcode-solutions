@@ -573,6 +573,44 @@ function mountFilterWidget(host) {
   render();
 }
 
+/* ---------------- the approach, in brief ----------------
+ *
+ * Shown in part 2 under the approach tabs: the idea, the steps as the code
+ * takes them (named after its identifiers), and the cost with its reason. */
+
+const APPROACH = {
+  clean: {
+    idea: t("Do what the statement says, literally: keep only letters and digits, lowercase them, and compare the result with its reverse.",
+        "မေးခွန်းပြောသည့်အတိုင်း တိုက်ရိုက် လုပ်သည် — စာလုံးနှင့် ဂဏန်းများကိုသာ ထား၊ အသေးပြောင်း၊ ပြီးလျှင် ရလဒ်ကို ၎င်း၏ ပြောင်းပြန်နှင့် နှိုင်းယှဉ်သည်။"),
+    steps: [
+      t("Walk <code>s</code>, appending each letter or digit, lowercased, to <code>cleaned</code>.",
+        "<code>s</code> ကို လျှောက်ပြီး စာလုံး သို့မဟုတ် ဂဏန်း တစ်ခုစီကို အသေးပြောင်း၍ <code>cleaned</code> နောက်တွင် ဆက်သည်။"),
+      t("Make <code>reversed</code>, a reversed copy of <code>cleaned</code>.",
+        "<code>cleaned</code> ၏ ပြောင်းပြန် copy <code>reversed</code> ကို ပြုလုပ်သည်။"),
+      t("Return whether they are equal.",
+        "နှစ်ခု တူမတူကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("one pass, but two new strings as long as the input — up to 2 × 10⁵ characters each.",
+        "တစ်ကြိမ် ဖြတ်သော်လည်း input အရှည်ရှိ string အသစ် နှစ်ခု — တစ်ခုလျှင် စာလုံး 2 × 10⁵ အထိ။"),
+  },
+  twopointer: {
+    idea: t("Compare from both ends inward, skipping anything that is not a letter or digit where it stands, so nothing is copied.",
+        "အစွန်းနှစ်ဖက်မှ အတွင်းသို့ နှိုင်းယှဉ်ပြီး စာလုံး သို့မဟုတ် ဂဏန်း မဟုတ်သည့်အရာကို ရှိရာနေရာတွင်ပင် ကျော်သဖြင့် ဘာမျှ မကူးရပါ။"),
+    steps: [
+      t("Start with <code>left</code> at 0 and <code>right</code> at the last index.",
+        "<code>left</code> ကို 0 တွင်၊ <code>right</code> ကို နောက်ဆုံး index တွင် ထား၍ စသည်။"),
+      t("Move <code>left</code> forward past non-alphanumerics, and <code>right</code> backward, each guarded by <code>left &lt; right</code>.",
+        "<code>left</code> ကို ရှေ့သို့၊ <code>right</code> ကို နောက်သို့ alphanumeric မဟုတ်သည့်အရာများ ကျော်အောင် ရွှေ့သည် — တစ်ခုစီကို <code>left &lt; right</code> ဖြင့် ကာထားသည်။"),
+      t("If the two characters differ, ignoring case, return <code>false</code>.",
+        "စာလုံးအကြီးအသေး မခွဲဘဲ စာလုံးနှစ်လုံး မတူလျှင် <code>false</code> ကို ပြန်ပေးသည်။"),
+      t("Otherwise step both inward; when they meet, return <code>true</code>.",
+        "တူလျှင် နှစ်ခုလုံးကို အတွင်းသို့ တစ်ဆင့် ရွှေ့သည် — ဆုံသည့်အခါ <code>true</code> ကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("each character is visited at most once, by one pointer or the other, and two indices are kept.",
+        "စာလုံးတစ်ခုစီကို pointer တစ်ခုခုက အများဆုံး တစ်ကြိမ်သာ ရောက်ပြီး index နှစ်ခုသာ သိမ်းသည်။"),
+  },
+};
+
 /* ---------------- mount ----------------
  *
  * Last in the file on purpose: mountLesson runs the widget immediately, so
@@ -624,9 +662,9 @@ mountLesson({
   code: CODE,
   hover: { python: { reversed_: 'reversed' }, go: { c: 'ch' } },
   solutions: {
-    clean: { desc: t('The statement, transcribed: filter, lowercase, compare with the reverse. Correct and linear — it just allocates two copies of the input to produce one bit.',
+    clean: { approach: APPROACH.clean, desc: t('The statement, transcribed: filter, lowercase, compare with the reverse. Correct and linear — it just allocates two copies of the input to produce one bit.',
                      'မေးခွန်းကို တိုက်ရိုက် ကူးရေးထားခြင်း — filter လုပ်၊ အသေးပြောင်း၊ ပြောင်းပြန်နှင့် နှိုင်းယှဉ်။ မှန်ပြီး linear ဖြစ်သည် — bit တစ်ခု ထုတ်ရန် input ၏ copy နှစ်ခု ယူရုံသာ။') },
-    twopointer: { desc: t('The submission worth writing. Skip instead of filter, and give each skip loop its own <code>left &lt; right</code> guard so a string of pure punctuation cannot run a pointer off the end.',
+    twopointer: { approach: APPROACH.twopointer, desc: t('The submission worth writing. Skip instead of filter, and give each skip loop its own <code>left &lt; right</code> guard so a string of pure punctuation cannot run a pointer off the end.',
                           'ရေးသင့်သည့် submission ဖြစ်သည်။ filter မလုပ်ဘဲ ကျော်ပါ၊ သင်္ကေတချည်းသာ ပါသော string တွင် pointer အပြင်ထွက်မသွားစေရန် skip loop တစ်ခုစီတွင် <code>left &lt; right</code> စစ်ချက် ထည့်ပါ။') },
   },
   // How each language was actually checked. Printed as a badge on every

@@ -508,6 +508,44 @@ function mountWidget(host) {
   render();
 }
 
+/* ---------------- the approach, in brief ----------------
+ *
+ * Shown in part 2 under the approach tabs: the idea, the steps as the code
+ * takes them (named after its identifiers), and the cost with its reason. */
+
+const APPROACH = {
+  copy: {
+    idea: t("Build the answer somewhere else: every non-zero value in order, then zeros to fill, then copy it back into <code>nums</code>.",
+        "အဖြေကို အခြားနေရာတွင် တည်ဆောက်သည် — သုညမဟုတ်သော value တိုင်းကို အစဉ်အတိုင်း၊ ပြီးလျှင် သုညများဖြင့် ဖြည့်၊ ပြီးမှ <code>nums</code> ထဲ ပြန်ကူးသည်။"),
+    steps: [
+      t("Collect each non-zero value into <code>kept</code>.",
+        "သုညမဟုတ်သော value တစ်ခုစီကို <code>kept</code> ထဲ စုသည်။"),
+      t("Pad <code>kept</code> with zeros to the length of <code>nums</code>.",
+        "<code>kept</code> ကို <code>nums</code> ၏ အရှည်အထိ သုညဖြင့် ဖြည့်သည်။"),
+      t("Write <code>kept</code> back into <code>nums</code>, index by index.",
+        "<code>kept</code> ကို <code>nums</code> ထဲ index အလိုက် ပြန်ရေးသည်။"),
+    ],
+    cost: t("two passes and a second array as long as <code>nums</code>, which the statement's \"in-place\" asks you not to use.",
+        "နှစ်ကြိမ် ဖြတ်ပြီး <code>nums</code> အရှည်ရှိ ဒုတိယ array တစ်ခု သုံးသည် — မေးခွန်း၏ \"in-place\" က မသုံးရန် တောင်းထားသည့်အရာ ဖြစ်သည်။"),
+  },
+  twopointer: {
+    idea: t("Keep a boundary, <code>slow</code>: everything to its left is already the final answer. A second index, <code>fast</code>, scans ahead and swaps each non-zero value down to the boundary.",
+        "<code>slow</code> ဟူသော နယ်နိမိတ်တစ်ခု ထားသည် — ၎င်း၏ ဘယ်ဘက်ရှိ အရာအားလုံးသည် နောက်ဆုံးအဖြေ ဖြစ်ပြီးသား။ ဒုတိယ index <code>fast</code> က ရှေ့သို့ ရှာပြီး သုညမဟုတ်သော value တစ်ခုစီကို နယ်နိမိတ်သို့ swap ချသည်။"),
+    steps: [
+      t("Start with <code>slow = 0</code>.",
+        "<code>slow = 0</code> ဖြင့် စသည်။"),
+      t("Move <code>fast</code> from left to right, skipping zeros.",
+        "<code>fast</code> ကို ဘယ်မှ ညာသို့ ရွှေ့ပြီး သုညများကို ကျော်သည်။"),
+      t("Swap <code>nums[slow]</code> and <code>nums[fast]</code>, then move <code>slow</code> up by one.",
+        "<code>nums[slow]</code> နှင့် <code>nums[fast]</code> ကို swap လုပ်ပြီး <code>slow</code> ကို တစ်ဆင့် တိုးသည်။"),
+      t("When <code>fast</code> reaches the end, every zero has been swapped behind the boundary.",
+        "<code>fast</code> ဆုံးသွားသည့်အခါ သုညတိုင်း နယ်နိမိတ်နောက်သို့ ရောက်သွားပြီ ဖြစ်သည်။"),
+    ],
+    cost: t("one pass, one swap per non-zero value, and two indices.",
+        "တစ်ကြိမ် ဖြတ်ခြင်း၊ သုညမဟုတ်သော value တစ်ခုလျှင် swap တစ်ခု၊ index နှစ်ခု။"),
+  },
+};
+
 /* ---------------- mount ----------------
  *
  * Last in the file on purpose: mountLesson runs the widget immediately, so
@@ -559,10 +597,10 @@ mountLesson({
   languages: LANGUAGES,
   code: CODE,
   solutions: {
-    copy: { desc: t(
+    copy: { approach: APPROACH.copy, desc: t(
       'Collect every non-zero value in a second array, pad with zeros, then write it back. Returns the right answer but spends the <code>O(n)</code> memory the problem asked you not to.',
       'Non-zero တန်ဖိုးတိုင်းကို ဒုတိယ array တစ်ခုထဲ စုဆောင်း၊ သုညများ ဖြည့်၊ ပြီးမှ ပြန်ရေးသည်။ အဖြေ မှန်သော်လည်း မေးခွန်းက မသုံးရန် တောင်းဆိုထားသည့် <code>O(n)</code> memory ကို သုံးထားသည်။') },
-    twopointer: { desc: t(
+    twopointer: { approach: APPROACH.twopointer, desc: t(
       'The submission worth writing. <code>slow</code> is a boundary, not an index — everything to its left is correct and never touched again. Swap a non-zero value down to <code>slow</code> and advance both pointers.',
       'ရေးသင့်သည့် submission ဖြစ်သည်။ <code>slow</code> သည် index မဟုတ်ဘဲ boundary ဖြစ်သည် — ၎င်း၏ ဘယ်ဘက်ရှိ အားလုံးသည် မှန်ကန်ပြီး နောက်ထပ် ထိတော့မည် မဟုတ်။ Non-zero တစ်လုံးကို <code>slow</code> သို့ swap ချပြီး pointer နှစ်ခုလုံး ရှေ့သို့ တိုးသည်။') },
   },

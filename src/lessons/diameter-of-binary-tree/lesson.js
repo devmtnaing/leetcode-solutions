@@ -573,6 +573,48 @@ function atLeastOne(text) {
   return level;
 }
 
+/* ---------------- the approach, in brief ----------------
+ *
+ * Shown in part 2 under the approach tabs: the idea, the steps as the code
+ * takes them (named after its identifiers), and the cost with its reason. */
+
+const APPROACH = {
+  brute: {
+    idea: t("Every path has a highest node where it bends, and the longest path bending at a node is its left height plus its right height. Try that at every node.",
+        "လမ်းကြောင်းတိုင်းတွင် ကွေ့ရာ အမြင့်ဆုံး node တစ်ခု ရှိပြီး node တစ်ခုတွင် ကွေ့သော အရှည်ဆုံး လမ်းကြောင်းသည် ၎င်း၏ ဘယ် height နှင့် ညာ height ပေါင်းလဒ် ဖြစ်သည်။ node တိုင်းတွင် စမ်းသည်။"),
+    steps: [
+      t("An empty tree has no path: return 0.",
+        "ဗလာ tree တွင် လမ်းကြောင်း မရှိ — 0 ကို ပြန်ပေးသည်။"),
+      t("Measure <code>lh</code> and <code>rh</code>, the heights of the two subtrees, each with its own <code>height</code> walk.",
+        "subtree နှစ်ခု၏ height <code>lh</code> နှင့် <code>rh</code> ကို <code>height</code> ဖြင့် သီးခြားစီ လျှောက်၍ တိုင်းသည်။"),
+      t("Find <code>left</code> and <code>right</code>, the diameters inside each subtree.",
+        "subtree တစ်ခုစီအတွင်းရှိ diameter <code>left</code> နှင့် <code>right</code> ကို ရှာသည်။"),
+      t("Return the largest of <code>lh + rh</code>, <code>left</code> and <code>right</code>.",
+        "<code>lh + rh</code>၊ <code>left</code> နှင့် <code>right</code> အနက် အကြီးဆုံးကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("<code>height</code> re-walks each subtree once for every ancestor: 100,010,000 calls on a 10⁴-node chain.",
+        "<code>height</code> သည် subtree တစ်ခုစီကို ancestor တစ်ခုလျှင် တစ်ကြိမ် ပြန်လျှောက်သည် — node 10⁴ ကွင်းဆက်တွင် call 100,010,000။"),
+  },
+  dfs: {
+    idea: t("A height recursion already has both children's heights in hand at every node, and their sum is the path that bends there. Record the best sum while returning heights.",
+        "height recursion တွင် node တိုင်း၌ ကလေးနှစ်ခု၏ height ရှိပြီးသား ဖြစ်ပြီး ၎င်းတို့၏ ပေါင်းလဒ်သည် ထိုနေရာတွင် ကွေ့သော လမ်းကြောင်း ဖြစ်သည်။ height များ ပြန်ပေးရင်း အကောင်းဆုံး ပေါင်းလဒ်ကို မှတ်သည်။"),
+    steps: [
+      t("Start with <code>best = 0</code> and call <code>height(root)</code>.",
+        "<code>best = 0</code> ဖြင့် စပြီး <code>height(root)</code> ကို ခေါ်သည်။"),
+      t("In <code>height</code>, an empty node has height 0.",
+        "<code>height</code> ထဲတွင် ဗလာ node ၏ height မှာ 0။"),
+      t("Get <code>left</code> and <code>right</code>, then set <code>best</code> to the larger of <code>best</code> and <code>left + right</code>.",
+        "<code>left</code> နှင့် <code>right</code> ကို ရယူပြီး <code>best</code> ကို <code>best</code> နှင့် <code>left + right</code> အနက် ကြီးသည့်တစ်ခု ဖြစ်စေသည်။"),
+      t("Return 1 plus the larger of <code>left</code> and <code>right</code>: only one side can continue up.",
+        "<code>left</code> နှင့် <code>right</code> အနက် ကြီးသည့်တစ်ခုကို 1 ပေါင်း၍ ပြန်ပေးသည် — ဘက်တစ်ဘက်သာ အပေါ်ဆက်တက်နိုင်သည်။"),
+      t("The answer is <code>best</code>.",
+        "အဖြေမှာ <code>best</code> ဖြစ်သည်။"),
+    ],
+    cost: t("every node visited once: 20,001 calls on the same chain, counting the ones on null.",
+        "node တိုင်းကို တစ်ကြိမ်သာ ရောက်သည် — ထိုကွင်းဆက်တွင်ပင် null ပေါ်ရှိ call များပါ call 20,001။"),
+  },
+};
+
 /* ---------------- mount ----------------
  *
  * Last in the file on purpose: mountLesson runs the widget immediately, so
@@ -613,9 +655,9 @@ mountLesson({
   languages: LANGUAGES,
   code: CODE,
   solutions: {
-    brute: { desc: t('The definition, checked at every node: the longest path bends here or lies below. Correct, but height() re-walks each subtree once for every ancestor — about 10⁸ calls on a 10⁴-node chain.',
+    brute: { approach: APPROACH.brute, desc: t('The definition, checked at every node: the longest path bends here or lies below. Correct, but height() re-walks each subtree once for every ancestor — about 10⁸ calls on a 10⁴-node chain.',
                      'အဓိပ္ပာယ်ကို node တိုင်းတွင် စစ်ခြင်း — အရှည်ဆုံး လမ်းကြောင်းသည် ဤနေရာတွင် ကွေ့သည် သို့မဟုတ် အောက်တွင် ရှိသည်။ မှန်သည်၊ သို့သော် height() သည် subtree တစ်ခုစီကို ၎င်း၏ ancestor တစ်ခုလျှင် တစ်ကြိမ် ပြန်လျှောက်သည် — node 10⁴ ကွင်းဆက်တွင် call 10⁸ ခန့်။') },
-    dfs: { desc: t('Maximum Depth\'s recursion with one extra line: a node already has both children\'s heights when it returns, and their sum is the path that bends there. Each node is visited once.',
+    dfs: { approach: APPROACH.dfs, desc: t('Maximum Depth\'s recursion with one extra line: a node already has both children\'s heights when it returns, and their sum is the path that bends there. Each node is visited once.',
                    'Maximum Depth ၏ recursion ကို စာကြောင်း တစ်ကြောင်း ထပ်ထည့်ထားခြင်း — node တစ်ခု ပြန်ပေးချိန်တွင် ကလေးနှစ်ခု၏ height ရှိပြီးသား ဖြစ်ပြီး ၎င်းတို့၏ ပေါင်းလဒ်သည် ထိုနေရာတွင် ကွေ့သော လမ်းကြောင်း ဖြစ်သည်။ node တစ်ခုစီကို တစ်ကြိမ်သာ ရောက်သည်။') },
   },
   // How each language was actually checked, printed as the part 3 badges.

@@ -513,6 +513,44 @@ function mountWidget(host) {
   render();
 }
 
+/* ---------------- the approach, in brief ----------------
+ *
+ * Shown in part 2 under the approach tabs: the idea, the steps as the code
+ * takes them (named after its identifiers), and the cost with its reason. */
+
+const APPROACH = {
+  sort: {
+    idea: t("Two strings are anagrams exactly when they hold the same letters the same number of times, and sorting turns equal collections of letters into equal strings.",
+        "string နှစ်ခုသည် စာလုံးတူကို အကြိမ်ရေ တူတူ ပါမှသာ anagram ဖြစ်ပြီး sort လုပ်ခြင်းက စာလုံး အစုတူများကို string တူများ ဖြစ်စေသည်။"),
+    steps: [
+      t("If the lengths differ, return <code>false</code>.",
+        "အရှည် မတူလျှင် <code>false</code> ကို ပြန်ပေးသည်။"),
+      t("Sort the characters of <code>s</code> into <code>a</code>, and of <code>t</code> into <code>b</code>.",
+        "<code>s</code> ၏ စာလုံးများကို sort လုပ်၍ <code>a</code>၊ <code>t</code> ၏ စာလုံးများကို <code>b</code> ထဲ ထည့်သည်။"),
+      t("Return whether <code>a</code> equals <code>b</code>.",
+        "<code>a</code> နှင့် <code>b</code> တူမတူကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("two sorts of up to 5 × 10⁴ characters, and a sorted copy of each string.",
+        "စာလုံး 5 × 10⁴ အထိ sort နှစ်ကြိမ်နှင့် string တစ်ခုစီ၏ sort လုပ်ထားသော copy။"),
+  },
+  count: {
+    idea: t("Count instead of sorting: add one for every letter of <code>s</code> and take one away for every letter of <code>t</code>. Anagrams bring every count back to zero.",
+        "sort မလုပ်ဘဲ ရေတွက်သည် — <code>s</code> ၏ စာလုံးတိုင်းအတွက် တစ်ပေါင်းပြီး <code>t</code> ၏ စာလုံးတိုင်းအတွက် တစ်နုတ်သည်။ anagram ဖြစ်လျှင် count တိုင်း သုညသို့ ပြန်ရောက်သည်။"),
+    steps: [
+      t("If the lengths differ, return <code>false</code>.",
+        "အရှည် မတူလျှင် <code>false</code> ကို ပြန်ပေးသည်။"),
+      t("Walk <code>s</code>: <code>count[ch] += 1</code>.",
+        "<code>s</code> ကို လျှောက်သည် — <code>count[ch] += 1</code>။"),
+      t("Walk <code>t</code>: <code>count[ch] −= 1</code>, and return <code>false</code> the moment a count drops below zero.",
+        "<code>t</code> ကို လျှောက်သည် — <code>count[ch] −= 1</code>၊ count တစ်ခု သုညအောက် ရောက်သည်နှင့် <code>false</code> ကို ပြန်ပေးသည်။"),
+      t("If <code>t</code> finishes, return <code>true</code>: with equal lengths, nothing can be left over.",
+        "<code>t</code> ဆုံးသွားလျှင် <code>true</code> ကို ပြန်ပေးသည် — အရှည် တူသဖြင့် ဘာမျှ ပိုမကျန်နိုင်ပါ။"),
+    ],
+    cost: t("each string is read once, and the table has at most 26 rows, one per lowercase letter.",
+        "string တစ်ခုစီကို တစ်ကြိမ်သာ ဖတ်ပြီး table တွင် စာလုံးအသေး တစ်လုံးလျှင် row တစ်ခု၊ အများဆုံး row 26 ခုသာ ရှိသည်။"),
+  },
+};
+
 /* ---------------- mount ---------------- */
 
 const word = (v) => {
@@ -594,9 +632,9 @@ mountLesson({
   languages: LANGUAGES,
   code: CODE,
   solutions: {
-    sort: { desc: t('Sort a copy of each string, then compare. Three lines, hard to get wrong, and the only approach that handles Unicode without an edit.',
+    sort: { approach: APPROACH.sort, desc: t('Sort a copy of each string, then compare. Three lines, hard to get wrong, and the only approach that handles Unicode without an edit.',
                     'စာကြောင်းနှစ်ခုစလုံး၏ မိတ္တူကို sort လုပ်ပြီး နှိုင်းယှဉ်သည်။ သုံးကြောင်းသာ ရှိပြီး မှားရန် ခက်သည်။ Unicode ကို ဘာမှ မပြင်ဘဲ ရင်ဆိုင်နိုင်သည့် တစ်ခုတည်းသော နည်းလည်း ဖြစ်သည်။') },
-    count: { desc: t('Walk s and add to a count table, walk t and subtract. The moment a row goes below zero, return false — no recovery possible.',
+    count: { approach: APPROACH.count, desc: t('Walk s and add to a count table, walk t and subtract. The moment a row goes below zero, return false — no recovery possible.',
                     's ကို လျှောက်ပြီး ရေတွက်ဇယားတွင် တိုးသည်၊ t ကို လျှောက်ပြီး နုတ်သည်။ အတန်းတစ်ခု သုညအောက် ရောက်သည်နှင့် false ပြန်လိုက်သည် — ပြန်တက်လာနိုင်မည် မဟုတ်ပါ။') },
   },
   // How each language was actually checked, printed as the part 3 badges.

@@ -475,6 +475,46 @@ function mountMirrorWidget(host) {
   render();
 }
 
+/* ---------------- the approach, in brief ----------------
+ *
+ * Shown in part 2 under the approach tabs: the idea, the steps as the code
+ * takes them (named after its identifiers), and the cost with its reason. */
+
+const APPROACH = {
+  dfs: {
+    idea: t("Inverting a tree means swapping every node's children. Swap at the root, then invert each subtree the same way.",
+        "tree ကို invert လုပ်ခြင်းဆိုသည်မှာ node တိုင်း၏ ကလေးများကို swap လုပ်ခြင်း ဖြစ်သည်။ root တွင် swap လုပ်ပြီး subtree တစ်ခုစီကို အလားတူ invert လုပ်သည်။"),
+    steps: [
+      t("An empty subtree is already inverted: return <code>nil</code>.",
+        "ဗလာ subtree သည် invert ပြီးသား ဖြစ်သည် — <code>nil</code> ကို ပြန်ပေးသည်။"),
+      t("Swap <code>root.left</code> and <code>root.right</code>.",
+        "<code>root.left</code> နှင့် <code>root.right</code> ကို swap လုပ်သည်။"),
+      t("Invert the left subtree, then the right.",
+        "ဘယ် subtree ကို invert လုပ်ပြီးမှ ညာကို လုပ်သည်။"),
+      t("Return <code>root</code>.",
+        "<code>root</code> ကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("one visit per node; the stack grows with the height — 101 frames for the 100-node chain the constraints allow.",
+        "node တစ်ခုလျှင် တစ်ကြိမ် ရောက်သည် — stack သည် အမြင့်နှင့်အမျှ ကြီးသည်၊ ကန့်သတ်ချက်က ခွင့်ပြုသော node 100 ကွင်းဆက်အတွက် frame 101။"),
+  },
+  bfs: {
+    idea: t("The same swaps without recursion: keep a queue of nodes still to swap, and work through it level by level.",
+        "recursion မပါဘဲ swap အတူတူ — swap လုပ်ရန် ကျန်သော node များ၏ queue ကို ထားပြီး အဆင့်လိုက် ဆောင်ရွက်သည်။"),
+    steps: [
+      t("Start with a <code>queue</code> holding the root, or nothing for an empty tree.",
+        "root ပါသော <code>queue</code> ဖြင့် စသည် — ဗလာ tree ဆိုလျှင် ဘာမျှ မပါ။"),
+      t("Take the front <code>node</code> and swap its children.",
+        "ရှေ့ဆုံး <code>node</code> ကို ယူပြီး ၎င်း၏ ကလေးများကို swap လုပ်သည်။"),
+      t("Put its children, if any, at the back of the queue.",
+        "ကလေးများ ရှိလျှင် queue ၏ နောက်ဆုံးတွင် ထည့်သည်။"),
+      t("When the queue is empty, return <code>root</code>.",
+        "queue ဗလာ ဖြစ်သည့်အခါ <code>root</code> ကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("one visit per node; the queue grows with the widest level instead of the height.",
+        "node တစ်ခုလျှင် တစ်ကြိမ် ရောက်သည် — queue သည် အမြင့်အစား အကျယ်ဆုံး အဆင့်နှင့်အမျှ ကြီးသည်။"),
+  },
+};
+
 /* ---------------- mount ----------------
  *
  * Last in the file on purpose: mountLesson runs the widget immediately, so
@@ -517,9 +557,9 @@ mountLesson({
   languages: LANGUAGES,
   code: CODE,
   solutions: {
-    dfs: { desc: t('Three lines of real work: swap, recurse left, recurse right. Its stack grows with the height of the tree — 101 frames for the 100-node chain the constraints allow, counting the final call on null.',
+    dfs: { approach: APPROACH.dfs, desc: t('Three lines of real work: swap, recurse left, recurse right. Its stack grows with the height of the tree — 101 frames for the 100-node chain the constraints allow, counting the final call on null.',
                    'တကယ် အလုပ်လုပ်သည့် စာကြောင်း သုံးကြောင်း — လဲ၊ ဘယ်သို့ recurse၊ ညာသို့ recurse။ stack သည် tree ၏ အမြင့်နှင့်အမျှ ကြီးသည် — ကန့်သတ်ချက်က ခွင့်ပြုသော node 100 ကွင်းဆက်အတွက် frame 101 (null ပေါ်ရှိ နောက်ဆုံး call ပါ)။') },
-    bfs: { desc: t('The same swaps with no recursion. Its queue grows with the widest level instead — the right trade when the tree is deep rather than wide.',
+    bfs: { approach: APPROACH.bfs, desc: t('The same swaps with no recursion. Its queue grows with the widest level instead — the right trade when the tree is deep rather than wide.',
                    'recursion မပါဘဲ လဲခြင်း အတူတူ။ ၎င်း၏ queue သည် အကျယ်ဆုံး အဆင့်နှင့်အမျှ ကြီးသည် — tree သည် ကျယ်ခြင်းထက် နက်သည့်အခါ မှန်ကန်သော ရွေးချယ်မှု။') },
   },
   // How each language was actually checked, printed as the part 3 badges.

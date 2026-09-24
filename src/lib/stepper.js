@@ -122,15 +122,6 @@ export function mountLesson(cfg) {
   /* ---------------- markup ---------------- */
 
   function shell() {
-    const modeCards = cfg.modes.map((m) => `
-      <button class="mode-card" role="tab" data-mode="${m.id}" aria-selected="${m.id === state.mode}">
-        <span class="mode-mark" aria-hidden="true"></span>
-        <span class="mode-body">
-          <span class="mode-name">${esc(pick(m.name))}${m.sub ? ` <span class="sub-name">&middot; ${esc(pick(m.sub))}</span>` : ''}</span>
-          <span class="mode-desc">${esc(pick(m.desc ?? m.blurb ?? ''))}</span>
-        </span>
-      </button>`).join('');
-
     const fields = (cfg.controls || []).map((c) => `
       <div class="field">
         <label for="f-${c.key}">${esc(pick(c.label))}</label>
@@ -151,70 +142,13 @@ export function mountLesson(cfg) {
         `<button class="lang" role="tab" data-lang="${l.id}" aria-selected="${l.id === state.lang}">${esc(l.name)}</button>`).join('')}
       </div>`;
 
-    if (root.dataset.layout === 'sections') return sectionsShell({ fields, presets, langBar });
-
-    return `
-      <div class="mode-pick">
-        <span class="pick-label">${esc(pick(UI.pick))}</span>
-        <div class="mode-cards" role="tablist" style="--modes:${cfg.modes.length}">${modeCards}</div>
-        <div data-approach></div>
-      </div>
-
-      <div class="controls">${fields}${presets}
-        <p class="warn" data-warn hidden></p>
-      </div>
-
-      ${cfg.strip ? `
-      <div class="strip-card">
-        <div class="strip-head">
-          <h2>${esc(pick(cfg.stripLabel ?? UI.array))}</h2>
-          <span class="op mono" data-op>${esc(pick(UI.ready))}</span>
-        </div>
-        <div class="strip" data-strip></div>
-      </div>` : ''}
-
-      <div class="transport">
-        <button class="btn" data-act="prev">${esc(pick(UI.back))}</button>
-        <button class="btn primary" data-act="play">${esc(pick(UI.play))}</button>
-        <button class="btn" data-act="next">${esc(pick(UI.next))}</button>
-        <input type="range" data-scrub min="0" max="0" value="0" aria-label="${esc(pick(UI.scrub))}">
-        <span class="counter" data-count>0 / 0</span>
-      </div>
-
-      <div class="narration">
-        <span class="tag" data-tag>${esc(pick(UI.step))}</span>
-        <p class="text" data-note></p>
-      </div>
-
-      <div class="bench">
-        <div class="col">
-          <div class="panel" data-stage></div>
-          ${cfg.answer ? `
-          <div class="strip-card answer-card">
-            <div class="strip-head">
-              <h2>${esc(pick(cfg.answerLabel ?? UI.answer))}</h2>
-              <span class="note mono" data-ans-note></span>
-            </div>
-            <div class="answer-row" data-answer></div>
-          </div>` : ''}
-        </div>
-        <div class="panel">
-          <div class="panel-head">
-            <h2>${esc(pick(UI.codeLive))}</h2>
-            <span class="note" data-code-label></span>
-          </div>
-          ${langBar(' mini')}
-          <div class="code" data-code></div>
-          <p class="code-sub" data-code-sub hidden></p>
-        </div>
-      </div>`;
+    return sectionsShell({ fields, presets, langBar });
   }
 
-  /* The sectioned layout (page.js: layout: 'sections'). The same pieces and
-   * the same data-* hooks as shell(), grouped into two sub-sections: the
-   * approach as a tab with its explanation attached, then one player card
-   * holding everything the walkthrough needs, divided by rules rather than
-   * boxed separately. */
+  /* Part 2's interactive half, as two sub-sections: 2·1 the approach as a tab
+   * with its explanation attached, then 2·2 one player card holding
+   * everything the walkthrough needs, divided by rules rather than boxed
+   * separately. (2·3, going deeper, is static and lives in Walkthrough.astro.) */
   function sectionsShell({ fields, presets, langBar }) {
     const tabs = cfg.modes.map((m) => `
       <button class="atab" role="tab" data-mode="${m.id}" aria-selected="${m.id === state.mode}">

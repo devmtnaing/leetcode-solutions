@@ -478,6 +478,60 @@ function mountLastMoveWidget(host) {
   render();
 }
 
+/* ---------------- the approach, in brief ----------------
+ *
+ * Shown in part 2 under the approach tabs: the idea, the steps as the code
+ * takes them (named after its identifiers), and the cost with its reason. */
+
+const APPROACH = {
+  naive: {
+    idea: t("Every climb ends with a 1-step or a 2-step, so the ways to reach step n are the ways to reach n − 1 plus the ways to reach n − 2.",
+        "climb တိုင်းသည် 1-step သို့မဟုတ် 2-step ဖြင့် ဆုံးသဖြင့် step n သို့ ရောက်ရန် နည်းများမှာ n − 1 သို့ ရောက်ရန် နည်းများနှင့် n − 2 သို့ ရောက်ရန် နည်းများ ပေါင်းလဒ် ဖြစ်သည်။"),
+    steps: [
+      t("Steps 0 and 1 have one way each: return 1.",
+        "step 0 နှင့် 1 တွင် နည်း တစ်နည်းစီ ရှိသည် — 1 ကို ပြန်ပေးသည်။"),
+      t("<code>one</code> = the ways to reach n − 1.",
+        "<code>one</code> = n − 1 သို့ ရောက်ရန် နည်းများ။"),
+      t("<code>two</code> = the ways to reach n − 2.",
+        "<code>two</code> = n − 2 သို့ ရောက်ရန် နည်းများ။"),
+      t("Return <code>one + two</code>.",
+        "<code>one + two</code> ကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("small steps are worked out again in every branch: 3,672,623,805 calls at n = 45.",
+        "step ငယ်များကို branch တိုင်းတွင် ပြန်တွက်သည် — n = 45 တွင် call 3,672,623,805။"),
+  },
+  memo: {
+    idea: t("The same recurrence, but each answer is remembered the first time it is worked out, so no step is computed twice.",
+        "recurrence အတူတူ၊ သို့သော် အဖြေတစ်ခုစီကို ပထမဆုံး တွက်သည့်အခါ မှတ်ထားသဖြင့် step တစ်ခုကို နှစ်ခါ မတွက်ရပါ။"),
+    steps: [
+      t("Steps 0 and 1 have one way each.",
+        "step 0 နှင့် 1 တွင် နည်း တစ်နည်းစီ ရှိသည်။"),
+      t("If <code>memo</code> already has n, return it.",
+        "<code>memo</code> တွင် n ရှိပြီးသားဆိုလျှင် ၎င်းကို ပြန်ပေးသည်။"),
+      t("Otherwise work out <code>one</code> and <code>two</code> as before.",
+        "မရှိလျှင် ယခင်အတိုင်း <code>one</code> နှင့် <code>two</code> ကို တွက်သည်။"),
+      t("Store <code>one + two</code> in <code>memo[n]</code> and return it.",
+        "<code>one + two</code> ကို <code>memo[n]</code> တွင် သိမ်းပြီး ပြန်ပေးသည်။"),
+    ],
+    cost: t("each step is worked out once: 89 calls at n = 45, and a table of 44 entries.",
+        "step တစ်ခုစီကို တစ်ကြိမ်သာ တွက်သည် — n = 45 တွင် call 89 နှင့် entry 44 ခုရှိ table။"),
+  },
+  dp: {
+    idea: t("Each step needs only the two below it, so climb from the bottom holding just those two numbers.",
+        "step တစ်ခုစီသည် ၎င်းအောက်ရှိ နှစ်ခုကိုသာ လိုသဖြင့် ထိုကိန်းနှစ်ခုကိုသာ ကိုင်၍ အောက်ခြေမှ တက်သည်။"),
+    steps: [
+      t("Start with <code>a = 1</code> and <code>b = 1</code>: the ways to reach steps 0 and 1.",
+        "<code>a = 1</code> နှင့် <code>b = 1</code> ဖြင့် စသည် — step 0 နှင့် 1 သို့ ရောက်ရန် နည်းများ။"),
+      t("Repeat n − 1 times: <code>a, b = b, a + b</code>.",
+        "n − 1 ကြိမ် ထပ်လုပ်သည် — <code>a, b = b, a + b</code>။"),
+      t("Return <code>b</code>.",
+        "<code>b</code> ကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("n − 1 additions and two integers: 44 additions at n = 45.",
+        "ပေါင်းခြင်း n − 1 ကြိမ်နှင့် integer နှစ်ခု — n = 45 တွင် ပေါင်းခြင်း 44 ကြိမ်။"),
+  },
+};
+
 /* ---------------- mount ----------------
  *
  * Last in the file on purpose: mountLesson runs the widget immediately, so
@@ -522,11 +576,11 @@ mountLesson({
   languages: LANGUAGES,
   code: CODE,
   solutions: {
-    naive: { desc: t('The recurrence, written straight down. Correct for every n, and exponential: n = 45 makes 3,672,623,805 calls because the small steps are recomputed inside every branch.',
+    naive: { approach: APPROACH.naive, desc: t('The recurrence, written straight down. Correct for every n, and exponential: n = 45 makes 3,672,623,805 calls because the small steps are recomputed inside every branch.',
                      'recurrence ကို တိုက်ရိုက် ချရေးခြင်း။ n တိုင်းအတွက် မှန်ပြီး exponential ဖြစ်သည် — step ငယ်များကို branch တိုင်းအတွင်း ပြန်တွက်သဖြင့် n = 45 သည် call 3,672,623,805 ခု ဖြစ်စေသည်။') },
-    memo: { desc: t('The same recursion with a table in front of it: each step is worked out once and looked up after that — 89 calls for n = 45.',
+    memo: { approach: APPROACH.memo, desc: t('The same recursion with a table in front of it: each step is worked out once and looked up after that — 89 calls for n = 45.',
                     'ရှေ့တွင် table တစ်ခုပါသော recursion အတူတူ — step တစ်ခုစီကို တစ်ကြိမ် တွက်ပြီး နောက်ပိုင်း ရှာဖတ်သည် — n = 45 အတွက် call 89 ခု။') },
-    dp: { desc: t('Each step only needs the two below it, so walk up from step 1 carrying just those two. No recursion, no table: 44 additions for n = 45.',
+    dp: { approach: APPROACH.dp, desc: t('Each step only needs the two below it, so walk up from step 1 carrying just those two. No recursion, no table: 44 additions for n = 45.',
                   'step တစ်ခုစီသည် ၎င်းအောက်ရှိ နှစ်ခုကိုသာ လိုသဖြင့် step 1 မှ ထိုနှစ်ခုကိုသာ သယ်၍ တက်သည်။ recursion မရှိ၊ table မရှိ — n = 45 အတွက် ပေါင်းခြင်း 44 ကြိမ်။') },
   },
   // How each language was actually checked, printed as the part 3 badges.

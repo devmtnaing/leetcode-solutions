@@ -542,6 +542,46 @@ function mountTradeWidget(host) {
   render();
 }
 
+/* ---------------- the approach, in brief ----------------
+ *
+ * Shown in part 2 under the approach tabs: the idea, the steps as the code
+ * takes them (named after its identifiers), and the cost with its reason. */
+
+const APPROACH = {
+  brute: {
+    idea: t("Every trade is a buy day followed by a later sell day, so price every such pair and keep the best profit. Doing nothing is allowed, so the best starts at 0.",
+        "အရောင်းအဝယ်တိုင်းသည် ဝယ်သည့်နေ့နှင့် နောက်ကျသော ရောင်းသည့်နေ့ အတွဲ ဖြစ်သဖြင့် ထိုအတွဲတိုင်း၏ အမြတ်ကို တွက်ပြီး အကောင်းဆုံးကို ထားသည်။ ဘာမှ မလုပ်ဘဲ နေခြင်းကို ခွင့်ပြုသဖြင့် best ကို 0 မှ စသည်။"),
+    steps: [
+      t("Start with <code>best = 0</code>.",
+        "<code>best = 0</code> ဖြင့် စသည်။"),
+      t("For each <code>buy</code> day, try each <code>sell</code> day after it.",
+        "<code>buy</code> နေ့ တစ်ခုစီအတွက် ၎င်းနောက်ရှိ <code>sell</code> နေ့ တစ်ခုစီကို စမ်းသည်။"),
+      t("Work out <code>gain = prices[sell] − prices[buy]</code>; if it beats <code>best</code>, keep it.",
+        "<code>gain = prices[sell] − prices[buy]</code> ကို တွက်ပြီး <code>best</code> ထက် ကြီးလျှင် ထားသည်။"),
+      t("Return <code>best</code>.",
+        "<code>best</code> ကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("n(n − 1)/2 trades, which is 4,999,950,000 at the n = 10⁵ constraint; only <code>best</code> is stored.",
+        "အရောင်းအဝယ် n(n − 1)/2 ခု — ကန့်သတ်ချက် n = 10⁵ တွင် 4,999,950,000။ <code>best</code> တစ်ခုတည်းကိုသာ သိမ်းသည်။"),
+  },
+  onepass: {
+    idea: t("The best sale on any day is that day's price minus the cheapest price before it. So walk once, remembering the cheapest price so far and the best profit so far.",
+        "မည်သည့်နေ့၏ အကောင်းဆုံး ရောင်းခြင်းမဆို ထိုနေ့ဈေးမှ ၎င်းမတိုင်မီ ဈေးအသက်သာဆုံးကို နုတ်ခြင်း ဖြစ်သည်။ ထို့ကြောင့် ယခုထိ ဈေးအသက်သာဆုံးနှင့် ယခုထိ အကောင်းဆုံး အမြတ်ကို မှတ်ရင်း တစ်ကြိမ်တည်း လျှောက်သည်။"),
+    steps: [
+      t("Start with <code>best = 0</code> and <code>cheapest = ∞</code>, so day 0 needs no special case.",
+        "<code>best = 0</code> နှင့် <code>cheapest = ∞</code> ဖြင့် စသဖြင့် နေ့ 0 အတွက် သီးသန့် မစစ်ရပါ။"),
+      t("If a <code>price</code> is below <code>cheapest</code>, it becomes the new <code>cheapest</code>.",
+        "<code>price</code> သည် <code>cheapest</code> ထက် နည်းလျှင် ၎င်းသည် <code>cheapest</code> အသစ် ဖြစ်လာသည်။"),
+      t("Otherwise, if <code>price − cheapest</code> beats <code>best</code>, that is the new <code>best</code>.",
+        "မဟုတ်လျှင် <code>price − cheapest</code> သည် <code>best</code> ထက် ကြီးပါက ၎င်းသည် <code>best</code> အသစ် ဖြစ်သည်။"),
+      t("Return <code>best</code>.",
+        "<code>best</code> ကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("each price is read once, and two numbers are kept however long the list is.",
+        "ဈေးတစ်ခုစီကို တစ်ကြိမ်သာ ဖတ်ပြီး စာရင်း မည်မျှ ရှည်ရှည် ကိန်းနှစ်ခုသာ သိမ်းသည်။"),
+  },
+};
+
 /* ---------------- mount ----------------
  *
  * Last in the file on purpose: mountLesson runs the widget immediately, so
@@ -590,10 +630,10 @@ mountLesson({
       cost: 'O(n) time · O(1) space', build: buildOnePass },
   ],
   solutions: {
-    brute: { desc: t(
+    brute: { approach: APPROACH.brute, desc: t(
       'Two nested loops, <code>sell</code> always after <code>buy</code> so no element pairs with itself. Correct, and quadratic.',
       'Loop နှစ်ထပ်၊ element တစ်ခု သူ့ကိုယ်သူ မတွဲမိစေရန် <code>sell</code> ကို <code>buy</code> ၏ နောက်မှသာ စသည်။ မှန်သည်၊ သို့သော် quadratic ဖြစ်သည်။') },
-    onepass: { desc: t(
+    onepass: { approach: APPROACH.onepass, desc: t(
       'The submission worth writing. One walk, two variables — <code>cheapest</code> starts at ∞ so day 0 needs no special case.',
       'ရေးသင့်သည့် submission ဖြစ်သည်။ တစ်ခေါက်တည်း၊ variable နှစ်လုံး — <code>cheapest</code> ကို ∞ ဖြင့် စတင်သဖြင့် နေ့ 0 အတွက် သီးသန့် စစ်ဆေးစရာ မလိုပါ။') },
   },

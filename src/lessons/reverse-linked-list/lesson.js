@@ -611,6 +611,46 @@ function mountRewireWidget(host) {
   render();
 }
 
+/* ---------------- the approach, in brief ----------------
+ *
+ * Shown in part 2 under the approach tabs: the idea, the steps as the code
+ * takes them (named after its identifiers), and the cost with its reason. */
+
+const APPROACH = {
+  iterative: {
+    idea: t("Walk the list once, turning each <code>next</code> pointer around to point at the node before it.",
+        "list ကို တစ်ကြိမ် လျှောက်ပြီး <code>next</code> pointer တစ်ခုစီကို ၎င်းရှေ့ရှိ node ဘက်သို့ လှည့်ညွှန်စေသည်။"),
+    steps: [
+      t("Start with <code>prev = nil</code> and <code>curr = head</code>.",
+        "<code>prev = nil</code> နှင့် <code>curr = head</code> ဖြင့် စသည်။"),
+      t("Save <code>nxt = curr.next</code> before touching it.",
+        "မထိမီ <code>nxt = curr.next</code> ကို သိမ်းထားသည်။"),
+      t("Point <code>curr.next</code> at <code>prev</code>.",
+        "<code>curr.next</code> ကို <code>prev</code> သို့ ညွှန်စေသည်။"),
+      t("Move <code>prev</code> to <code>curr</code> and <code>curr</code> to <code>nxt</code>; when <code>curr</code> runs off the end, <code>prev</code> is the new head.",
+        "<code>prev</code> ကို <code>curr</code> သို့၊ <code>curr</code> ကို <code>nxt</code> သို့ ရွှေ့သည် — <code>curr</code> အဆုံးကျော်သွားသည့်အခါ <code>prev</code> သည် head အသစ် ဖြစ်သည်။"),
+    ],
+    cost: t("one pass and three pointers; no node is created.",
+        "တစ်ကြိမ် ဖြတ်ခြင်းနှင့် pointer သုံးခု — node အသစ် မဖန်တီးပါ။"),
+  },
+  recursive: {
+    idea: t("Reverse the rest of the list first, then attach the current node to its end. The call stack remembers the way back.",
+        "list ၏ ကျန်အပိုင်းကို အရင် ပြောင်းပြန်လုပ်ပြီးမှ လက်ရှိ node ကို ၎င်း၏ အဆုံးတွင် တပ်သည်။ ပြန်လမ်းကို call stack က မှတ်ထားသည်။"),
+    steps: [
+      t("A list of zero or one node is its own reverse: return <code>head</code>.",
+        "node သုည သို့မဟုတ် တစ်ခုရှိ list သည် ၎င်းကိုယ်တိုင်၏ ပြောင်းပြန် ဖြစ်သည် — <code>head</code> ကို ပြန်ပေးသည်။"),
+      t("Reverse from <code>head.next</code> onward; the result, <code>new_head</code>, is the old tail.",
+        "<code>head.next</code> မှ စ၍ ပြောင်းပြန်လုပ်သည် — ရလဒ် <code>new_head</code> သည် tail အဟောင်း ဖြစ်သည်။"),
+      t("Point <code>head.next.next</code> back at <code>head</code>, then cut <code>head.next</code>.",
+        "<code>head.next.next</code> ကို <code>head</code> သို့ ပြန်ညွှန်ပြီး <code>head.next</code> ကို ဖြတ်သည်။"),
+      t("Return <code>new_head</code> from every level.",
+        "အဆင့်တိုင်းမှ <code>new_head</code> ကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("the same n rewrites, plus one stack frame per node — which is why Python needs its recursion limit raised at 5,000 nodes.",
+        "ပြန်ရေးခြင်း n ကြိမ် အတူတူ၊ node တစ်ခုလျှင် stack frame တစ်ခု ထပ်လိုသည် — ထို့ကြောင့် node 5,000 တွင် Python ၏ recursion limit ကို မြှင့်ရသည်။"),
+  },
+};
+
 /* ---------------- mount ----------------
  *
  * Last in the file on purpose: mountLesson runs the widget immediately, so
@@ -666,9 +706,9 @@ mountLesson({
     javascript: { newHead: 'new_head' }, go: { newHead: 'new_head' },
   },
   solutions: {
-    iterative: { desc: t('The submission worth writing. Save <code>next</code> before overwriting <code>curr.next</code>, and return <code>prev</code> — <code>curr</code> has run off the end.',
+    iterative: { approach: APPROACH.iterative, desc: t('The submission worth writing. Save <code>next</code> before overwriting <code>curr.next</code>, and return <code>prev</code> — <code>curr</code> has run off the end.',
                          'ရေးသင့်သည့် submission ဖြစ်သည်။ <code>curr.next</code> ကို မရေးမီ <code>next</code> ကို သိမ်းပါ၊ <code>prev</code> ကို ပြန်ပေးပါ — <code>curr</code> သည် အဆုံးကို ကျော်သွားပြီ။') },
-    recursive: { desc: t('The follow-up. Same n rewrites, with the back-pointers held by the call stack — which is why it costs <code>O(n)</code> stack, and why Python needs its recursion limit raised for 5,000 nodes.',
+    recursive: { approach: APPROACH.recursive, desc: t('The follow-up. Same n rewrites, with the back-pointers held by the call stack — which is why it costs <code>O(n)</code> stack, and why Python needs its recursion limit raised for 5,000 nodes.',
                          'follow-up အတွက်။ ပြန်ရေးခြင်း n ကြိမ် အတူတူ၊ နောက်ပြန် pointer များကို call stack က ကိုင်ထားသည် — ထို့ကြောင့် <code>O(n)</code> stack ကုန်ပြီး node 5,000 အတွက် Python ၏ recursion limit ကို မြှင့်ရသည်။') },
   },
   // How each language was actually checked. Printed as a badge on every

@@ -509,6 +509,46 @@ function mountHiddenPosWidget(host) {
   render();
 }
 
+/* ---------------- the approach, in brief ----------------
+ *
+ * Shown in part 2 under the approach tabs: the idea, the steps as the code
+ * takes them (named after its identifiers), and the cost with its reason. */
+
+const APPROACH = {
+  seen: {
+    idea: t("Walk the list and remember every node. Reaching a node you have already seen means the list loops back on itself.",
+        "list ကို လျှောက်ပြီး node တိုင်းကို မှတ်ထားသည်။ တွေ့ပြီးသား node သို့ ပြန်ရောက်လျှင် list သည် ၎င်းကိုယ်တိုင်ထံ ပြန်ပတ်နေခြင်း ဖြစ်သည်။"),
+    steps: [
+      t("Start with an empty set, <code>seen</code>.",
+        "set ဗလာ <code>seen</code> ဖြင့် စသည်။"),
+      t("For each <code>node</code>: if it is in <code>seen</code>, return <code>true</code>.",
+        "<code>node</code> တစ်ခုစီအတွက် — <code>seen</code> ထဲတွင် ရှိလျှင် <code>true</code> ကို ပြန်ပေးသည်။"),
+      t("Otherwise add it and move to <code>node.next</code>.",
+        "မရှိလျှင် ထည့်ပြီး <code>node.next</code> သို့ ရွှေ့သည်။"),
+      t("Reaching the end means there is no cycle: return <code>false</code>.",
+        "အဆုံးသို့ ရောက်လျှင် cycle မရှိ — <code>false</code> ကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("one pass, but <code>seen</code> holds up to n node references — the memory the follow-up asks you to give up.",
+        "တစ်ကြိမ် ဖြတ်သော်လည်း <code>seen</code> တွင် node reference n ခုအထိ ရှိသည် — follow-up က စွန့်ရန် တောင်းသည့် memory ဖြစ်သည်။"),
+  },
+  floyd: {
+    idea: t("Send two pointers down the list, one a step at a time and one two steps. Without a cycle the fast one falls off the end; with one, it laps the slow one and they meet.",
+        "pointer နှစ်ခုကို list အတိုင်း လွှတ်သည် — တစ်ခုက တစ်ကြိမ်လျှင် တစ်ဆင့်၊ တစ်ခုက နှစ်ဆင့်။ cycle မရှိလျှင် မြန်သောတစ်ခု အဆုံးကျော်သွားသည် — ရှိလျှင် နှေးသောတစ်ခုကို ပတ်မှီပြီး ဆုံကြသည်။"),
+    steps: [
+      t("Start <code>slow</code> and <code>fast</code> at <code>head</code>.",
+        "<code>slow</code> နှင့် <code>fast</code> ကို <code>head</code> တွင် ထား၍ စသည်။"),
+      t("While <code>fast</code> and <code>fast.next</code> exist, move <code>slow</code> one step and <code>fast</code> two.",
+        "<code>fast</code> နှင့် <code>fast.next</code> ရှိနေသမျှ <code>slow</code> ကို တစ်ဆင့်၊ <code>fast</code> ကို နှစ်ဆင့် ရွှေ့သည်။"),
+      t("If they land on the same node, return <code>true</code>.",
+        "node တစ်ခုတည်းပေါ် ရောက်လျှင် <code>true</code> ကို ပြန်ပေးသည်။"),
+      t("If <code>fast</code> runs out, return <code>false</code>.",
+        "<code>fast</code> ကုန်သွားလျှင် <code>false</code> ကို ပြန်ပေးသည်။"),
+    ],
+    cost: t("linear in the length of the list, and two pointers whatever its size.",
+        "list အရှည်နှင့် linear ဖြစ်ပြီး အရွယ်အစား မည်မျှပင် ဖြစ်စေ pointer နှစ်ခုသာ။"),
+  },
+};
+
 /* ---------------- mount ----------------
  *
  * Last in the file on purpose: mountLesson runs the widget immediately, so
@@ -565,9 +605,9 @@ mountLesson({
   languages: LANGUAGES,
   code: CODE,
   solutions: {
-    seen: { desc: t('Obvious and correct: a set of node references, not values. It holds up to n references, which is what the follow-up asks you to give up.',
+    seen: { approach: APPROACH.seen, desc: t('Obvious and correct: a set of node references, not values. It holds up to n references, which is what the follow-up asks you to give up.',
                     'ရှင်းလင်းပြီး မှန်သည် — value များ မဟုတ်ဘဲ node reference များ၏ set။ reference n ခုအထိ ကိုင်ထားရပြီး follow-up က စွန့်လွှတ်ခိုင်းသည်မှာ ထိုအရာပင်။') },
-    floyd: { desc: t('The submission the follow-up asks for. Check <code>fast</code> and <code>fast.next</code> before the two-step move, and compare nodes by identity.',
+    floyd: { approach: APPROACH.floyd, desc: t('The submission the follow-up asks for. Check <code>fast</code> and <code>fast.next</code> before the two-step move, and compare nodes by identity.',
                      'follow-up တောင်းသည့် submission။ နှစ်လှမ်း မလှမ်းမီ <code>fast</code> နှင့် <code>fast.next</code> ကို စစ်ပါ၊ node များကို identity ဖြင့် နှိုင်းယှဉ်ပါ။') },
   },
   // How each language was actually checked. Printed as a badge on every
