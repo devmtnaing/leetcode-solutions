@@ -22,8 +22,8 @@
  *     vars(step, input),     [[name, value], ...] — also drives hover-to-inspect
  *     hover?,                { [lang]: { identifier: varName } } extra aliases
  *     solutions?,            { [mode]: { desc, tag?, approach? } } part 3 captions;
- *                            approach = { idea, steps: [..], cost } is the
- *                            short read above each listing
+ *                            approach = { idea, steps: [..], cost } is shown
+ *                            under the mode cards for the chosen approach
  *     verification,          { [lang]: how it was checked, or { [mode]: … } } → part 3 badges
  *     caveats?,              { [mode]: { [lang]: note } } → under the code
  *     widget?(host),         part 1's interactive, mounted into #q-widget
@@ -95,6 +95,10 @@ export function mountLesson(cfg) {
   const mode = () => cfg.modes.find((m) => m.id === state.mode);
 
   function rebuild() {
+    // the chosen approach in brief, under the mode cards; rebuild runs on every
+    // mode switch, input change and language change
+    const approach = $('[data-approach]', root);
+    if (approach) approach.innerHTML = approachBlock(cfg.solutions?.[state.mode]?.approach, mode().cost);
     let steps;
     try {
       steps = mode().build(structuredClone(state.input)) || [];
@@ -149,6 +153,7 @@ export function mountLesson(cfg) {
       <div class="mode-pick">
         <span class="pick-label">${esc(pick(UI.pick))}</span>
         <div class="mode-cards" role="tablist" style="--modes:${cfg.modes.length}">${modeCards}</div>
+        <div data-approach></div>
       </div>
 
       <div class="controls">${fields}${presets}
@@ -473,8 +478,8 @@ function renderExamples(cfg, loadInput) {
 /* Part 3 — the whole solution. Built from the same `code` the stepper
  * highlights, so the listing a reader copies cannot drift from the one they
  * watched run. */
-/* The approach in brief, above its listing: the idea in a sentence or two,
- * the steps as the code takes them, and the cost with the reason for it. */
+/* The chosen approach in brief, under the mode cards: the idea in a sentence
+ * or two, the steps as the code takes them, and the cost with its reason. */
 function approachBlock(a, cost) {
   if (!a) return '';
   return `<div class="approach">
@@ -517,7 +522,6 @@ function renderSolutions(cfg, activeLang) {
               <button class="btn copy" data-copy>${esc(pick(UI.copy))}</button>
               ${meta.desc ? `<p class="sub">${pick(meta.desc)}</p>` : `<p class="sub mono">${esc(pick(m.cost))}</p>`}
             </div>
-            ${approachBlock(meta.approach, m.cost)}
             <pre class="full" tabindex="0">${lines}</pre>
           </div>`;
         }).join('')}
