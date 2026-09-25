@@ -1,6 +1,7 @@
 # Checks every pull request the way CONTRIBUTING.md asks a contributor to:
 #
-#   check   — npm run check (every page has every part) and npm run build
+#   check   — npm run check (every page has every part), npm run build, and a
+#             wrangler dry run of the Cloudflare deploy
 #   audit   — npm run audit: every page driven in a real browser (a line lit on
 #             every step, presets load, no errors, nothing too wide at 400px)
 #   docs    — warns when the shared page code changed but the skill did not
@@ -43,6 +44,8 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run build
+      - name: The Cloudflare deploy config is valid (no upload, no credentials)
+        run: npx wrangler deploy --dry-run
 
   audit:
     runs-on: ubuntu-24.04

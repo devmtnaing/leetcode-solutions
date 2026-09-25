@@ -10,7 +10,9 @@
     "check": "node scripts/check-lessons.mjs",
     "verify": "python3 scripts/verify/run.py",
     "audit": "node scripts/audit.mjs",
-    "refresh-problems": "node scripts/refresh-problems.mjs"
+    "refresh-problems": "node scripts/refresh-problems.mjs",
+    "deploy": "npm run build && wrangler deploy",
+    "serve": "wrangler dev"
   },
   "dependencies": {
     "astro": "^7.3.3"
@@ -19,6 +21,7 @@
   "license": "MIT",
   "devDependencies": {
     "axe-core": "^4.13.0",
-    "playwright": "^1.63.0"
+    "playwright": "^1.63.0",
+    "wrangler": "^4.140.0"
   }
 }

@@ -37,10 +37,20 @@ Pointers, Trees, …) with search and a difficulty filter. A problem with an
 interactive solution opens it; every problem also links to LeetCode. **Most don't yet, and adding one is the
 main way to contribute.** See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Deploying
+
+The site is static and is served by Cloudflare Workers from `dist/`
+(`wrangler.jsonc`) at https://learn.devmtnaing.com. Cloudflare builds it from
+this repo on every push to `main` (build command `npm run build`, deploy
+command `npx wrangler deploy`); `public/_redirects` and `public/_headers` set
+redirects and caching. `npm run serve` runs the same thing locally after a
+build, and `npm run deploy` deploys by hand.
+
 ## What is in the repo
 
 ```
 src/pages/index.astro           the problem list
+wrangler.jsonc                  Cloudflare: serve dist/ at learn.devmtnaing.com
 src/pages/leetcode/[slug].astro renders every lesson folder
 src/lessons/<slug>/             one folder per solution page
 src/lib/                        the shared kit: stepper, stage shapes, trees, i18n

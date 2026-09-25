@@ -1,0 +1,22 @@
+// Cloudflare Workers config: the site is static, so the Worker has no code —
+// it only serves the files `npm run build` writes to dist/.
+//
+// Cloudflare builds and deploys this on every push to main (Workers Builds,
+// connected to the GitHub repo): build command `npm run build`, deploy
+// command `npx wrangler deploy`. The custom domain below is created on the
+// first deploy, with its DNS record and certificate, because the zone
+// devmtnaing.com is on the same Cloudflare account.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "learn",
+  "compatibility_date": "2026-09-25",
+  "assets": {
+    "directory": "./dist",
+    // /x serves dist/x/index.html; an unknown path gets dist/404.html with a 404
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    { "pattern": "learn.devmtnaing.com", "custom_domain": true }
+  ]
+}

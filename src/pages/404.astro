@@ -1,0 +1,13 @@
+---
+/* Served for any path that is not a page (wrangler.jsonc: not_found_handling). */
+import Base from '../layouts/Base.astro';
+import { SITE_NAME } from '../data/site';
+---
+<Base title={`Not found · ${SITE_NAME}`} description="There is no page at this address.">
+  <div class="shell">
+    <div class="page-head">
+      <h1>Not found</h1>
+      <p class="lede">There is no page at this address. The problem list is on the <a href="/">home page</a>.</p>
+    </div>
+  </div>
+</Base>

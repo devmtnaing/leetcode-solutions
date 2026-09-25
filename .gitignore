@@ -20,3 +20,6 @@ __pycache__/
 
 # per-person Claude Code settings; the project skill in .claude/skills is shared
 .claude/settings.local.json
+
+# Cloudflare Wrangler local state
+.wrangler/

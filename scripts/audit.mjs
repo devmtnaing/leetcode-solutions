@@ -51,7 +51,7 @@ if (!existsSync(resolve(ROOT, 'dist/index.html'))) {
   process.exit(1);
 }
 
-/* dist/ served as a static site: /x resolves to /x/index.html. Its own
+/* dist/ served as a static site: /x resolves to /x.html or /x/index.html. Its own
  * server rather than `astro preview`, which runs one instance per project. */
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml',
   '.json': 'application/json', '.png': 'image/png', '.woff2': 'font/woff2', '.ico': 'image/x-icon', '.xml': 'application/xml' };
@@ -60,6 +60,7 @@ function serve() {
     let file = join(DIST, decodeURIComponent(new URL(req.url, 'http://x').pathname));
     if (!file.startsWith(DIST)) { res.writeHead(403).end(); return; }
     if (existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
+    else if (!existsSync(file) && existsSync(`${file}.html`)) file = `${file}.html`;   // build.format 'file'
     if (!existsSync(file)) { res.writeHead(404).end('not found'); return; }
     res.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream' });
     res.end(readFileSync(file));

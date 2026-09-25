@@ -12,7 +12,9 @@ interface Props {
   interactive?: boolean;
 }
 const { title, description, interactive = false } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site);
+// Pages build as .html files (astro.config.mjs) but are served without the
+// extension, so the canonical address drops it: /leetcode/two-sum, not .html.
+const canonical = new URL(Astro.url.pathname.replace(/(index)?\.html$/, ''), Astro.site);
 ---
 <!doctype html>
 <html lang="en">
