@@ -4,6 +4,8 @@
  * per pair, while the hash map asks "have I already seen the number that would
  * complete this one?" once per element. Same answer, and the second question
  * can be answered without looking at anything else.
+ *
+ * (CI smoke test: this comment exists only to make the verify job run.)
  */
 import { t, exampleTitle, LANGUAGES, k, c } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
