@@ -1,0 +1,12 @@
+/* N-Queens: the board is rows of cells packed tight so it reads as a board
+   (the stage's .nq, the part 1 widget's .nq-w). In the widget, squares on a
+   diagonal of the last square clicked get an outline, and each cell's corner
+   shows its two diagonal numbers, r − c and r + c. */
+.nq .rows{gap:5px}
+.nq .rows .row{flex-wrap:nowrap}
+.nq .cell{width:36px;height:36px;font-size:15px}
+.nq-w{margin-bottom:10px;overflow-x:auto}
+.nq-w .q-arr{flex-wrap:nowrap;gap:4px;margin-bottom:4px}
+.nq-w .cell{width:40px;height:42px}
+.nq-w .cell .idx{font-size:9px}
+.nq-w .cell.nq-diag{outline:1px dashed var(--accent);outline-offset:-3px}

@@ -1,0 +1,27 @@
+/* Merge k Sorted Lists: the part 1 widget's bars — one row per list, how
+   many times its nodes are walked, merging one at a time against in pairs.
+   Widths are classes (mk-w1 … mk-w16), not inline styles. */
+.mk-bars{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;overflow-x:auto}
+.mk-head,.mk-row{display:grid;grid-template-columns:38px 1fr 1fr;gap:10px;align-items:center}
+.mk-head span{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.mk-bar{display:flex;align-items:center;gap:6px;min-width:0}
+.mk-fill{display:block;height:12px;border-radius:3px;flex:none}
+.mk-bar.one .mk-fill{background:var(--amber)}
+.mk-bar.two .mk-fill{background:var(--accent)}
+.mk-n{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-2)}
+.mk-w1{width:6px}
+.mk-w2{width:12px}
+.mk-w3{width:18px}
+.mk-w4{width:24px}
+.mk-w5{width:30px}
+.mk-w6{width:36px}
+.mk-w7{width:42px}
+.mk-w8{width:48px}
+.mk-w9{width:54px}
+.mk-w10{width:60px}
+.mk-w11{width:66px}
+.mk-w12{width:72px}
+.mk-w13{width:78px}
+.mk-w14{width:84px}
+.mk-w15{width:90px}
+.mk-w16{width:96px}

@@ -1,0 +1,7 @@
+/* Word Search II: the board is rows of cells packed tight so it reads as a
+   grid, in the strip (.ws) and in the part 1 widget (.ws-w). */
+.ws .rows{gap:6px}
+.ws .rows .row{flex-wrap:nowrap}
+.ws .cell{width:38px;height:42px}
+.ws-w{margin-bottom:10px;overflow-x:auto}
+.ws-w .q-arr{flex-wrap:nowrap;margin-bottom:6px}
