@@ -97,7 +97,11 @@ verify/<slug>/adapter.mjs            a corpus line → the lesson's input; a las
 every lesson needs — `t(en, my)`, `plural`, `exampleTitle(n)`, `LANGUAGES`, the
 code-token helpers `k` / `c`, `verdictAnswer` for a true/false answer card,
 `stageRow` / `stageGap` inside the stage, `labelledRows` for a strip card with
-two inputs. Anything a lesson draws uses a class from `lesson.css`, `kit.css`
+two inputs. Controls parse with `intList({ min, max, lo, hi, distinct, check })`
+and `intValue({ lo, hi })` — they reject rather than trim, and `check` takes
+the lesson's own rule (sorted, a majority exists); show a list back with
+`listText`. The part 1 widget uses `presetChips(sets, active)` for its chips
+and `widgetLabel(text)` for the note beside its heading. Anything a lesson draws uses a class from `lesson.css`, `kit.css`
 or its own `style.css`; never a `style="…"` string (a width that varies can be
 a class per step, as x-sum's tally bars are). In `page.js`'s cost table, the
 gloss under an approach's name is `<span class="sub">`. A class a second lesson would

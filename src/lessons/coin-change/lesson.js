@@ -9,30 +9,9 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, kv, stack, readout, slots, stagePanel } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, intList, intValue, listText, presetChips, widgetLabel } from '../../lib/kit.js';
 
 const MAX_AMOUNT = 11;
-
-function parseCoins(text) {
-  const s = text.trim().replace(/^\[|\]$/g, '').trim();
-  const coins = s ? s.split(',').map((x) => {
-    const v = x.trim();
-    const n = Number(v);
-    if (v === '' || !Number.isInteger(n) || n < 1) throw new Error('positive integers, separated by commas');
-    return n;
-  }) : [];
-  if (!coins.length) throw new Error('at least one coin');
-  if (coins.length > 5) throw new Error('at most 5 coins, so the stage stays readable');
-  if (new Set(coins).size !== coins.length) throw new Error('each coin once');
-  return coins;
-}
-
-function parseAmount(text) {
-  const n = Number(text);
-  if (!Number.isInteger(n) || n < 0) throw new Error('a whole number, 0 or more');
-  if (n > MAX_AMOUNT) throw new Error(`at most ${MAX_AMOUNT}: the recursion makes hundreds of calls already`);
-  return n;
-}
 
 /* ---------------- step generators ---------------- */
 
@@ -436,12 +415,10 @@ function mountGreedyWidget(host) {
     const worse = g == null ? b != null : b != null && g.length > b.length;
     q('#qw-amt').value = String(amount);
     q('[data-out]').textContent = String(amount);
-    q('[data-presets]').innerHTML = QW_SETS.map((x, j) =>
-      `<button class="chip" data-set="${j}"${j === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
     q('[data-greedy]').innerHTML = row('greedy', g, worse ? 'cut' : 'kept');
     q('[data-best]').innerHTML = row('fewest', b, 'kept');
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = `coins = [${coins.join(', ')}]`;
+    widgetLabel(`coins = [${coins.join(', ')}]`);
     q('[data-line]').innerHTML = pick(b == null
       ? t(`No mix of [${coins.join(', ')}] makes ${amount}: the answer is -1.`, `[${coins.join(', ')}] ၏ မည်သည့် ပေါင်းစပ်မှုမျှ ${amount} ကို မဖွဲ့နိုင်ပါ — အဖြေ -1။`)
       : g == null
@@ -503,8 +480,8 @@ const APPROACH = {
 mountLesson({
   input: { coins: [1, 2, 5], amount: 7 },
   controls: [
-    { key: 'coins', label: 'coins', value: '1, 2, 5', parse: parseCoins, format: (a) => a.join(', ') },
-    { key: 'amount', label: 'amount', type: 'number', value: 7, parse: parseAmount },
+    { key: 'coins', label: 'coins', value: '1, 2, 5', parse: intList({ max: 5, lo: 1, distinct: true }), format: listText },
+    { key: 'amount', label: 'amount', type: 'number', value: 7, parse: intValue({ lo: 0, hi: MAX_AMOUNT, why: 'the recursion makes hundreds of calls already' }) },
   ],
   presets: [
     { label: exampleTitle(1), input: { coins: [1, 2, 5], amount: 11 } },

@@ -121,8 +121,9 @@ narration, then stage and answer beside the live code) and **2·3 Going deeper**
 boxes of your own inside the player.
 
 Shapes for the stage are in `src/lib/stage.js` (`cells`, `kv`, `stack`,
-`chain`, `tree`, `bars`, `readout`). Small helpers are in `src/lib/kit.js`,
-and LeetCode binary trees in `src/lib/tree.js`. Use their classes, never a
+`chain`, `tree`, `bars`, `readout`). Small helpers are in `src/lib/kit.js` —
+including `intList` / `intValue` for a control's `parse`, and `presetChips` /
+`widgetLabel` for the widget — and LeetCode binary trees in `src/lib/tree.js`. Use their classes, never a
 `style="…"`; a class only your page needs goes in its own `style.css`.
 
 Give a failed comparison its own frame. The branch that *doesn't* fire is often

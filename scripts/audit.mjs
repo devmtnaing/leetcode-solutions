@@ -5,6 +5,7 @@
 //
 //   · every approach × language × step highlights a line of code
 //   · every preset loads without a warning
+//   · every input field accepts the text it shows, and rejects junk
 //   · no page errors
 //   · nothing wider than the screen at 400px, in both page languages, for
 //     every approach and code language
@@ -50,7 +51,7 @@ let BASE;
 /* Runs inside the page: step every frame of every approach × code language. */
 async function stepEverything() {
   const wait = () => new Promise((r) => setTimeout(r, 0));
-  const out = { frames: 0, noHot: [], presets: [], greyTone: [] };
+  const out = { frames: 0, noHot: [], presets: [], greyTone: [], fields: [] };
   const toneless = (el) => ![...el.classList].some((c) => c.startsWith('t-'));
   const plainRowBg = () => {
     const plain = [...document.querySelectorAll('#lesson .st-row:not(.head):not(.on)')].find(toneless);
@@ -69,6 +70,20 @@ async function stepEverything() {
         const plain = plainRowBg();
         if (toned && plain && getComputedStyle(toned).backgroundColor === plain) out.greyTone.push(`${mode}/step ${i}`);
       }
+    }
+    // each field re-reads its own text without complaint, and flags garbage
+    for (const el of document.querySelectorAll('#lesson [data-field]')) {
+      const good = el.value;
+      el.value = good; el.dispatchEvent(new Event('input', { bubbles: true })); await wait();
+      const warn = document.querySelector('#lesson [data-warn]');
+      if (el.classList.contains('bad')) out.fields.push(`${mode}: field ${el.dataset.field} rejects its own value "${good}": ${warn?.textContent}`);
+      const field = document.querySelector(`#lesson [data-field="${el.dataset.field}"]`);
+      if (field.type !== 'number' && /^[-\d\s,\[\]null]*$/.test(good)) {   // number lists only: "@@" is a fine string
+        field.value = '@@'; field.dispatchEvent(new Event('input', { bubbles: true })); await wait();
+        if (!field.classList.contains('bad')) out.fields.push(`${mode}: field ${el.dataset.field} accepts "@@"`);
+      }
+      const again = document.querySelector(`#lesson [data-field="${el.dataset.field}"]`);
+      again.value = good; again.dispatchEvent(new Event('input', { bubbles: true })); await wait();
     }
     for (const chip of document.querySelectorAll('#lesson [data-preset]')) {
       chip.click(); await wait();
@@ -134,6 +149,7 @@ async function main() {
       ...errors,
       ...r.noHot.map((x) => `no highlighted line: ${x}`),
       ...r.presets.map((x) => `preset warns: ${x}`),
+      ...r.fields,
       ...r.greyTone.map((x) => `toned table row renders grey: ${x}`),
       ...wide,
     ]);

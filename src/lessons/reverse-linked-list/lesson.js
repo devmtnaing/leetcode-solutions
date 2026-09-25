@@ -12,7 +12,7 @@
  * suffix, and the suffix is reachable only through the variable saved one line
  * earlier. Drawing it as one tidy list would hide the entire problem.
  */
-import { t, plural, exampleTitle, LANGUAGES, k, c } from '../../lib/kit.js';
+import { t, plural, exampleTitle, LANGUAGES, k, c, intList, listText, presetChips, widgetLabel } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, chain, stack, panels, slots, stagePanel } from '../../lib/stage.js';
@@ -558,8 +558,7 @@ function mountRewireWidget(host) {
     slider.max = String(save ? n : 1);
     slider.value = String(k);
     q('[data-out]').textContent = String(k);
-    q('[data-presets]').innerHTML = QW_SETS.map((x, i) =>
-      `<button class="chip" data-set="${i}"${i === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
 
     // kept = already reversed · plain = still forward, reachable · cut = lost
     q('[data-arr]').innerHTML = a.map((v, j) => {
@@ -568,8 +567,7 @@ function mountRewireWidget(host) {
       return `<div class="cell ${cls}"><span>${v}</span><span class="idx">${arrow}</span></div>`;
     }).join('');
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(save ? t('prev · curr · next', 'prev · curr · next') : t('prev · curr only', 'prev · curr သာ'));
+    widgetLabel(pick(save ? t('prev · curr · next', 'prev · curr · next') : t('prev · curr only', 'prev · curr သာ')));
 
     const reached = k + (lost ? 0 : n - k);
     let line;
@@ -660,16 +658,7 @@ mountLesson({
   input: { nums: [1, 2, 3, 4, 5] },
   controls: [
     { key: 'nums', label: 'head', value: '1, 2, 3, 4, 5',
-      parse: (v) => {
-        const s = v.trim().replace(/^\[|\]$/g, '');
-        if (!s.trim()) return [];
-        // Number('') is 0, so a blank segment would quietly become a node.
-        const parts = s.split(',').map((x) => x.trim());
-        if (parts.some((x) => x === '')) throw new Error('numbers separated by commas');
-        const a = parts.map(Number);
-        if (a.some((x) => !Number.isFinite(x))) throw new Error('numbers separated by commas');
-        return a.slice(0, 12);
-      } },
+      parse: intList({ min: 0 }), format: listText },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [1, 2, 3, 4, 5] } },

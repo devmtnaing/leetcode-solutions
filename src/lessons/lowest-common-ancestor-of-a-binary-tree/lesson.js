@@ -10,7 +10,7 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, tree, stack, readout, slots, stagePanel, panels } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageGap } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageGap, intValue, widgetLabel } from '../../lib/kit.js';
 import { buildTree, levelOrder, asNested, preorderKeys, nameOf, treeInput, formatLevelOrder } from '../../lib/tree.js';
 
 const EX = [3, 5, 1, 6, 2, 0, 8, null, null, 7, 4];
@@ -496,8 +496,7 @@ function mountPathsWidget(host) {
     }).join('')}`;
     q('[data-pick-p]').innerHTML = row('p');
     q('[data-pick-q]').innerHTML = row('q');
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t('pick p and q', 'p နှင့် q ကို ရွေးပါ'));
+    widgetLabel(pick(t('pick p and q', 'p နှင့် q ကို ရွေးပါ')));
     const name = (key) => T.val[key];
     q('[data-line]').innerHTML = pick(state.p === state.q
       ? t('p and q must be different nodes — pick another.', 'p နှင့် q သည် မတူသော node ဖြစ်ရမည် — နောက်တစ်ခု ရွေးပါ။')
@@ -550,14 +549,12 @@ const APPROACH = {
 
 /* ---------------- mount ---------------- */
 
-const numberInput = (name) => (v) => { const n = Number(v); if (!Number.isInteger(n)) throw new Error(`${name} is a node value`); return n; };
-
 mountLesson({
   input: { level: EX, p: 5, q: 1 },
   controls: [
     { key: 'level', label: 'root', value: formatLevelOrder(EX), parse: treeInput(15), format: formatLevelOrder },
-    { key: 'p', label: 'p', type: 'number', value: 5, parse: numberInput('p') },
-    { key: 'q', label: 'q', type: 'number', value: 1, parse: numberInput('q') },
+    { key: 'p', label: 'p', type: 'number', value: 5, parse: intValue() },
+    { key: 'q', label: 'q', type: 'number', value: 1, parse: intValue() },
   ],
   presets: [
     { label: exampleTitle(1), input: { level: EX, p: 5, q: 1 } },

@@ -5,7 +5,7 @@
  * passes and the other writes down nothing at all. Watching the visited set
  * grow next to two pointers that never grow is the whole lesson.
  */
-import { t, plural, exampleTitle, LANGUAGES, k, c, verdictAnswer, stageGap } from '../../lib/kit.js';
+import { t, plural, exampleTitle, LANGUAGES, k, c, verdictAnswer, stageGap, intList, intValue, listText, presetChips, widgetLabel } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, chain, kv, readout, stagePanel } from '../../lib/stage.js';
@@ -457,8 +457,7 @@ function mountHiddenPosWidget(host) {
     q('#qw-pos').max = String(n - 1);
     q('#qw-pos').value = String(pos);
     q('[data-out]').textContent = String(pos);
-    q('[data-presets]').innerHTML = QW_SETS.map((x, i) =>
-      `<button class="chip" data-set="${i}"${i === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
 
     // kept = on the loop, visited forever · cut = the run-in before the loop,
     // walked once · plain = every node, when nothing loops
@@ -468,8 +467,7 @@ function mountHiddenPosWidget(host) {
       return `<div class="cell ${cls}"><span>${v}</span><span class="idx">${tag}</span></div>`;
     }).join('');
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t('hasCycle(head) — pos is not passed', 'hasCycle(head) — pos ကို မပေးပါ'));
+    widgetLabel(pick(t('hasCycle(head) — pos is not passed', 'hasCycle(head) — pos ကို မပေးပါ')));
 
     // what a walk from the head sees: indices, until a repeat or null
     const walk = [];
@@ -558,21 +556,9 @@ mountLesson({
   input: { values: [3, 2, 0, -4], pos: 1 },
   controls: [
     { key: 'values', label: 'head', value: '3, 2, 0, -4',
-      parse: (v) => {
-        const s = v.trim().replace(/^\[|\]$/g, '').trim();
-        if (!s) return [];             // an empty list is a legal input
-        const parts = s.split(',').map((x) => x.trim());
-        if (parts.some((x) => x === '')) throw new Error('a value is missing');
-        const a = parts.map(Number);
-        if (a.some(Number.isNaN)) throw new Error('numbers only');
-        return a.slice(0, 12);
-      } },
+      parse: intList({ min: 0 }), format: listText },     // an empty list is a legal input
     { key: 'pos', label: 'pos', type: 'number', value: 1, min: -1,
-      parse: (v) => {
-        const p = Number(v);
-        if (!v.trim() || !Number.isInteger(p)) throw new Error('whole number, -1 for no cycle');
-        return p;
-      } },
+      parse: intValue({ lo: -1 }) },
   ],
   presets: [
     { label: exampleTitle(1), input: { values: [3, 2, 0, -4], pos: 1 } },

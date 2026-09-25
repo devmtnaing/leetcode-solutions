@@ -11,7 +11,7 @@
  * after the buy, which is the whole reason the answer is not
  * max(prices) - min(prices).
  */
-import { t, plural, exampleTitle, LANGUAGES, k, c } from '../../lib/kit.js';
+import { t, plural, exampleTitle, LANGUAGES, k, c, intList, listText, presetChips, widgetLabel } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { bars, cells, slots, stagePanel } from '../../lib/stage.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
@@ -497,8 +497,7 @@ function mountTradeWidget(host) {
     }
     q('[data-out-buy]').textContent = String(buy);
     q('[data-out-sell]').textContent = String(sell);
-    q('[data-presets]').innerHTML = QW_SETS.map((x, i) =>
-      `<button class="chip" data-set="${i}"${i === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
 
     // kept = the days you hold the stock, a legal trade · cut = an illegal pair
     q('[data-arr]').innerHTML = p.map((v, i) => {
@@ -507,8 +506,7 @@ function mountTradeWidget(host) {
       return `<div class="cell${cls}"><span>${v}</span><span class="idx">${i}</span></div>`;
     }).join('');
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t(`${p.length} days, best ${best}`, `${p.length} ရက်၊ အကောင်းဆုံး ${best}`));
+    widgetLabel(pick(t(`${p.length} days, best ${best}`, `${p.length} ရက်၊ အကောင်းဆုံး ${best}`)));
 
     const line = verdict(p, buy, sell, best);
     // The max − min shortcut is worth naming once the reader is looking at
@@ -591,11 +589,7 @@ mountLesson({
   input: { prices: [7, 1, 5, 3, 6, 4] },
   controls: [
     { key: 'prices', label: L.prices, value: '7, 1, 5, 3, 6, 4',
-      parse: (v) => {
-        const a = v.split(',').map((x) => x.trim()).filter((x) => x !== '').map(Number);
-        if (!a.length || a.some(Number.isNaN)) throw new Error('need at least one price');
-        return a.slice(0, 12);
-      } },
+      parse: intList({ lo: 0 }), format: listText },
   ],
   presets: [
     { label: exampleTitle(1), input: { prices: [7, 1, 5, 3, 6, 4] } },

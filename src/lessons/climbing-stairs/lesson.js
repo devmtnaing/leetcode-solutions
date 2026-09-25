@@ -11,20 +11,11 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, stack, bars, readout, panels, slots, stagePanel } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageGap } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageGap, intValue, widgetLabel } from '../../lib/kit.js';
 
 /* ten steps is 177 calls in the plain recursion — 441 frames, which is as far
  * as stepping by hand stays worth it */
 const MAX_N = 10;
-
-function parseN(text) {
-  const v = text.trim();
-  const n = Number(v);
-  if (v === '' || !Number.isInteger(n)) throw new Error('a whole number');
-  if (n < 1) throw new Error('n is at least 1');
-  if (n > MAX_N) throw new Error(`at most ${MAX_N} here, so the plain recursion stays steppable`);
-  return n;
-}
 
 /* ---------------- step generators ---------------- */
 
@@ -451,8 +442,7 @@ function mountLastMoveWidget(host) {
       `<p class="q-row-label">${pick(t(`ends in 1 — ${ones.length}`, `1 ဖြင့် ဆုံး — ${ones.length}`))}</p>${ones.map(row).join('')}`
       + (twos.length ? `<p class="q-row-label">${pick(t(`ends in 2 — ${twos.length}`, `2 ဖြင့် ဆုံး — ${twos.length}`))}</p>${twos.map(row).join('')}` : '');
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t(`${all.length} ${all.length === 1 ? 'climb' : 'climbs'} of ${n}`, `${n} ၏ climb ${all.length} ခု`));
+    widgetLabel(pick(t(`${all.length} ${all.length === 1 ? 'climb' : 'climbs'} of ${n}`, `${n} ၏ climb ${all.length} ခု`)));
 
     q('[data-line]').innerHTML = pick(n === 1
       ? t('One step, one climb. A 2-step would overshoot, so nothing ends in 2.', 'step တစ်ခု၊ climb တစ်ခု။ 2-step သည် ကျော်သွားမည်ဖြစ်၍ 2 ဖြင့် ဆုံးသည့်အရာ မရှိပါ။')
@@ -540,7 +530,7 @@ const APPROACH = {
 mountLesson({
   input: { n: 5 },
   controls: [
-    { key: 'n', label: 'n', value: '5', parse: parseN, format: String },
+    { key: 'n', label: 'n', value: '5', parse: intValue({ lo: 1, hi: MAX_N, why: 'so the plain recursion stays steppable' }), format: String },
   ],
   presets: [
     { label: exampleTitle(1), input: { n: 2 } },

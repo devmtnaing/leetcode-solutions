@@ -10,23 +10,9 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, readout, stagePanel } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, intList, listText, presetChips, widgetLabel } from '../../lib/kit.js';
 
 const MAX_LEN = 10;
-
-function parseNums(text) {
-  const s = text.trim().replace(/^\[|\]$/g, '').trim();
-  const nums = s ? s.split(',').map((x) => {
-    const v = x.trim();
-    const n = Number(v);
-    if (v === '' || !Number.isInteger(n)) throw new Error('integers, separated by commas');
-    if (n < -30 || n > 30) throw new Error('values run from -30 to 30');
-    return n;
-  }) : [];
-  if (nums.length < 2) throw new Error('at least two values');
-  if (nums.length > MAX_LEN) throw new Error(`at most ${MAX_LEN} values, so the stage stays readable`);
-  return nums;
-}
 
 // -0 is a real JavaScript value (−3 × 0) but not an answer anyone writes.
 const clean = (v) => (Object.is(v, -0) ? 0 : v);
@@ -436,14 +422,12 @@ function mountSplitWidget(host) {
     slider.max = String(n - 1);
     slider.value = String(i);
     q('[data-out]').textContent = String(i);
-    q('[data-presets]').innerHTML = QW_SETS.map((x, j) =>
-      `<button class="chip" data-set="${j}"${j === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
 
     q('[data-arr]').innerHTML = nums.map((v, j) =>
       `<div class="cell ${j === i ? 'cut' : 'kept'}"><span>${v}</span><span class="idx">${j}</span></div>`).join('');
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t(`${n} values · product ${whole}`, `value ${n} ခု · မြှောက်လဒ် ${whole}`));
+    widgetLabel(pick(t(`${n} values · product ${whole}`, `value ${n} ခု · မြှောက်လဒ် ${whole}`)));
 
     q('[data-line]').innerHTML = pick(zeros && nums[i] === 0
       ? t(`nums[${i}] is 0. The whole product is ${whole}, and ${whole} ÷ 0 has no answer — yet left × right is ${clean(left * right)}. That is why the statement bans division.`,
@@ -515,7 +499,7 @@ const APPROACH = {
 mountLesson({
   input: { nums: [1, 2, 3, 4] },
   controls: [
-    { key: 'nums', label: 'nums', value: '1, 2, 3, 4', parse: parseNums, format: (a) => a.join(', ') },
+    { key: 'nums', label: 'nums', value: '1, 2, 3, 4', parse: intList({ min: 2, max: MAX_LEN, lo: -30, hi: 30 }), format: listText },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [1, 2, 3, 4] } },

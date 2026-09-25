@@ -9,7 +9,7 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, tree, treeNodes, stack, panels, slots, stagePanel } from '../../lib/stage.js';
-import { t, plural, exampleTitle, LANGUAGES, k, c, stageRow, stageGap } from '../../lib/kit.js';
+import { t, plural, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, presetChips, widgetLabel } from '../../lib/kit.js';
 import { buildTree, levelOrder, asNested, preorderKeys, treeDepth, copyKids as copy, nameOf, treeInput, formatLevelOrder } from '../../lib/tree.js';
 
 /* The tree helpers — parsing LeetCode's level order, drawing, serializing —
@@ -427,8 +427,7 @@ function mountMirrorWidget(host) {
     slider.max = String(levels);
     slider.value = String(k);
     q('[data-out]').textContent = String(k);
-    q('[data-presets]').innerHTML = QW_SETS.map((x, i) =>
-      `<button class="chip" data-set="${i}"${i === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
 
     q('[data-tree]').innerHTML = tree(asNested(T.root, T.val, kids));
     // kept = already where the mirror puts it · cut = not yet
@@ -437,8 +436,7 @@ function mountMirrorWidget(host) {
       return `<div class="cell ${ok ? 'kept' : 'cut'}"><span>${x.v == null ? '∅' : x.v}</span><span class="idx">${i}</span></div>`;
     }).join('');
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t(`${Object.keys(T.val).length} nodes, ${levels} levels`, `node ${Object.keys(T.val).length} ခု၊ အဆင့် ${levels} ဆင့်`));
+    widgetLabel(pick(t(`${Object.keys(T.val).length} nodes, ${levels} levels`, `node ${Object.keys(T.val).length} ခု၊ အဆင့် ${levels} ဆင့်`)));
 
     let line;
     if (k === 0) {

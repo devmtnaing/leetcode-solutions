@@ -10,7 +10,7 @@
  * resolves with pick(). Only the cost strings stay as they are: "O(n log n)
  * time" is notation, not prose.
  */
-import { t, plural, exampleTitle, LANGUAGES, k, c, verdictAnswer, labelledRows } from '../../lib/kit.js';
+import { t, plural, exampleTitle, LANGUAGES, k, c, verdictAnswer, labelledRows, presetChips, widgetLabel } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { cells, strip, kv, panels } from '../../lib/stage.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
@@ -429,13 +429,11 @@ function mountWidget(host) {
     slider.max = String(tWord.length - 1);
     slider.value = String(state.turn);
     q('[data-out]').textContent = String(state.turn);
-    q('[data-presets]').innerHTML = QW_SETS.map((x, i) =>
-      `<button class="chip" data-set="${i}"${i === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('')
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set)
       + `<button class="chip" data-act="shuffle">${pick(W.shuffle)}</button>`
       + `<button class="chip" data-act="mutate">${pick(W.mutate)}</button>`;
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(ok ? W.isAna : W.notAna);
+    widgetLabel(pick(ok ? W.isAna : W.notAna));
 
     const detail = off.map((l) => pick(W.row)(l, cs[l] || 0, ct[l] || 0)).join(' · ');
     q('[data-line]').innerHTML = ok ? (state.moves ? pick(W.held)(state.moves) : pick(W.start)) : pick(W.broke)(detail);

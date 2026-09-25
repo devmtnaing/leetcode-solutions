@@ -10,22 +10,9 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, kv, readout, slots, stagePanel } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageGap } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageGap, intList, listText, presetChips, widgetLabel } from '../../lib/kit.js';
 
 const MAX_LEN = 10;
-
-function parseNums(text) {
-  const s = text.trim().replace(/^\[|\]$/g, '').trim();
-  const nums = s ? s.split(',').map((x) => {
-    const v = x.trim();
-    const n = Number(v);
-    if (v === '' || !Number.isInteger(n)) throw new Error('integers, separated by commas');
-    return n;
-  }) : [];
-  if (nums.length < 3) throw new Error('at least three values');
-  if (nums.length > MAX_LEN) throw new Error(`at most ${MAX_LEN} values, so the stage stays readable`);
-  return nums;
-}
 
 const fmt = (tr) => `[${tr.join(',')}]`;
 
@@ -518,15 +505,13 @@ function mountTripletWidget(host) {
     const mine = fmt(sel.map((x) => nums[x]).sort((a, b) => a - b));
     const sameAs = idx.filter((tr) => fmt(tr.map((x) => nums[x]).sort((a, b) => a - b)) === mine && tr.join() !== sel.join());
 
-    q('[data-presets]').innerHTML = QW_SETS.map((x, j) =>
-      `<button class="chip" data-set="${j}"${j === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
     q('[data-arr]').innerHTML = nums.map((v, x) => {
       const on = sel.includes(x);
       return `<div class="cell kept${on ? ' picked' : ''}" role="button" tabindex="0" aria-pressed="${on}" data-i="${x}"><span>${v}</span><span class="idx">${x}</span></div>`;
     }).join('');
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t('click three cells', 'cell သုံးခု နှိပ်ပါ'));
+    widgetLabel(pick(t('click three cells', 'cell သုံးခု နှိပ်ပါ')));
 
     q('[data-line]').innerHTML = pick(sel.length < 3
       ? t(`Pick ${3 - sel.length} more.`, `နောက်ထပ် ${3 - sel.length} ခု ရွေးပါ။`)
@@ -603,7 +588,7 @@ const APPROACH = {
 mountLesson({
   input: { nums: [-1, 0, 1, 2, -1, -4] },
   controls: [
-    { key: 'nums', label: 'nums', value: '-1, 0, 1, 2, -1, -4', parse: parseNums, format: (a) => a.join(', ') },
+    { key: 'nums', label: 'nums', value: '-1, 0, 1, 2, -1, -4', parse: intList({ min: 3, max: MAX_LEN }), format: listText },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [-1, 0, 1, 2, -1, -4] } },

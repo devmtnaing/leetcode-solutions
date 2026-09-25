@@ -6,7 +6,7 @@
  * `slow` is already where it belongs — so the array is partially correct at
  * every single step, and no second array is ever allocated.
  */
-import { t, exampleTitle, LANGUAGES, k, c } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, intList, listText, presetChips, widgetLabel } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { cells, panels, stagePanel } from '../../lib/stage.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
@@ -442,8 +442,7 @@ function mountWidget(host) {
     qw('#mw-sweep').max = String(a.length - 1);
     qw('#mw-sweep').value = String(p);
     qw('[data-out]').textContent = String(p);
-    qw('[data-presets]').innerHTML = Q_SETS.map((s, i) =>
-      `<button class="chip" data-set="${i}"${i === state.set ? ' aria-pressed="true"' : ''}>${pick(s.label)}</button>`).join('');
+    qw('[data-presets]').innerHTML = presetChips(Q_SETS, state.set);
 
     // cells: non-zero left of or at position → kept; zero left of or at position → cut; right of position → default
     qw('[data-arr]').innerHTML = a.map((v, i) => {
@@ -455,8 +454,7 @@ function mountWidget(host) {
         <span>${v}</span><span class="idx">${i}</span></div>`;
     }).join('');
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t(`${a.length} values`, `တန်ဖိုး ${a.length} ခု`));
+    widgetLabel(pick(t(`${a.length} values`, `တန်ဖိုး ${a.length} ခု`)));
 
     const v = a[p];
     const kept = a.filter((x, i) => x !== 0 && i <= p);
@@ -551,16 +549,10 @@ const APPROACH = {
  * Last in the file on purpose: mountLesson runs the widget immediately, so
  * every const the widget reads must already be initialised. */
 
-const parseNums = (v) => {
-  const a = v.split(',').map((x) => Number(x.trim()));
-  if (!a.length || a.some(Number.isNaN)) throw new Error('need at least one number');
-  return a.slice(0, 12);
-};
-
 mountLesson({
   input: { nums: [0, 1, 0, 3, 12] },
   controls: [
-    { key: 'nums', label: 'nums', value: '0, 1, 0, 3, 12', parse: parseNums },
+    { key: 'nums', label: 'nums', value: '0, 1, 0, 3, 12', parse: intList(), format: listText },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [0, 1, 0, 3, 12] } },

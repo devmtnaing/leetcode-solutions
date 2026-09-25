@@ -7,7 +7,7 @@
  * opener nobody has closed yet?" — and the top of a stack is exactly that, so
  * the answer is free and one pass is enough.
  */
-import { t, exampleTitle, LANGUAGES, k, c, verdictAnswer, stageRow } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, verdictAnswer, stageRow, presetChips, widgetLabel } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, stack, stagePanel } from '../../lib/stage.js';
@@ -463,8 +463,7 @@ function mountStackWidget(host) {
     slider.max = String(s.length);
     slider.value = String(k);
     q('[data-out]').textContent = String(k);
-    q('[data-presets]').innerHTML = QW_SETS.map((x, i) =>
-      `<button class="chip" data-set="${i}"${i === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
 
     // kept = closed by its partner · inwin = open, still waiting · leaving = the
     // closer that found the wrong opener on top · cut = not read yet
@@ -477,8 +476,7 @@ function mountStackWidget(host) {
       return `<div class="cell ${cls}"><span>${ch}</span><span class="idx">${top ? 'top' : j}</span></div>`;
     }).join('');
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t(`s = "${s}"`, `s = "${s}"`));
+    widgetLabel(pick(t(`s = "${s}"`, `s = "${s}"`)));
 
     let line;
     if (r.broke >= 0) {

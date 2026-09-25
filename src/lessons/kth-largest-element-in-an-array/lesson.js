@@ -8,22 +8,9 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, tree, readout, slots, stagePanel } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, intList, intValue, listText, presetChips, widgetLabel } from '../../lib/kit.js';
 
 const MAX_LEN = 10;
-
-function parseNums(text) {
-  const s = text.trim().replace(/^\[|\]$/g, '').trim();
-  const nums = s ? s.split(',').map((x) => {
-    const v = x.trim();
-    const n = Number(v);
-    if (v === '' || !Number.isInteger(n)) throw new Error('integers, separated by commas');
-    return n;
-  }) : [];
-  if (!nums.length) throw new Error('at least one value');
-  if (nums.length > MAX_LEN) throw new Error(`at most ${MAX_LEN} values, so the stage stays readable`);
-  return nums;
-}
 
 const ord = (n) => {
   const s = ['th', 'st', 'nd', 'rd'];
@@ -386,12 +373,10 @@ function mountRankWidget(host) {
     q('#qw-k').max = String(nums.length);
     q('#qw-k').value = String(kk);
     q('[data-out]').textContent = String(kk);
-    q('[data-presets]').innerHTML = QW_SETS.map((x, j) =>
-      `<button class="chip" data-set="${j}"${j === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
     q('[data-arr]').innerHTML = desc.map((v, x) =>
       `<div class="cell ${x < kk ? 'kept' : 'cut'}${x === kk - 1 ? ' picked' : ''}"><span>${v}</span><span class="idx">${ord(x + 1)}</span></div>`).join('');
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t('sorted largest first', 'အကြီးဆုံးမှ စ၍ sort'));
+    widgetLabel(pick(t('sorted largest first', 'အကြီးဆုံးမှ စ၍ sort')));
     q('[data-line]').innerHTML = pick(wrong === undefined
       ? t(`There are only ${distinct.length} distinct ${distinct.length === 1 ? 'value' : 'values'}, so a "${ord(kk)} distinct" does not even exist — but the ${ord(kk)} largest is ${answer}.`,
           `ကွဲပြားသော value ${distinct.length} ခုသာ ရှိသဖြင့် "${kk} ခုမြောက် ကွဲပြား" မရှိပါ — သို့သော် ${kk} ခုမြောက် အကြီးဆုံးမှာ ${answer}။`)
@@ -448,8 +433,8 @@ const APPROACH = {
 mountLesson({
   input: { nums: [3, 2, 1, 5, 6, 4], k: 2 },
   controls: [
-    { key: 'nums', label: 'nums', value: '3, 2, 1, 5, 6, 4', parse: parseNums, format: (a) => a.join(', ') },
-    { key: 'k', label: 'k', type: 'number', value: 2, parse: (v) => { const n = Number(v); if (!Number.isInteger(n) || n < 1) throw new Error('k is at least 1'); return n; } },
+    { key: 'nums', label: 'nums', value: '3, 2, 1, 5, 6, 4', parse: intList({ max: MAX_LEN }), format: listText },
+    { key: 'k', label: 'k', type: 'number', value: 2, parse: intValue({ lo: 1 }) },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [3, 2, 1, 5, 6, 4], k: 2 } },

@@ -15,7 +15,7 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, slots } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, intList, intValue, listText, presetChips, widgetLabel } from '../../lib/kit.js';
 
 const MAX_N = 12;
 
@@ -1947,10 +1947,8 @@ function mountRankWidget(host) {
     slider.max = String(Math.max(1, counts.size));
     slider.value = String(x);
     q('[data-out]').textContent = String(x);
-    q('[data-presets]').innerHTML = QW_SETS.map((p, i) =>
-      `<button class="chip" data-set="${i}"${i === state.set ? ' aria-pressed="true"' : ''}>${pick(p.label)}</button>`).join('');
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(L.valuesDistinct(win.length, counts.size));
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
+    widgetLabel(pick(L.valuesDistinct(win.length, counts.size)));
   }
 
   host.addEventListener('input', (ev) => {
@@ -2014,24 +2012,12 @@ const APPROACH = {
  * Last in the file on purpose: mountLesson runs the widget immediately, so
  * every const the widget reads must already be initialised. */
 
-const parseNums = (text) => {
-  const a = text.split(/[,\s]+/).filter(Boolean).map(Number);
-  if (!a.length || a.some((v) => !Number.isInteger(v) || v < 1)) throw new Error('positive integers, separated by commas');
-  if (a.length > MAX_N) throw new Error(`at most ${MAX_N} values, so the stage stays readable`);
-  return a;
-};
-const parseInt1 = (text) => {
-  const v = Number(String(text).trim());
-  if (!Number.isInteger(v) || v < 1) throw new Error('a whole number, 1 or more');
-  return v;
-};
-
 mountLesson({
   input: { nums: [1, 1, 2, 2, 3, 4, 2, 3], k: 6, x: 2 },
   controls: [
-    { key: 'nums', label: 'nums', value: '1, 1, 2, 2, 3, 4, 2, 3', parse: parseNums },
-    { key: 'k', label: t('k — window', 'k — window အရွယ်'), type: 'number', value: 6, min: 1, parse: parseInt1 },
-    { key: 'x', label: t('x — keep', 'x — ထားမည့်အရေအတွက်'), type: 'number', value: 2, min: 1, parse: parseInt1 },
+    { key: 'nums', label: 'nums', value: '1, 1, 2, 2, 3, 4, 2, 3', parse: intList({ max: MAX_N, lo: 1 }), format: listText },
+    { key: 'k', label: t('k — window', 'k — window အရွယ်'), type: 'number', value: 6, min: 1, parse: intValue({ lo: 1 }) },
+    { key: 'x', label: t('x — keep', 'x — ထားမည့်အရေအတွက်'), type: 'number', value: 2, min: 1, parse: intValue({ lo: 1 }) },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [1, 1, 2, 2, 3, 4, 2, 3], k: 6, x: 2 } },

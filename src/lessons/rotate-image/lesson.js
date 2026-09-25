@@ -9,7 +9,7 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, slots, stagePanel, readout } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, labelledRows, stageGap } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, labelledRows, stageGap, presetChips, widgetLabel } from '../../lib/kit.js';
 
 const MAX_N = 5;
 
@@ -331,15 +331,13 @@ function mountTurnWidget(host) {
     const inRing = new Map(ring.map(([a, b], x) => [key(a, b), x]));
     const [ti, tj] = ring[1];
     const center = ring.every(([a, b]) => a === state.i && b === state.j);
-    q('[data-presets]').innerHTML = QW_SETS.map((x, jj) =>
-      `<button class="chip" data-set="${jj}"${jj === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
     q('[data-grid]').innerHTML = m.map((row, a) => `<div class="q-arr">${row.map((v, b) => {
       const x = inRing.get(key(a, b));
       const cls = x == null ? '' : x === 0 ? 'kept picked' : x === 1 ? 'kept picked amber' : 'kept';
       return `<div class="cell ${cls}" role="button" tabindex="0" data-i="${a}" data-j="${b}"><span>${v}</span><span class="idx">${a},${b}</span></div>`;
     }).join('')}</div>`).join('');
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t('click a cell', 'cell တစ်ခု နှိပ်ပါ'));
+    widgetLabel(pick(t('click a cell', 'cell တစ်ခု နှိပ်ပါ')));
     q('[data-line]').innerHTML = pick(center
       ? t(`(${state.i},${state.j}) is the centre of an odd-sized matrix: a quarter turn leaves it where it is.`,
           `(${state.i},${state.j}) သည် မဂဏန်း အရွယ် matrix ၏ အလယ် — လေးပုံတစ်ပုံ လှည့်ခြင်းက ၎င်းကို နေရာတွင်ပင် ထားသည်။`)

@@ -10,7 +10,7 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, kv, readout, slots, stagePanel } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, presetChips, widgetLabel } from '../../lib/kit.js';
 
 const MAX_LEN = 12;
 
@@ -413,8 +413,7 @@ function mountRunWidget(host) {
     for (let x = from; x <= to && dupAt < 0; x++) if (str.indexOf(str[x], from) < x) dupAt = x;
     const firstAt = dupAt >= 0 ? str.indexOf(str[dupAt], from) : -1;
 
-    q('[data-presets]').innerHTML = QW_SETS.map((x, j) =>
-      `<button class="chip" data-set="${j}"${j === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
     q('[data-arr]').innerHTML = [...str].map((ch, x) => {
       const inRun = x >= from && x <= to;
       const cls = x === dupAt || x === firstAt ? 'cut' : inRun ? 'kept' : '';
@@ -422,8 +421,7 @@ function mountRunWidget(host) {
       return `<div class="cell ${cls}${ends ? ' picked' : ''}" role="button" tabindex="0" aria-pressed="${ends}" data-i="${x}"><span>${vis(ch)}</span><span class="idx">${x}</span></div>`;
     }).join('');
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t(`click the ${state.next === 'from' ? 'start' : 'end'}`, `${state.next === 'from' ? 'အစ' : 'အဆုံး'} ကို နှိပ်ပါ`));
+    widgetLabel(pick(t(`click the ${state.next === 'from' ? 'start' : 'end'}`, `${state.next === 'from' ? 'အစ' : 'အဆုံး'} ကို နှိပ်ပါ`)));
 
     q('[data-line]').innerHTML = pick(dupAt >= 0
       ? t(`${quote(run)} repeats '${vis(str[dupAt])}' (indices ${firstAt} and ${dupAt}), so it does not count. A substring cannot skip the second copy — skipping makes a subsequence.`,

@@ -11,23 +11,9 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, readout, slots, stagePanel } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, intList, listText, presetChips, widgetLabel } from '../../lib/kit.js';
 
 const MAX_LEN = 12;
-
-function parseNums(text) {
-  const s = text.trim().replace(/^\[|\]$/g, '').trim();
-  const nums = s ? s.split(',').map((x) => {
-    const v = x.trim();
-    const n = Number(v);
-    if (v === '' || !Number.isInteger(n)) throw new Error('integers, separated by commas');
-    if (Math.abs(n) > 10000) throw new Error('values run from -10000 to 10000');
-    return n;
-  }) : [];
-  if (!nums.length) throw new Error('at least one value');
-  if (nums.length > MAX_LEN) throw new Error(`at most ${MAX_LEN} values, so the stage stays readable`);
-  return nums;
-}
 
 const span = (nums, a, b) => `[${nums.slice(a, b + 1).join(', ')}]`;
 
@@ -369,16 +355,14 @@ function mountRunWidget(host) {
     for (const [id, v] of [['#qw-from', from], ['#qw-to', to]]) { q(id).max = String(n - 1); q(id).value = String(v); }
     q('[data-out-from]').textContent = String(from);
     q('[data-out-to]').textContent = String(to);
-    q('[data-presets]').innerHTML = QW_SETS.map((x, j) =>
-      `<button class="chip" data-set="${j}"${j === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
     q('[data-arr]').innerHTML = nums.map((v, x) => {
       const inRun = x >= from && x <= to;
       const cls = inRun && cut >= 0 && x <= cut ? 'cut' : inRun ? 'kept' : '';
       return `<div class="cell ${cls}"><span>${v}</span><span class="idx">${x}</span></div>`;
     }).join('');
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t(`largest here: ${bestOf(nums)}`, `ဤနေရာ အကြီးဆုံး — ${bestOf(nums)}`));
+    widgetLabel(pick(t(`largest here: ${bestOf(nums)}`, `ဤနေရာ အကြီးဆုံး — ${bestOf(nums)}`)));
 
     q('[data-line]').innerHTML = pick(cut >= 0
       ? t(`The run opens with ${span(nums, from, cut)}, which sums to ${worst}. A negative start only drags the total down: drop it and the sum is ${sum - worst}.`,
@@ -444,7 +428,7 @@ const APPROACH = {
 mountLesson({
   input: { nums: [-2, 1, -3, 4, -1, 2, 1, -5, 4] },
   controls: [
-    { key: 'nums', label: 'nums', value: '-2, 1, -3, 4, -1, 2, 1, -5, 4', parse: parseNums, format: (a) => a.join(', ') },
+    { key: 'nums', label: 'nums', value: '-2, 1, -3, 4, -1, 2, 1, -5, 4', parse: intList({ max: MAX_LEN, lo: -10000, hi: 10000 }), format: listText },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [-2, 1, -3, 4, -1, 2, 1, -5, 4] } },

@@ -10,7 +10,7 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, tree, stack, readout, panels, slots, stagePanel } from '../../lib/stage.js';
-import { t, plural, exampleTitle, LANGUAGES, k, c, stageRow, stageGap } from '../../lib/kit.js';
+import { t, plural, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, presetChips, widgetLabel } from '../../lib/kit.js';
 import { buildTree, levelOrder, asNested, preorderKeys, treeDepth, nameOf, treeInput, formatLevelOrder } from '../../lib/tree.js';
 
 const MAX_NODES = 15;
@@ -402,8 +402,7 @@ function mountPathWidget(host) {
     slider.max = String(paths.length);
     slider.value = String(p + 1);
     q('[data-out]').textContent = `${p + 1}/${paths.length}`;
-    q('[data-presets]').innerHTML = QW_SETS.map((x, i) =>
-      `<button class="chip" data-set="${i}"${i === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
 
     const tone = {};
     path.forEach((key) => { tone[ids.indexOf(key)] = 'warn'; });
@@ -413,8 +412,7 @@ function mountPathWidget(host) {
     q('[data-arr]').innerHTML = path.map((key, i) =>
       `<div class="cell ${path.length === best ? 'kept' : 'cut'}"><span>${T.val[key]}</span><span class="idx">${i + 1}</span></div>`).join('');
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t(`${plural(paths.length, 'leaf')}, depth ${best}`, `leaf ${paths.length} ခု၊ depth ${best}`));
+    widgetLabel(pick(t(`${plural(paths.length, 'leaf')}, depth ${best}`, `leaf ${paths.length} ခု၊ depth ${best}`)));
 
     const nodes = path.length;
     const edges = nodes - 1;

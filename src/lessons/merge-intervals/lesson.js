@@ -10,7 +10,7 @@
 import { mountLesson, esc } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, readout, slots, stagePanel } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageGap } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageGap, presetChips, widgetLabel } from '../../lib/kit.js';
 
 const MAX_LEN = 8;
 const TOP = 20;
@@ -441,16 +441,14 @@ function mountOverlapWidget(host) {
     q('#qw-b').value = String(B[0]);
     q('[data-out-a]').textContent = String(A[1]);
     q('[data-out-b]').textContent = String(B[0]);
-    q('[data-presets]').innerHTML = QW_SETS.map((x, j) =>
-      `<button class="chip" data-set="${j}"${j === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
 
     const rows = [{ lo: A[0], hi: A[1], tone: 'res', label: `A ${fmt(A)}` }, { lo: B[0], hi: B[1], tone: 'res', label: `B ${fmt(B)}` }, 'sep'];
     if (overlap) rows.push({ lo: 1, hi: 9, tone: 'hit', label: fmt([1, 9]) });
     else rows.push({ lo: A[0], hi: A[1], tone: 'clear', label: fmt(A) }, { lo: B[0], hi: B[1], tone: 'clear', label: fmt(B) });
     q('[data-tl]').innerHTML = timeline(rows, QW_TOP);
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(overlap ? t('they merge', 'ပေါင်းသည်') : t('they stay apart', 'ခွဲနေသည်'));
+    widgetLabel(pick(overlap ? t('they merge', 'ပေါင်းသည်') : t('they stay apart', 'ခွဲနေသည်')));
 
     q('[data-line]').innerHTML = pick(B[0] === A[1]
       ? t(`A and B share exactly one point, ${A[1]}. That counts as overlapping — example 2 says so — and they merge into [1,9].`,

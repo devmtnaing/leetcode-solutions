@@ -8,7 +8,7 @@
  * 1-bits flip those columns of the accumulator, and the second copy of that
  * value flips them straight back.
  */
-import { t, exampleTitle, LANGUAGES, k, c } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, intList, listText, presetChips, widgetLabel } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, kv, strip as bitRow, slots, stagePanel } from '../../lib/stage.js';
@@ -404,8 +404,7 @@ function mountFoldWidget(host) {
     slider.max = String(a.length);
     slider.value = String(k);
     q('[data-out]').textContent = String(k);
-    q('[data-presets]').innerHTML = QW_SETS.map((x, i) =>
-      `<button class="chip" data-set="${i}"${i === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
 
     // kept = folded in and still in acc · cut = folded in twice, so erased ·
     // plain = not folded yet
@@ -414,8 +413,7 @@ function mountFoldWidget(host) {
       return `<div class="cell ${cls}"><span>${v}</span><span class="idx">${j}</span></div>`;
     }).join('');
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t(`${a.length} values`, `value ${a.length} ခု`));
+    widgetLabel(pick(t(`${a.length} values`, `value ${a.length} ခု`)));
 
     const live = [...seen].filter(([, c]) => c === 1).map(([v]) => v);
     let line;
@@ -497,16 +495,7 @@ mountLesson({
   input: { nums: [4, 1, 2, 1, 2] },
   controls: [
     { key: 'nums', label: 'nums', value: '4, 1, 2, 1, 2',
-      parse: (v) => {
-        const parts = v.split(',').map((x) => x.trim());
-        if (parts.some((p) => p === '')) throw new Error('a value is missing');
-        const nums = parts.map(Number);
-        if (!nums.every(Number.isInteger)) throw new Error('whole numbers only');
-        if (nums.some((x) => x < 0 || x > MAXV)) throw new Error(`keep values 0..${MAXV} so ${BITS} bits stay readable`);
-        if (nums.length > 13) throw new Error('at most 13 values — trimming one would break the pairing');
-        loneValue(nums);
-        return nums;
-      } },
+      parse: intList({ lo: 0, hi: MAXV, max: 13, why: 'and trimming one would break the pairing', check: loneValue }), format: listText },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [2, 2, 1] } },

@@ -11,7 +11,7 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, kv, stack, readout, slots, stagePanel } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageGap } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageGap, intList, listText, presetChips, widgetLabel } from '../../lib/kit.js';
 
 const MAX_LEN = 15;
 
@@ -25,19 +25,6 @@ function majorityOf(nums) {
   const m = [...counts].find(([, n]) => n > half);
   if (!m) throw new Error(`no value appears more than ⌊${nums.length}/2⌋ = ${half} times — the statement guarantees one does`);
   return m[0];
-}
-
-function parseNums(text) {
-  const s = text.trim().replace(/^\[|\]$/g, '').trim();
-  const nums = s ? s.split(',').map((x) => {
-    const v = x.trim();
-    const n = Number(v);
-    if (v === '' || !Number.isInteger(n)) throw new Error('integers, separated by commas');
-    return n;
-  }) : [];
-  if (nums.length > MAX_LEN) throw new Error(`at most ${MAX_LEN} values, so the stage stays readable`);
-  majorityOf(nums);
-  return nums;
 }
 
 /* ---------------- step generators ---------------- */
@@ -374,15 +361,13 @@ function mountPairWidget(host) {
     slider.max = String(kmax);
     slider.value = String(kk);
     q('[data-out]').textContent = `${kk}/${kmax}`;
-    q('[data-presets]').innerHTML = QW_SETS.map((x, i) =>
-      `<button class="chip" data-set="${i}"${i === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
 
     // cut = crossed out in a pair · kept = a copy of m still standing
     q('[data-arr]').innerHTML = nums.map((v, i) =>
       `<div class="cell${cut.has(i) ? ' cut' : v === m ? ' kept' : ''}"><span>${v}</span><span class="idx">${i}</span></div>`).join('');
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = `n = ${n} · ⌊n/2⌋ = ${half}`;
+    widgetLabel(`n = ${n} · ⌊n/2⌋ = ${half}`);
 
     q('[data-line]').innerHTML = pick(!isMajority
       ? (kk === kmax
@@ -464,7 +449,7 @@ const APPROACH = {
 mountLesson({
   input: { nums: [2, 2, 1, 1, 1, 2, 2] },
   controls: [
-    { key: 'nums', label: 'nums', value: '2, 2, 1, 1, 1, 2, 2', parse: parseNums, format: (a) => a.join(', ') },
+    { key: 'nums', label: 'nums', value: '2, 2, 1, 1, 1, 2, 2', parse: intList({ max: MAX_LEN, check: majorityOf }), format: listText },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [3, 2, 3] } },

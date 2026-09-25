@@ -5,7 +5,7 @@
  * same question by *skipping* the characters the filter would have removed —
  * same O(n) time, but the only state that survives a step is two integers.
  */
-import { t, plural, exampleTitle, LANGUAGES, k, c, verdictAnswer, stageRow } from '../../lib/kit.js';
+import { t, plural, exampleTitle, LANGUAGES, k, c, verdictAnswer, stageRow, presetChips, widgetLabel } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, readout, stagePanel } from '../../lib/stage.js';
@@ -524,16 +524,14 @@ function mountFilterWidget(host) {
     slider.value = String(k);
     slider.disabled = pairs === 0;
     q('[data-out]').textContent = pairs ? String(k) : '—';
-    q('[data-presets]').innerHTML = QW_SETS.map((x, i) =>
-      `<button class="chip" data-set="${i}"${i === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
 
     q('[data-arr]').innerHTML = s.map((ch, i) => {
       const on = pairs && (i === a || i === b);
       return `<div class="cell ${isAlnum(ch) ? 'kept' : 'cut'}${on ? ' picked amber' : ''}"><span>${e(show(ch))}</span><span class="idx">${i}</span></div>`;
     }).join('');
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t(`${s.length} characters, ${m} count`, `စာလုံး ${s.length} လုံး၊ ${m} လုံး အရေးပါ`));
+    widgetLabel(pick(t(`${s.length} characters, ${m} count`, `စာလုံး ${s.length} လုံး၊ ${m} လုံး အရေးပါ`)));
 
     let line;
     if (m === 0) {

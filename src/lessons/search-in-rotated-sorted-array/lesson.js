@@ -10,24 +10,14 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, readout, slots, stagePanel } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, intList, intValue, listText, widgetLabel } from '../../lib/kit.js';
 
 const MAX_LEN = 12;
 
-function parseNums(text) {
-  const s = text.trim().replace(/^\[|\]$/g, '').trim();
-  const nums = s ? s.split(',').map((x) => {
-    const v = x.trim();
-    const n = Number(v);
-    if (v === '' || !Number.isInteger(n)) throw new Error('integers, separated by commas');
-    return n;
-  }) : [];
-  if (!nums.length) throw new Error('at least one value');
-  if (nums.length > MAX_LEN) throw new Error(`at most ${MAX_LEN} values, so the stage stays readable`);
-  if (new Set(nums).size !== nums.length) throw new Error('the values must be distinct');
+/* The statement's promise: a sorted array, rotated once. */
+function rotatedOnce(nums) {
   const drops = nums.filter((v, i) => i > 0 && v < nums[i - 1]).length;
   if (drops > 1 || (drops === 1 && nums.at(-1) > nums[0])) throw new Error('a sorted array, rotated once — like 4, 5, 6, 7, 0, 1, 2');
-  return nums;
 }
 
 const span = (nums, a, b) => `[${nums.slice(a, b + 1).join(', ')}]`;
@@ -387,8 +377,7 @@ function mountRotationWidget(host) {
       const inSorted = leftSorted ? i <= mid : i >= mid;
       return `<div class="cell ${inSorted ? 'kept' : 'cut'}${i === mid ? ' picked' : ''}"><span>${v}</span><span class="idx">${i}</span></div>`;
     }).join('');
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t(`mid = index ${mid}`, `mid = index ${mid}`));
+    widgetLabel(pick(t(`mid = index ${mid}`, `mid = index ${mid}`)));
     q('[data-line]').innerHTML = pick(drop < 0
       ? t('Not rotated at all: both sides are sorted, and the left one is found first.', 'လုံးဝ မလှည့်ထားပါ — ဘေးနှစ်ဘက်လုံး စီထားပြီး ဘယ်ဘက်ကို အရင်တွေ့သည်။')
       : t(`The drop is from ${nums[drop - 1]} to ${nums[drop]}, between index ${drop - 1} and ${drop} — inside the ${leftSorted ? 'right' : 'left'} side of mid. So the ${leftSorted ? 'left' : 'right'} side has no drop and is sorted.`,
@@ -438,8 +427,8 @@ const EX = [4, 5, 6, 7, 0, 1, 2];
 mountLesson({
   input: { nums: EX, target: 0 },
   controls: [
-    { key: 'nums', label: 'nums', value: EX.join(', '), parse: parseNums, format: (a) => a.join(', ') },
-    { key: 'target', label: 'target', type: 'number', value: 0, parse: Number },
+    { key: 'nums', label: 'nums', value: EX.join(', '), parse: intList({ max: MAX_LEN, distinct: true, check: rotatedOnce }), format: listText },
+    { key: 'target', label: 'target', type: 'number', value: 0, parse: intValue() },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: EX, target: 0 } },

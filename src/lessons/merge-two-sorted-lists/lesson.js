@@ -6,7 +6,7 @@
  * pointer hanging off a dummy node. The recursion holds it in the call stack,
  * and does not link anything until the calls start returning.
  */
-import { t, plural, exampleTitle, LANGUAGES, k, labelledRows } from '../../lib/kit.js';
+import { t, plural, exampleTitle, LANGUAGES, k, labelledRows, intList, presetChips, widgetLabel } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, chain, stack, panels, slots, stagePanel } from '../../lib/stage.js';
@@ -508,8 +508,7 @@ function mountFrontsWidget(host) {
     slider.max = String(total);
     slider.value = String(k);
     q('[data-out]').textContent = String(k);
-    q('[data-presets]').innerHTML = QW_SETS.map((x, n) =>
-      `<button class="chip" data-set="${n}"${n === state.set ? ' aria-pressed="true"' : ''}>${pick(x.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
 
     // cut = already spliced into the answer · kept = a front, one of the only
     // two candidates · plain = behind a front, never looked at yet
@@ -521,8 +520,7 @@ function mountFrontsWidget(host) {
     q('[data-a]').innerHTML = rowHtml('list1', a, i);
     q('[data-b]').innerHTML = rowHtml('list2', b, j);
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t(`${a.length} + ${b.length} nodes`, `node ${a.length} + ${b.length} ခု`));
+    widgetLabel(pick(t(`${a.length} + ${b.length} nodes`, `node ${a.length} + ${b.length} ခု`)));
 
     let line;
     if (k === total) {
@@ -602,19 +600,9 @@ const APPROACH = {
  * Last in the file on purpose: mountLesson runs the widget immediately, so
  * every const the widget reads must already be initialised. */
 
-const parseList = (name) => (v) => {
-  const s = v.trim().replace(/^\[|\]$/g, '').trim();
-  const xs = s === '' ? [] : s.split(',').map((x) => {
-    const n = Number(x.trim());
-    if (x.trim() === '' || !Number.isInteger(n)) throw new Error('integers only');
-    return n;
-  });
-  if (xs.length > 8) throw new Error('eight nodes is as many as the stage can show');
-  for (let i = 1; i < xs.length; i++) {
-    if (xs[i] < xs[i - 1]) throw new Error(`${name} must be sorted`);
-  }
-  return xs;
-};
+const parseList = (name) => intList({ min: 0, max: 8, why: 'as many as the stage can show', check: (xs) => {
+  for (let i = 1; i < xs.length; i++) if (xs[i] < xs[i - 1]) throw new Error(`${name} must be sorted`);
+} });
 
 mountLesson({
   input: { list1: [1, 2, 4], list2: [1, 3, 4] },

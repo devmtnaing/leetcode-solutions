@@ -5,7 +5,7 @@
  * complete this one?" once per element. Same answer, and the second question
  * can be answered without looking at anything else.
  */
-import { t, exampleTitle, LANGUAGES, k, c } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, intList, intValue, listText, presetChips, widgetLabel } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, kv, readout, slots, stagePanel } from '../../lib/stage.js';
@@ -322,8 +322,7 @@ function mountComplementWidget(host) {
     const a = nums();
     q('#qw-target').value = String(target);
     q('[data-out]').textContent = String(target);
-    q('[data-presets]').innerHTML = QW_SETS.map((s, i) =>
-      `<button class="chip" data-set="${i}"${i === state.set ? ' aria-pressed="true"' : ''}>${pick(s.label)}</button>`).join('');
+    q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
 
     q('[data-arr]').innerHTML = a.map((v, i) => {
       const has = partnerOf(i) >= 0;
@@ -335,8 +334,7 @@ function mountComplementWidget(host) {
     const v = a[sel], want = target - v, mate = partnerOf(sel);
     const found = a.map((_, i) => partnerOf(i)).filter((j) => j >= 0).length;
 
-    const label = document.getElementById('q-label');
-    if (label) label.textContent = pick(t(`${a.length} values, target ${target}`, `တန်ဖိုး ${a.length} ခု၊ target ${target}`));
+    widgetLabel(pick(t(`${a.length} values, target ${target}`, `တန်ဖိုး ${a.length} ခု၊ target ${target}`)));
 
     q('[data-line]').innerHTML = pick(mate >= 0
       ? t(`nums[${sel}] = ${v} needs ${target} − ${v} = ${want}, and a ${want} sits at index ${mate}. That pair is the answer.`,
@@ -378,17 +376,11 @@ function mountComplementWidget(host) {
  * Last in the file on purpose: mountLesson runs the widget immediately, so
  * every const the widget reads must already be initialised. */
 
-const parseNums = (v) => {
-  const a = v.split(',').map((x) => Number(x.trim()));
-  if (a.length < 2 || a.some(Number.isNaN)) throw new Error('need at least two numbers');
-  return a.slice(0, 12);
-};
-
 mountLesson({
   input: { nums: [2, 7, 11, 15], target: 9 },
   controls: [
-    { key: 'nums', label: 'nums', value: '2, 7, 11, 15', parse: parseNums },
-    { key: 'target', label: 'target', type: 'number', value: 9, parse: Number },
+    { key: 'nums', label: 'nums', value: '2, 7, 11, 15', parse: intList({ min: 2 }), format: listText },
+    { key: 'target', label: 'target', type: 'number', value: 9, parse: intValue() },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [2, 7, 11, 15], target: 9 } },
