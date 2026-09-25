@@ -26,6 +26,8 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
   background:transparent;color:var(--ink-2);border:1px solid var(--line-2);border-radius:999px;padding:5px 11px;
 }
 .chip:hover{border-color:var(--accent);color:var(--accent)}
+/* A widget chip that is the current choice (presetChips marks it aria-pressed). */
+.chip[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);font-weight:600}
 .warn{color:var(--down);font-size:12.5px;flex-basis:100%}
 
 /* ---------- array strip ---------- */
@@ -307,6 +309,9 @@ td.mono{font-variant-numeric:tabular-nums}
 }
 
 .ex-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(272px,1fr));gap:14px;margin-bottom:18px}
+/* An example's input can be one long unbroken array (the design problems'
+   call lists); let it wrap on a phone rather than widen the page. */
+.ex-grid code{overflow-wrap:anywhere}
 .ex-card{
   background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:15px;
   display:flex;flex-direction:column;gap:9px;

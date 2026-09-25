@@ -18,7 +18,8 @@ What it does, in order:
                shares no code with the solutions
      SKIP      optional {mode: predicate(case_line)} for cases one approach is
                too slow for (say so on the page)
-     BIG_STACK optional True: run Ruby and Node with a larger stack, for
+     BIG_STACK optional True: run Ruby and Node with a larger stack (and a
+               64 MB OS stack limit), for
                recursive listings the page already badges as overflowing the
                default one at the constraint
 2. Writes the corpus to .verify-cache/<slug>/ and extracts the listings from the
@@ -43,13 +44,24 @@ def command(lang, work, big_stack=False):
     if lang == 'python':
         return ['python3', f'{work}/main.py']
     if lang == 'javascript':
-        return ['node'] + (['--stack-size=4000'] if big_stack else []) + [f'{work}/main.cjs']
+        return ['node'] + (['--stack-size=16000'] if big_stack else []) + [f'{work}/main.cjs']
     if lang == 'go':
         return ['docker', 'run', '--rm', '-i', '-v', f'{work}:/w', '-w', '/w', 'golang:1.23-alpine',
                 'sh', '-c', 'go build -o m main.go && ./m']
     if lang == 'rust':
         return ['docker', 'run', '--rm', '-i', '-v', f'{work}:/w', '-w', '/w', 'rust:1-slim',
                 'sh', '-c', 'rustc -O -o m main.rs 2>&1 >/dev/null | grep -E "^error" ; ./m']
+
+
+def raise_stack():
+    """For BIG_STACK: let the child's main thread grow to 64 MB. Node's
+    --stack-size only moves V8's own limit; past the OS limit (8 MB by default)
+    the process segfaults with no output instead of throwing."""
+    import resource
+    soft, hard = resource.getrlimit(resource.RLIMIT_STACK)
+    want = 64 << 20 if hard == resource.RLIM_INFINITY else min(hard, 64 << 20)
+    if soft != resource.RLIM_INFINITY and soft < want:
+        resource.setrlimit(resource.RLIMIT_STACK, (want, hard))
 
 
 def main():
@@ -113,7 +125,8 @@ def main():
             main_name = 'main.cjs' if lang == 'javascript' else 'main.' + ext
             with open(f'{work}/{main_name}', 'w') as f:
                 f.write(S.DRIVERS[lang].replace('{SOL}', solution))
-            r = subprocess.run(command(lang, work, big_stack), input=cases, capture_output=True, text=True, env=env)
+            r = subprocess.run(command(lang, work, big_stack), input=cases, capture_output=True, text=True, env=env,
+                               preexec_fn=raise_stack if big_stack and lang in ('ruby', 'javascript') else None)
             got = r.stdout.split('\n')
             bad = [i for i, (_, e) in enumerate(todo) if i >= len(got) or got[i] != e]
             if bad:

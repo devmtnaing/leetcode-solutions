@@ -461,8 +461,16 @@ function markVars(lineHtml, names, aliases) {
   const keys = [...wanted.keys()].filter(Boolean).sort((a, b) => b.length - a.length);
   if (!keys.length) return lineHtml;
   const pattern = new RegExp(`(${keys.map((k) => k.replace(/[.*+?^${}()|[\]\\@]/g, '\\$&')).join('|')})(?![A-Za-z0-9_])`, 'g');
+  // A comment is prose about the code, not the code: "every word" in one
+  // must not light up as the variable `word`. Comments are c() spans.
+  let inComment = false;
   return lineHtml.split(/(<[^>]*>|&[a-z#0-9]+;)/i).map((part) => {
-    if (part.startsWith('<') || part.startsWith('&')) return part;
+    if (part.startsWith('<')) {
+      if (part === '<span class="c">') inComment = true;
+      else if (part === '</span>') inComment = false;
+      return part;
+    }
+    if (part.startsWith('&') || inComment) return part;
     return part.replace(pattern, (tok, _m, offset) => {
       if (/[A-Za-z0-9_.@$]/.test(part.charAt(offset - 1))) return tok;
       return `<span class="var" data-c="${esc(wanted.get(tok))}">${tok}</span>`;
