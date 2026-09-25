@@ -102,7 +102,7 @@
    "slug": "maximum-depth-of-binary-tree",
    "difficulty": "Easy",
    "paid": false,
-   "acRate": "78.6%",
+   "acRate": "78.7%",
    "tags": [
     "Tree",
     "Depth-First Search",
@@ -117,7 +117,7 @@
    "slug": "single-number",
    "difficulty": "Easy",
    "paid": false,
-   "acRate": "78.3%",
+   "acRate": "78.4%",
    "tags": [
     "Array",
     "Bit Manipulation"
@@ -144,7 +144,7 @@
    "slug": "climbing-stairs",
    "difficulty": "Easy",
    "paid": false,
-   "acRate": "54.3%",
+   "acRate": "54.4%",
    "tags": [
     "Math",
     "Dynamic Programming",
@@ -188,7 +188,7 @@
    "slug": "valid-palindrome",
    "difficulty": "Easy",
    "paid": false,
-   "acRate": "54.3%",
+   "acRate": "54.4%",
    "tags": [
     "Two Pointers",
     "String"
@@ -220,7 +220,8 @@
    "tags": [
     "Array",
     "Hash Table",
-    "Sliding Window"
+    "Sliding Window",
+    "Heap (Priority Queue)"
    ],
    "extra": true,
    "category": "Sliding Window"
@@ -407,7 +408,7 @@
    "slug": "lowest-common-ancestor-of-a-binary-tree",
    "difficulty": "Medium",
    "paid": false,
-   "acRate": "70.1%",
+   "acRate": "70.2%",
    "tags": [
     "Tree",
     "Depth-First Search",
@@ -454,7 +455,7 @@
    "slug": "median-of-two-sorted-arrays",
    "difficulty": "Hard",
    "paid": false,
-   "acRate": "47.6%",
+   "acRate": "47.7%",
    "tags": [
     "Array",
     "Binary Search",
@@ -692,7 +693,8 @@
    "tags": [
     "Array",
     "Hash Table",
-    "Sliding Window"
+    "Sliding Window",
+    "Heap (Priority Queue)"
    ],
    "extra": true,
    "category": "Sliding Window"

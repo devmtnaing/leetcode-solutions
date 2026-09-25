@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { SITE_NAME } from '../data/site';
 import problems from '../data/problems.json';
+import { asOf } from '../data/problems-meta.json';
 
 interface Problem {
   id: number; title: string; slug: string; difficulty: 'Easy' | 'Medium' | 'Hard';
@@ -121,7 +122,7 @@ const haystack = (p: Problem) => [p.id, p.title, p.category, ...p.tags].join(' '
                   </div>
                   <span class="ptags">{p.tags.slice(0, 3).join(' · ')}</span>
                   <span class={`diff ${p.difficulty.toLowerCase()}`}>{p.difficulty}</span>
-                  <span class="prate" title="Acceptance rate on LeetCode">{p.acRate}</span>
+                  <span class="prate" title={`Acceptance rate on LeetCode, as of ${asOf}`}>{p.acRate}</span>
                 </li>
               ))}
             </ul>
@@ -131,6 +132,7 @@ const haystack = (p: Problem) => [p.id, p.title, p.category, ...p.tags].join(' '
         <p class="plist-empty" data-empty hidden>
           No problems match. <button type="button" data-clear>Clear the filters</button>
         </p>
+        <p class="plist-foot">Difficulty, tags and acceptance rates from LeetCode, as of {asOf}.</p>
       </div>
     </div>
   </div>
