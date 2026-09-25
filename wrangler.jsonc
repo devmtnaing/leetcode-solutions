@@ -8,15 +8,13 @@
 // devmtnaing.com is on the same Cloudflare account.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "learn",
+  "name": "leetcode-solutions",
   "compatibility_date": "2026-09-25",
   "assets": {
     "directory": "./dist",
     // /x serves dist/x/index.html; an unknown path gets dist/404.html with a 404
     "html_handling": "auto-trailing-slash",
-    "not_found_handling": "404-page"
+    "not_found_handling": "404-page",
   },
-  "routes": [
-    { "pattern": "learn.devmtnaing.com", "custom_domain": true }
-  ]
+  "routes": [{ "pattern": "learn.devmtnaing.com", "custom_domain": true }],
 }
