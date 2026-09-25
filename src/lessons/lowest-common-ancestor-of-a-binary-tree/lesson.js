@@ -606,11 +606,11 @@ mountLesson({
   // Python (recursion limit raised in the listing) and Go ran a 10⁵ chain.
   // Go and Rust ran in Docker (golang:1.23-alpine, rust:1-slim).
   verification: {
-    ruby: { parents: 'ran here · 20,013 cases', recurse: 'ran here · stack overflows past 7,687 deep' },
+    ruby: { parents: 'ran here · 20,013 cases', recurse: 'ran here · overflows Ruby 3.1\'s default stack past 7,687 deep' },
     python: { parents: 'ran here · 20,013 cases', recurse: 'ran here · 20,011 cases, and a 10⁵-deep chain' },
-    javascript: { parents: 'ran here · 20,013 cases', recurse: 'ran here · stack overflows past 6,906 deep' },
+    javascript: { parents: 'ran here · 20,013 cases', recurse: 'ran here · overflows Node 24\'s default stack past 6,906 deep' },
     go: { parents: 'ran here · 20,013 cases · Go 1.23', recurse: 'ran here · 20,011 cases, and a 10⁵-deep chain · Go 1.23' },
-    rust: { parents: 'ran here · 20,013 cases · rustc 1.98', recurse: 'ran here · stack overflows at 10⁵ deep · rustc 1.98' },
+    rust: { parents: 'ran here · 20,013 cases · rustc 1.98', recurse: 'ran here · overflows the default 8 MB stack at 10⁵ deep · rustc 1.98' },
   },
   caveats: {
     recurse: {

@@ -39,7 +39,7 @@ for _lang, (_old, _new) in _MAIN.items():
     _text = trees._DRIVERS[_lang]
     assert _text.count(_old) == 1, _lang
     DRIVERS[_lang] = _text.replace(_old, _new)
-# Go: the tree builder's buffer is too small for a 10⁵-node line; the new main sizes its own.
+# Go's shared main reads lines of up to 4 MB; this one sizes its buffer for 10⁵-node trees.
 
 BIG_STACK = True   # the recursive Ruby and JavaScript listings overflow their default stacks on deep trees
 # The recursion is not run on the two 10⁵-deep chains: see the badges.

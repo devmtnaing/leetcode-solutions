@@ -190,7 +190,10 @@ node scripts/check-lessons.mjs            # every lesson — structure and forma
 node scripts/check-lessons.mjs two-sum    # one
 python3 scripts/verify/run.py <slug>      # every listing × 5 languages, then every walkthrough
 python3 scripts/verify/run.py <slug> --from DIR   # listing files, before they are in lesson.js
+npm run build && npm run audit -- <slug>  # in a browser: a lit line on every step, presets, errors, 400px
 ```
 
+`npm run audit` needs Chromium once: `npx playwright install chromium`.
 Then open the lesson beside any other in a browser at the same width. The
-checker proves the parts exist; only looking proves they read well.
+checker and the audit prove the parts exist and behave; only looking proves
+they read well.

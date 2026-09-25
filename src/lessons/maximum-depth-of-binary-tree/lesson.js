@@ -542,9 +542,9 @@ mountLesson({
   // corpus only because 20,000 small cases warmed the JIT first: run cold, one
   // chain per process, Node 24's default stack overflows past 7,774 nodes.
   verification: {
-    ruby: { dfs: 'ran here · stack overflows at 10⁴ deep', bfs: 'ran here · 20,010 cases' },
+    ruby: { dfs: 'ran here · overflows Ruby 3.1\'s default stack at 10⁴ deep', bfs: 'ran here · 20,010 cases' },
     python: 'ran here · 20,010 cases',
-    javascript: { dfs: 'ran here · stack overflows at 10⁴ deep', bfs: 'ran here · 20,010 cases' },
+    javascript: { dfs: 'ran here · overflows Node 24\'s default stack at 10⁴ deep', bfs: 'ran here · 20,010 cases' },
     go: 'ran here · 20,010 cases · Go 1.23',
     rust: 'ran here · 20,010 cases · rustc 1.98',
   },

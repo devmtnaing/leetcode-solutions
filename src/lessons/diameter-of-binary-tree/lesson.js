@@ -672,9 +672,9 @@ mountLesson({
   // and 7,773. Both pass all 20,009 cases with a larger stack
   // (RUBY_THREAD_VM_STACK_SIZE, node --stack-size).
   verification: {
-    ruby: 'ran here · stack overflows at 10⁴ deep',
+    ruby: 'ran here · overflows Ruby 3.1\'s default stack at 10⁴ deep',
     python: 'ran here · 20,009 cases',
-    javascript: 'ran here · stack overflows at 10⁴ deep',
+    javascript: 'ran here · overflows Node 24\'s default stack at 10⁴ deep',
     go: 'ran here · 20,009 cases · Go 1.23',
     rust: 'ran here · 20,009 cases · rustc 1.98',
   },

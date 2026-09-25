@@ -175,12 +175,15 @@ Things that have bitten before:
 
 ```sh
 npm run check        # structure: every key highlighted, every part present
+npm run build && npm run audit -- <slug>   # the page in a real browser
 npm run dev          # then open your page next to /leetcode/two-sum
 ```
 
-In the browser, check that every approach × language highlights a line on
-every step, that the page opens on step 1, and that nothing scrolls sideways at
-400px wide in either language.
+The audit drives the built page in Chromium (once: `npx playwright install
+chromium`): every approach × language highlights a line on every step, every
+preset loads, nothing throws, and nothing scrolls sideways at 400px in either
+language. What it cannot tell you is whether the page reads well — open it
+beside another one and look.
 
 ## Burmese
 
@@ -198,9 +201,9 @@ collects phrasings a native reader should check. Help there is very welcome.
 - [ ] `npm run check` passes
 - [ ] `npm run verify -- <slug>` passes, with Go and Rust run (not skipped)
 - [ ] every badge says what was actually run; every trap output was produced by running it
-- [ ] opens on step 1; every approach × language highlights a line on every step
-- [ ] no sideways scroll at 400px
-- [ ] `npm run build` succeeds
+- [ ] `npm run build` succeeds, then `npm run audit -- <slug>` passes: a line lit on
+      every step, presets load, no page errors, nothing too wide at 400px
+- [ ] opens on step 1, and reads well beside another page at the same width
 - [ ] if you changed how every page is built (`src/lib/`, `src/layouts/`,
       `lesson.css`, `kit.css`, the checker), the skill in
       `.claude/skills/leetcode-solution-page/` and this guide say so too
@@ -211,8 +214,8 @@ touches — every lesson, if it touches the shared kit or the verify scripts.
 Go and Rust run in Docker there too, and `--strict` fails the job if any
 language was skipped. It also warns, without failing, when a PR changes the
 shared page code but neither the skill nor this guide, so a reviewer can ask
-whether the docs need to follow. The browser checks in the list above are
-still yours to do by hand.
+whether the docs need to follow. A third job runs `npm run audit` over every
+page. Reading the page beside another one is still yours to do.
 
 ## Using Claude Code
 

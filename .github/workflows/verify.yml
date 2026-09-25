@@ -1,6 +1,8 @@
 # Checks every pull request the way CONTRIBUTING.md asks a contributor to:
 #
 #   check   — npm run check (every page has every part) and npm run build
+#   audit   — npm run audit: every page driven in a real browser (a line lit on
+#             every step, presets load, no errors, nothing too wide at 400px)
 #   docs    — warns when the shared page code changed but the skill did not
 #   plan    — which lessons the PR touched
 #   verify  — for each of those, every listing in all five languages against
@@ -9,6 +11,11 @@
 # A change to shared code (the kit, the verify scripts, the tree helpers, the
 # dependencies or this file) re-verifies every lesson. Run it by hand from the
 # Actions tab to verify all of them.
+#
+# Node 24, Ruby 3.1 and Python 3.12 are pinned to the versions the badges were
+# measured with: a stack depth a badge quotes ("overflows Ruby 3.1's default
+# stack past 7,687 deep") only holds for that runtime. Change them together
+# with the badges.
 
 name: verify
 
@@ -30,11 +37,25 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
       - run: npm ci
       - run: npm run check
       - run: npm run build
+
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - run: npm run audit
 
   # The skill and CONTRIBUTING.md describe how a page is built. A PR that
   # changes the shared page code without touching either gets a warning (not
@@ -114,7 +135,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
       - run: npm ci
       - uses: actions/setup-python@v5
@@ -122,7 +143,7 @@ jobs:
           python-version: '3.12'
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.3'
+          ruby-version: '3.1'
       - name: Pull the Go and Rust images run.py uses
         run: docker pull -q golang:1.23-alpine && docker pull -q rust:1-slim
       - name: Every listing, five languages, then the walkthroughs

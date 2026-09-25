@@ -8,11 +8,15 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "node scripts/check-lessons.mjs",
-    "verify": "python3 scripts/verify/run.py"
+    "verify": "python3 scripts/verify/run.py",
+    "audit": "node scripts/audit.mjs"
   },
   "dependencies": {
     "astro": "^7.3.3"
   },
   "description": "Interactive, verified LeetCode solution pages — step through the algorithm, copy code that was run in five languages.",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
 }

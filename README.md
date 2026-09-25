@@ -26,6 +26,7 @@ npm install
 npm run dev        # http://localhost:4321
 npm run build      # static site in dist/
 npm run check      # structural check of every lesson
+npm run audit      # every built page in a real browser (after npm run build)
 ```
 
 The home page lists 45 interview problems, 15 each of easy, medium and hard,
@@ -44,6 +45,7 @@ src/lessons/<slug>/             one folder per solution page
 src/lib/                        the shared kit: stepper, stage shapes, trees, i18n
 src/styles/                     tokens, site chrome, the lesson page, the stage
 scripts/check-lessons.mjs       structure and format check
+scripts/audit.mjs               drives every built page in Chromium
 scripts/verify/                 runs every listing in five languages
 verify/<slug>/                  each lesson's test corpus and drivers
 docs/                           how the problem list was chosen; translation notes
