@@ -48,6 +48,13 @@
 .st-row.on{background:var(--accent-soft)}
 .st-row.on .st-k,.st-row.on .st-v{color:var(--accent);font-weight:600}
 .st-k{color:var(--ink-2)}
+/* Row tones. .st-row sets its own background after the generic t-* rules, so
+   the tones are restated here or a toned row stays grey. */
+.st-row.t-up{background:var(--up-soft)}
+.st-row.t-up .st-k,.st-row.t-up .st-v{color:var(--up);font-weight:600}
+.st-row.t-warn{background:var(--amber-soft)}
+.st-row.t-warn .st-k,.st-row.t-warn .st-v{color:var(--amber);font-weight:600}
+.st-row.t-down{background:var(--down-soft)}
 .st-v{color:var(--ink);font-variant-numeric:tabular-nums}
 
 /* stack */

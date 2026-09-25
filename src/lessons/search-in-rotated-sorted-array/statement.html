@@ -1,0 +1,11 @@
+<p data-i18n="ascending အစဉ်ဖြင့် စီထားသော (<strong>ကွဲပြားသော</strong> value များပါသည့်) ကိန်းပြည့် array <code>nums</code> တစ်ခု ရှိသည်။">There is an integer array <code>nums</code> sorted in ascending order (with <strong>distinct</strong> values).</p>
+
+<p data-i18n="function ထဲ မပေးမီ <code>nums</code> ကို မသိရသော index <code>k</code> (<code>1 &lt;= k &lt; nums.length</code>) တွင် <strong>ဘယ်သို့ လှည့်ထားနိုင်</strong>ပြီး ရလဒ် array မှာ <code>[nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]]</code> (<strong>0-indexed</strong>) ဖြစ်သည်။ ဥပမာ <code>[0,1,2,4,5,6,7]</code> ကို index <code>3</code> ခု ဘယ်သို့ လှည့်လျှင် <code>[4,5,6,7,0,1,2]</code> ဖြစ်လာနိုင်သည်။">Prior to being passed to your function, <code>nums</code> is <strong>possibly left rotated</strong> at an unknown index
+<code>k</code> (<code>1 &lt;= k &lt; nums.length</code>) such that the resulting array is
+<code>[nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]]</code> (<strong>0-indexed</strong>). For example,
+<code>[0,1,2,4,5,6,7]</code> might be left rotated by <code>3</code> indices and become <code>[4,5,6,7,0,1,2]</code>.</p>
+
+<p data-i18n="လှည့်ပြီး<strong>နောက်</strong> array <code>nums</code> နှင့် ကိန်းပြည့် <code>target</code> ပေးထားသည်။ <code>target</code> သည် <code>nums</code> ထဲ ရှိလျှင် <em>၎င်း၏ index ကို</em>၊ မရှိလျှင် <code>-1</code> ကို ပြန်ပေးပါ။">Given the array <code>nums</code> <strong>after</strong> the possible rotation and an integer <code>target</code>, return
+<em>the index of </em><code>target</code><em> if it is in </em><code>nums</code><em>, or </em><code>-1</code><em> if it is not in </em><code>nums</code>.</p>
+
+<p data-i18n="<code>O(log n)</code> runtime ရှိသော algorithm ကို ရေးရမည်။">You must write an algorithm with <code>O(log n)</code> runtime complexity.</p>
