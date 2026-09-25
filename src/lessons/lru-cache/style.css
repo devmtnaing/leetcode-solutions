@@ -1,0 +1,4 @@
+/* LRU Cache: the strip's cells hold whole calls like "put 1,1", wider than a
+   number, and the widget's rows sit close together. */
+#lesson .strip .cell{width:auto;min-width:46px;padding-inline:8px;font-size:13px}
+#q-widget .q-arr{margin-bottom:8px}

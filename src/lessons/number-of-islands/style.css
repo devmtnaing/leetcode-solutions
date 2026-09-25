@@ -1,0 +1,9 @@
+/* Number of Islands: the grid is rows of cells, packed tighter than
+   labelledRows' default so it reads as a map, with land drawn solid. */
+.isl .rows{gap:6px}
+.isl .rows .row{flex-wrap:nowrap}
+.isl .cell{width:34px;height:40px;font-size:14px}
+.isl .cell.land{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+/* the part 1 widget's grid: one .q-arr per row, close together */
+.isl-w .q-arr{flex-wrap:nowrap;margin-bottom:6px}
+.isl-w{margin-bottom:10px;overflow-x:auto}

@@ -1,0 +1,11 @@
+<p data-i18n="<strong>Least Recently Used (LRU) cache</strong> ၏ စည်းကမ်းများကို လိုက်နာသော data structure တစ်ခု ဒီဇိုင်းဆွဲပါ။">Design a data structure that follows the constraints of a <strong>Least Recently Used (LRU) cache</strong>.</p>
+
+<p data-i18n="<code>LRUCache</code> class ကို implement လုပ်ပါ —">Implement the <code>LRUCache</code> class:</p>
+
+<ul>
+  <li data-i18n="<code>LRUCache(int capacity)</code> သည် LRU cache ကို <strong>အပေါင်း</strong> အရွယ်အစား <code>capacity</code> ဖြင့် initialize လုပ်သည်။"><code>LRUCache(int capacity)</code> Initialize the LRU cache with <strong>positive</strong> size <code>capacity</code>.</li>
+  <li data-i18n="<code>int get(int key)</code> သည် <code>key</code> ရှိလျှင် ၎င်း၏ value ကို ပြန်ပေးသည်၊ မရှိလျှင် <code>-1</code> ပြန်ပေးသည်။"><code>int get(int key)</code> Return the value of the <code>key</code> if the key exists, otherwise return <code>-1</code>.</li>
+  <li data-i18n="<code>void put(int key, int value)</code> သည် <code>key</code> ရှိလျှင် ၎င်း၏ value ကို update လုပ်သည်။ မရှိလျှင် <code>key-value</code> pair ကို cache ထဲ ထည့်သည်။ ဤ operation ကြောင့် key အရေအတွက်သည် <code>capacity</code> ကို ကျော်လျှင် အဟောင်းဆုံး အသုံးပြုထားသော key ကို <strong>ဖယ်ရှား</strong>ပါ။"><code>void put(int key, int value)</code> Update the value of the <code>key</code> if the <code>key</code> exists. Otherwise, add the <code>key-value</code> pair to the cache. If the number of keys exceeds the <code>capacity</code> from this operation, <strong>evict</strong> the least recently used key.</li>
+</ul>
+
+<p data-i18n="<code>get</code> နှင့် <code>put</code> function တစ်ခုစီသည် ပျမ်းမျှ <code>O(1)</code> time complexity ဖြင့် run ရမည်။">The functions <code>get</code> and <code>put</code> must each run in <code>O(1)</code> average time complexity.</p>

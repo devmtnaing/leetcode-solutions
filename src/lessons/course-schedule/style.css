@@ -1,0 +1,24 @@
+/* Course Schedule: the prerequisite graph, drawn by graphSvg() in lesson.js —
+   courses on a circle, one arrow b → a per pair [a, b]. Classes only; the
+   colours follow the strip's tones: amber for the course being worked on,
+   green for done or taken, blue for queued, red for a course on a loop. */
+.cs-graph{display:flex;justify-content:center;overflow-x:auto}
+.cs-graph svg{display:block;max-width:100%;height:auto}
+.g-edge{fill:none;stroke:var(--ink-3);stroke-width:1.5}
+.g-edge.hot{stroke:var(--amber);stroke-width:2.5}
+.g-edge.bad{stroke:var(--down);stroke-width:2.5}
+.g-head{fill:var(--ink-3)}
+.g-head.hot{fill:var(--amber)}
+.g-head.bad{fill:var(--down)}
+.g-node circle{fill:var(--surface);stroke:var(--line-2);stroke-width:1.5}
+.g-node text{fill:var(--ink);font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:500}
+.g-node.on circle{fill:var(--amber-soft);stroke:var(--amber)}
+.g-node.done circle{fill:var(--up-soft);stroke:var(--up)}
+.g-node.queued circle{fill:var(--accent-soft);stroke:var(--accent)}
+.g-node.bad circle{fill:var(--down-soft);stroke:var(--down)}
+.g-node.cur circle{stroke-width:3}
+/* the part 1 widget: courses are clickable, the picked one ringed */
+.g-node[role="button"]{cursor:pointer}
+.g-node[role="button"]:hover circle{stroke:var(--accent)}
+.g-node[role="button"]:focus{outline:none}
+.g-node[role="button"]:focus-visible circle,.g-node.picked circle{stroke:var(--accent);stroke-width:3}

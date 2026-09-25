@@ -1,0 +1,10 @@
+<p data-i18n="<strong>trie</strong> (&quot;try&quot; ဟု အသံထွက်) သို့မဟုတ် <strong>prefix tree</strong> သည် string dataset တစ်ခုထဲရှိ key များကို ထိရောက်စွာ သိမ်းဆည်းပြီး ပြန်ရှာရန် သုံးသော tree data structure တစ်ခု ဖြစ်သည်။ autocomplete နှင့် spellchecker ကဲ့သို့ ဤ data structure ၏ အသုံးချမှု အမျိုးမျိုး ရှိသည်။">A <strong>trie</strong> (pronounced as &quot;try&quot;) or <strong>prefix tree</strong> is a tree data structure used to efficiently store and retrieve keys in a dataset of strings. There are various applications of this data structure, such as autocomplete and spellchecker.</p>
+
+<p data-i18n="Trie class ကို implement လုပ်ပါ —">Implement the Trie class:</p>
+
+<ul>
+  <li data-i18n="<code>Trie()</code> သည် trie object ကို initialize လုပ်သည်။"><code>Trie()</code> Initializes the trie object.</li>
+  <li data-i18n="<code>void insert(String word)</code> သည် string <code>word</code> ကို trie ထဲ ထည့်သည်။"><code>void insert(String word)</code> Inserts the string <code>word</code> into the trie.</li>
+  <li data-i18n="<code>boolean search(String word)</code> သည် string <code>word</code> သည် trie ထဲ ရှိလျှင် (ဆိုလိုသည်မှာ ယခင်က ထည့်ခဲ့လျှင်) <code>true</code>၊ မရှိလျှင် <code>false</code> ပြန်ပေးသည်။"><code>boolean search(String word)</code> Returns <code>true</code> if the string <code>word</code> is in the trie (i.e., was inserted before), and <code>false</code> otherwise.</li>
+  <li data-i18n="<code>boolean startsWith(String prefix)</code> သည် prefix <code>prefix</code> ပါသော ယခင်က ထည့်ခဲ့သည့် string <code>word</code> တစ်ခု ရှိလျှင် <code>true</code>၊ မရှိလျှင် <code>false</code> ပြန်ပေးသည်။"><code>boolean startsWith(String prefix)</code> Returns <code>true</code> if there is a previously inserted string <code>word</code> that has the prefix <code>prefix</code>, and <code>false</code> otherwise.</li>
+</ul>

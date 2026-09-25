@@ -1,0 +1,22 @@
+/* Implement Trie: the strip's cells hold whole calls, wider than a number;
+   the trie is drawn by outline() in lesson.js as one row per node, indented
+   by depth (classes d0–d6), spelling the prefix the node stands for. */
+#lesson .strip .cell{width:auto;min-width:46px;padding-inline:8px;font-size:13px}
+.trie{display:flex;flex-direction:column;gap:3px;font-family:"IBM Plex Mono",monospace;font-size:13px}
+.tr-row{display:flex;align-items:center;gap:8px;min-height:26px}
+.tr-row.d1{margin-left:14px}.tr-row.d2{margin-left:28px}.tr-row.d3{margin-left:42px}
+.tr-row.d4{margin-left:56px}.tr-row.d5{margin-left:70px}.tr-row.d6{margin-left:84px}
+.tr-ch{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding-inline:4px;border-radius:7px;
+  background:var(--sunk);border:1px solid var(--line);color:var(--ink);font-weight:500}
+.tr-pre{color:var(--ink-3);font-size:11.5px}
+.tr-end{font-size:10.5px;font-weight:600;letter-spacing:.04em;color:var(--up);border:1px solid var(--up);border-radius:5px;padding:0 5px}
+.tr-row.path .tr-ch{border-color:var(--up);box-shadow:inset 0 0 0 1px var(--up)}
+.tr-row.on .tr-ch{background:var(--amber-soft);border-color:var(--amber)}
+.tr-row.new .tr-ch{background:var(--up-soft);border-color:var(--up)}
+.tr-row.ghost .tr-ch{border-style:dashed;border-color:var(--down);background:var(--down-soft)}
+.tr-row.ghost .tr-pre{color:var(--down)}
+/* the part 1 widget: whole words in cells, and the prefix field */
+.tw-word{width:auto!important;padding-inline:9px}
+.tw-input{font-family:"IBM Plex Mono",monospace;font-size:14px;width:7.5em;padding:6px 9px;border-radius:7px;
+  border:1px solid var(--line-2);background:var(--surface);color:var(--ink)}
+.tw-input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
