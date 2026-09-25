@@ -9,7 +9,7 @@
  */
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
-import { cells, slots, stagePanel, readout } from '../../lib/stage.js';
+import { cells, slots, stagePanel, readout, trieOutline } from '../../lib/stage.js';
 import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, presetChips, widgetLabel } from '../../lib/kit.js';
 
 const MAX_OPS = 8, MAX_LEN = 6;
@@ -150,18 +150,6 @@ function strip(s, { ops }) {
   });
 }
 
-function outline(s) {
-  const rows = [...s.nodes];
-  if (s.miss) rows.push(s.miss);
-  rows.sort();
-  return `<div class="trie">${rows.map((p) => {
-    const d = Math.min(p.length, MAX_LEN);
-    const ghost = p === s.miss;
-    const cls = ghost ? 'ghost' : p === s.made ? 'new' : p === s.at ? 'on' : s.at != null && s.at.startsWith(p) ? 'path' : '';
-    return `<div class="tr-row d${d} ${cls}"><span class="tr-ch">${p ? p.at(-1) : 'root'}</span>${p ? `<span class="tr-pre">${ghost ? `${p} ✗` : p}</span>` : ''}${s.ends.includes(p) ? '<span class="tr-end">end</span>' : ''}</div>`;
-  }).join('')}</div>`;
-}
-
 function draw(s) {
   if (s.view === 'set') {
     const tone = {};
@@ -173,7 +161,7 @@ function draw(s) {
   const word = s.word ? stagePanel(pick(t('The word', 'Word')), '', stageRow(cells(s.word.split(''), {
     tone: Object.fromEntries(s.word.split('').map((_, i) => [i, s.miss && i === s.i ? 'leaving' : i === s.i ? 'inwin' : i < s.i || (s.i === -1 && s.at != null && s.line.startsWith('has')) ? 'entering' : null]).filter(([, x]) => x)),
   }), '')) + stageGap : '';
-  return word + stagePanel(pick(t('The trie', 'Trie')), pick(t(`${s.nodes.length} nodes · ${s.ends.length} words`, `node ${s.nodes.length} · word ${s.ends.length}`)), outline(s));
+  return word + stagePanel(pick(t('The trie', 'Trie')), pick(t(`${s.nodes.length} nodes · ${s.ends.length} words`, `node ${s.nodes.length} · word ${s.ends.length}`)), trieOutline({ nodes: s.nodes, ends: s.ends, at: s.at, made: s.made, miss: s.miss }));
 }
 
 function answer(s, { ops }) {

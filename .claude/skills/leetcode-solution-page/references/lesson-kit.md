@@ -167,6 +167,7 @@ fails a lesson whose `page.js` leaves one out.
 | `slots(values, o)` | the answer card's slots — for `cfg.answer` |
 | `stagePanel(title, note, inner)` | a titled block inside the stage |
 | `kv` `stack` `chain` `tree` `bars` `readout` `strip` `panels` | the auxiliary shapes |
+| `trieOutline({ nodes, ends, at, made, miss })` | a trie, one row per node named by its prefix |
 
 `cells` tones: `inwin` (amber, looking at it), `entering` (green, joined or
 matched), `leaving` (red dashed, dropped or failed), `done` (faded, settled).

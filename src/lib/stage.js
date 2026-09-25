@@ -199,6 +199,25 @@ export function bars(values, o = {}) {
   return box(label, `<div class="st-bars" style="--bar-h:${height}px">${cells}</div>`);
 }
 
+/* A trie, drawn as an outline: one row per node, indented by depth (to 10),
+ * showing its letter and the prefix it stands for. Nodes are named by their
+ * prefix ('' is the root). `ends` marks nodes where a word ends; `at` is the
+ * node being visited (its ancestors are drawn as the path to it), `made` a
+ * node just created, `miss` a child looked for and not found, drawn as a
+ * ghost row, and `gone` nodes just pruned. Styled by kit.css (.trie). */
+export function trieOutline({ nodes, ends = [], at = null, made = null, miss = null, endLabel = 'end' }) {
+  const rows = [...nodes];
+  if (miss != null && !nodes.includes(miss)) rows.push(miss);
+  rows.sort();
+  return `<div class="trie">${rows.map((p) => {
+    const ghost = p === miss;
+    const cls = ghost ? 'ghost' : p === made ? 'new' : p === at ? 'on' : at != null && at.startsWith(p) ? 'path' : '';
+    return `<div class="tr-row d${Math.min(p.length, 10)} ${cls}"><span class="tr-ch">${esc(p ? p.at(-1) : 'root')}</span>${
+      p ? `<span class="tr-pre">${esc(ghost ? `${p} ✗` : p)}</span>` : ''}${
+      ends.includes(p) ? `<span class="tr-end">${esc(endLabel)}</span>` : ''}</div>`;
+  }).join('')}</div>`;
+}
+
 /* A scalar readout for the values that aren't part of a structure. */
 export function readout(pairs, o = {}) {
   const items = Object.entries(pairs)

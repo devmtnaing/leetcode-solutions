@@ -179,3 +179,20 @@
 .approach-label{display:inline-block;min-width:52px;margin-right:8px;font-family:"IBM Plex Mono",monospace;
   font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
 :root[data-ui="my"] .approach{line-height:1.85;overflow-wrap:break-word}
+
+/* A trie as an outline, one row per node indented by depth: trieOutline() in
+   stage.js (Implement Trie, Word Search II). */
+.trie{display:flex;flex-direction:column;gap:3px;font-family:"IBM Plex Mono",monospace;font-size:13px}
+.tr-row{display:flex;align-items:center;gap:8px;min-height:26px}
+.tr-row.d1{margin-left:14px}.tr-row.d2{margin-left:28px}.tr-row.d3{margin-left:42px}
+.tr-row.d4{margin-left:56px}.tr-row.d5{margin-left:70px}.tr-row.d6{margin-left:84px}
+.tr-row.d7{margin-left:98px}.tr-row.d8{margin-left:112px}.tr-row.d9{margin-left:126px}.tr-row.d10{margin-left:140px}
+.tr-ch{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding-inline:4px;border-radius:7px;
+  background:var(--sunk);border:1px solid var(--line);color:var(--ink);font-weight:500}
+.tr-pre{color:var(--ink-3);font-size:11.5px}
+.tr-end{font-size:10.5px;font-weight:600;letter-spacing:.04em;color:var(--up);border:1px solid var(--up);border-radius:5px;padding:0 5px}
+.tr-row.path .tr-ch{border-color:var(--up);box-shadow:inset 0 0 0 1px var(--up)}
+.tr-row.on .tr-ch{background:var(--amber-soft);border-color:var(--amber)}
+.tr-row.new .tr-ch{background:var(--up-soft);border-color:var(--up)}
+.tr-row.ghost .tr-ch{border-style:dashed;border-color:var(--down);background:var(--down-soft)}
+.tr-row.ghost .tr-pre{color:var(--down)}
