@@ -99,7 +99,8 @@ code-token helpers `k` / `c`, `verdictAnswer` for a true/false answer card,
 `stageRow` / `stageGap` inside the stage, `labelledRows` for a strip card with
 two inputs. Anything a lesson draws uses a class from `lesson.css`, `kit.css`
 or its own `style.css`; never a `style="…"` string (a width that varies can be
-a class per step, as x-sum's tally bars are). A class a second lesson would
+a class per step, as x-sum's tally bars are). In `page.js`'s cost table, the
+gloss under an approach's name is `<span class="sub">`. A class a second lesson would
 want belongs in `kit.css`, next to the helper that emits it.
 
 ### `lesson.js`

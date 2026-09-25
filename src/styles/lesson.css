@@ -210,6 +210,8 @@ td.mono{font-variant-numeric:tabular-nums}
 .cross{color:var(--down);font-weight:600}
 .mid{color:var(--amber);font-weight:600;font-size:12.5px;line-height:1.45}
 .cost figcaption{font-size:12px;color:var(--ink-3);margin-top:10px}
+/* The one-line gloss under an approach's name in the cost table. */
+.cost .sub{color:var(--ink-3);font-size:12.5px}
 
 /* Under the player in 2·2: the keys and what the reader can edit. */
 .play-hint{margin:10px 2px 0;font-size:12.5px;line-height:1.7;color:var(--ink-3)}
@@ -262,7 +264,8 @@ td.mono{font-variant-numeric:tabular-nums}
   background:var(--accent-soft);border-radius:5px;padding:2px 7px;margin-left:8px;
   vertical-align:middle;letter-spacing:.04em;
 }
-.verify{font-family:"IBM Plex Mono",monospace;font-size:11px;padding:3px 8px;border-radius:5px;white-space:nowrap}
+/* A long badge wraps inside its pill rather than pushing the page sideways on a phone. */
+.verify{display:inline-block;max-width:100%;font-family:"IBM Plex Mono",monospace;font-size:11px;padding:3px 8px;border-radius:5px;line-height:1.5}
 .verify.ok{color:var(--up);background:var(--up-soft)}
 .verify.warn{color:var(--amber);background:var(--amber-soft)}
 

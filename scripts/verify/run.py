@@ -6,7 +6,8 @@
     python3 scripts/verify/run.py <slug> --no-docker  skip Go and Rust
     python3 scripts/verify/run.py <slug> --strict     a skipped language fails the run (CI)
     python3 scripts/verify/run.py <slug> --from DIR   run listing files (brute.rb, …)
-                                                      before they are in lesson.js
+                                                      before they are in lesson.js;
+                                                      their ⟦key⟧ markers are stripped
 
 What it does, in order:
 
@@ -29,7 +30,7 @@ What it does, in order:
 
 A language that could not run is reported as SKIPPED, never as passing.
 """
-import argparse, importlib.util, os, shutil, subprocess, sys
+import argparse, importlib.util, os, re, shutil, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..'))
@@ -106,6 +107,8 @@ def main():
             os.makedirs(work)
             with open(f'{listings}/{mode}.{ext}') as f:
                 solution = f.read()
+            if args.source:   # listing files still carry their ⟦key⟧ markers
+                solution = re.sub(r' ⟦\w+⟧$', '', solution, flags=re.M)
             # .cjs: the repo's package.json says "type": "module", and drivers use require()
             main_name = 'main.cjs' if lang == 'javascript' else 'main.' + ext
             with open(f'{work}/{main_name}', 'w') as f:
