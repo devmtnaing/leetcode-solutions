@@ -23,7 +23,8 @@
   border-radius:7px;flex:0 0 auto;
 }
 .st-cell.on{background:var(--accent-soft);border-color:var(--accent)}
-.st-cell.dim{opacity:.4}
+.st-cell.dim{background:transparent;border-style:dashed}
+.st-cell.dim .st-val{color:var(--ink-3)}
 .st-val{font-family:"IBM Plex Mono",monospace;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
 .st-cell.on .st-val{color:var(--accent);font-weight:600}
 .st-idx{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink-3);margin-top:2px}
@@ -37,7 +38,9 @@
 .t-down .st-val{color:var(--down)}
 .t-warn{background:var(--amber-soft);border-color:var(--amber)}
 .t-warn .st-val{color:var(--amber)}
-.t-done{opacity:.55}
+/* Settled: no fill, muted text — faded without dropping below AA contrast. */
+.t-done{background:transparent}
+.t-done .st-val,.t-done .st-k,.t-done .st-v{color:var(--ink-3)}
 
 /* key/value */
 .st-kv{border:1px solid var(--line);border-radius:7px;overflow:hidden;min-width:150px}
@@ -55,6 +58,7 @@
 .st-row.t-warn{background:var(--amber-soft)}
 .st-row.t-warn .st-k,.st-row.t-warn .st-v{color:var(--amber);font-weight:600}
 .st-row.t-down{background:var(--down-soft)}
+.st-row.t-done{background:transparent}
 .st-v{color:var(--ink);font-variant-numeric:tabular-nums}
 
 /* stack */
@@ -128,7 +132,7 @@
   font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;color:var(--accent);
 }
 .player .strip:has(.ptr),.strip.has-ptr{padding-bottom:24px}
-.cell.done{opacity:.45}
+.cell.done{background:transparent;border-style:dotted}
 .strip .strip.has-ptr{display:contents}
 
 /* ---------- shared lesson pieces (the helpers in src/lib/kit.js) ----------
@@ -147,7 +151,7 @@
 .strip.wraps{flex-wrap:wrap;overflow:visible}
 .stage-empty{margin:6px 0}
 .stage-gap{height:16px}
-.faint{opacity:.5}
+.faint{color:var(--ink-3)}
 
 /* Two or more labelled input rows in the strip card: labelledRows(). */
 .rows{display:flex;flex-direction:column;gap:22px}

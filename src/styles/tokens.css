@@ -1,19 +1,21 @@
 /* Palette and shape, in all three theme states: system, forced light,
-   forced dark. Every other stylesheet reads colour only through these. */
+   forced dark. Every other stylesheet reads colour only through these.
+   Text colours clear WCAG AA (4.5:1) on every background they sit on —
+   ground, surface, sunk and the soft tints; npm run audit checks it. */
 :root{
   --ground:#EEF2F2;
   --surface:#FFFFFF;
   --sunk:#E3E9EA;
   --ink:#0F1A1E;
   --ink-2:#4B5D64;
-  --ink-3:#7C8F96;
+  --ink-3:#5B696E;
   --line:#CCD7D9;
   --line-2:#B4C3C6;
-  --accent:#0E7C86;
+  --accent:#0C727B;
   --accent-soft:#D8EDEE;
-  --amber:#9E5F09;
+  --amber:#945908;
   --amber-soft:#F6E7CD;
-  --up:#1B7A55;
+  --up:#197551;
   --up-soft:#D6EDE2;
   --down:#A63A2B;
   --down-soft:#F6DED9;
@@ -27,7 +29,7 @@
     --sunk:#0F1A1D;
     --ink:#E7EFF0;
     --ink-2:#A2B5BB;
-    --ink-3:#7A8D94;
+    --ink-3:#8C9CA2;
     --line:#26363A;
     --line-2:#33474C;
     --accent:#4FC0C9;
@@ -47,7 +49,7 @@
   --sunk:#0F1A1D;
   --ink:#E7EFF0;
   --ink-2:#A2B5BB;
-  --ink-3:#7A8D94;
+  --ink-3:#8C9CA2;
   --line:#26363A;
   --line-2:#33474C;
   --accent:#4FC0C9;

@@ -16,8 +16,8 @@
 .tl-row.cur .tl-c.on{background:var(--amber)}
 .tl-row.res .tl-c.on{background:var(--accent)}
 .tl-row.hit .tl-c.on{background:var(--up)}
-.tl-row.gone{opacity:.45}
-.tl-row.gone .tl-c.on{background:var(--down)}
+.tl-row.gone .tl-lab{color:var(--ink-3);text-decoration:line-through}
+.tl-row.gone .tl-c.on{background:var(--down-soft);outline:1px dashed var(--down);outline-offset:-1px}
 .tl-row.clear .tl-c.on{background:var(--accent);opacity:.55}
 .tl-row.cur .tl-lab{color:var(--amber);font-weight:600}
 /* the axis: a number under every fifth point */

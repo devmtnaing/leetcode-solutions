@@ -12,6 +12,9 @@
 //   · a toned row in a key/value table is actually coloured (a later CSS
 //     rule once turned every highlighted row grey)
 //   · the home page loads, lists every lesson, and fits at 400px
+//   · axe-core finds no WCAG 2 A/AA violation (contrast, labels, keyboard
+//     access) on any page, in the light and the dark theme, at the first
+//     step and partway through
 //
 // Exits 1 on any finding. Needs Chromium: `npx playwright install chromium`.
 import { createServer } from 'node:http';
@@ -22,6 +25,23 @@ import { chromium } from 'playwright';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = resolve(ROOT, 'dist');
+const AXE = readFileSync(resolve(ROOT, 'node_modules/axe-core/axe.min.js'), 'utf8');
+
+/* WCAG 2 A and AA problems on the page as it stands, one line per rule. */
+async function accessibility(page, where) {
+  await page.addScriptTag({ content: AXE });
+  const found = await page.evaluate(async () => (await window.axe.run(document, { runOnly: ['wcag2a', 'wcag2aa'] }))
+    .violations.map((v) => `${v.id}: ${v.help} — ${v.nodes.length}× e.g. ${v.nodes[0].target.join(' ')}`));
+  return found.map((x) => `a11y (${where}) ${x}`);
+}
+
+async function scrubTo(page, fraction) {
+  await page.evaluate((f) => {
+    const s = document.querySelector('#lesson [data-scrub]');
+    s.value = String(Math.floor(Number(s.max) * f));
+    s.dispatchEvent(new Event('input', { bubbles: true }));
+  }, fraction);
+}
 
 const all = readdirSync(resolve(ROOT, 'src/lessons')).filter((d) => existsSync(resolve(ROOT, 'src/lessons', d, 'page.js'))).sort();
 const only = process.argv.slice(2);
@@ -141,6 +161,17 @@ async function main() {
     await page.reload();
     await page.waitForSelector('#lesson .atab');
     const r = await page.evaluate(stepEverything);
+    const a11y = [];
+    for (const scheme of ['light', 'dark']) {
+      await page.emulateMedia({ colorScheme: scheme });
+      await page.goto(`${BASE}/leetcode/${slug}`);
+      await page.waitForSelector('#lesson .atab');
+      for (const f of [0, 0.35, 0.7, 1]) {
+        await scrubTo(page, f);
+        a11y.push(...await accessibility(page, `${scheme}, ${f === 0 ? 'first step' : f === 1 ? 'last step' : `${f * 100}% in`}`));
+      }
+    }
+    await page.emulateMedia({ colorScheme: 'light' });
     await page.setViewportSize({ width: 400, height: 850 });
     await page.waitForTimeout(100);
     const wide = await page.evaluate(widestAt400);
@@ -152,6 +183,7 @@ async function main() {
       ...r.fields,
       ...r.greyTone.map((x) => `toned table row renders grey: ${x}`),
       ...wide,
+      ...new Set(a11y),
     ]);
   }
 
@@ -165,10 +197,18 @@ async function main() {
       links: [...document.querySelectorAll('a.ptitle')].map((a) => a.getAttribute('href')),
     }));
     const missing = slugs.filter((s) => !home.links.includes(`/leetcode/${s}`));
+    const a11y = [];
+    for (const scheme of ['light', 'dark']) {
+      await page.setViewportSize({ width: 1300, height: 900 });
+      await page.emulateMedia({ colorScheme: scheme });
+      await page.goto(BASE);
+      a11y.push(...await accessibility(page, scheme));
+    }
     report('home page', [
       ...errors,
       ...(home.over > 0 ? [`${home.over}px too wide at 400px`] : []),
       ...missing.map((s) => `no link to /leetcode/${s}`),
+      ...a11y,
     ]);
   }
 

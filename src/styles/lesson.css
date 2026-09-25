@@ -41,10 +41,11 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
   background:var(--sunk);border:1px solid var(--line);color:var(--ink-3);
   font-family:"IBM Plex Mono",monospace;font-size:16px;font-weight:500;
 }
-.cell .idx{font-size:9.5px;color:var(--ink-3);opacity:.75}
+.cell .idx{font-size:9.5px;color:var(--ink-3)}
 .cell.inwin{background:var(--amber-soft);border-color:var(--amber);color:var(--ink)}
 .cell.entering{box-shadow:inset 0 0 0 2px var(--up);border-color:var(--up)}
-.cell.leaving{opacity:.55;border-style:dashed;border-color:var(--down);background:var(--down-soft)}
+.cell.leaving{border-style:dashed;border-color:var(--down);background:var(--down-soft);color:var(--ink-2)}
+.cell.leaving .idx{color:var(--ink-2)}
 
 /* ---------- transport ---------- */
 .transport{
@@ -112,7 +113,7 @@ input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-width:120px}
 .kard .face .x{color:var(--ink-3);font-weight:400;font-size:13px;margin-inline:1px}
 .kard .key{font-size:10px;color:var(--ink-3)}
 .shelf-top .kard{border-color:var(--accent);border-left-width:3px}
-.shelf-rest .kard{opacity:.72;border-style:dashed}
+.shelf-rest .kard{border-style:dashed;background:transparent}
 .kard.hl-up{border-color:var(--up);background:var(--up-soft)}
 .kard.hl-up .face{color:var(--up)}
 .kard.hl-down{border-color:var(--down);background:var(--down-soft)}
@@ -143,7 +144,9 @@ input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-width:120px}
 /* brute-force stage */
 .bf-steps{display:flex;flex-direction:column;gap:14px}
 .bf-step{padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--sunk);transition:opacity .2s}
-.bf-step.pending{opacity:.32}
+/* Not reached yet: dashed and unfilled, its text muted rather than faded. */
+.bf-step.pending{background:transparent;border-style:dashed}
+.bf-step.pending, .bf-step.pending *{color:var(--ink-3)}
 .bf-step.active{background:var(--surface);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .bf-step h3{margin-bottom:9px;color:var(--ink-2)}
 .bf-step h3 .n{font-family:"IBM Plex Mono",monospace;color:var(--accent);margin-right:6px}
@@ -157,7 +160,8 @@ input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-width:120px}
   font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;color:var(--down);
   border-left:2px dashed var(--down);padding-left:7px;align-self:stretch;display:flex;align-items:center;
 }
-.kard.dropped{opacity:.45;border-style:dashed}
+.kard.dropped{border-style:dashed;background:transparent}
+.kard.dropped .face{color:var(--ink-3)}
 
 /* code */
 .code{
@@ -242,7 +246,8 @@ td.mono{font-variant-numeric:tabular-nums}
 .q-arr{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
 .q-arr .cell{width:40px;height:44px;font-size:15px}
 .q-arr .cell.kept{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
-.q-arr .cell.cut{opacity:.38;border-style:dashed}
+/* Out of play: dashed and see-through, but the value stays readable (WCAG AA). */
+.q-arr .cell.cut{background:transparent;border-style:dashed;color:var(--ink-3)}
 .q-slider{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px}
 .q-slider label{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
 .q-slider output{font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:600;color:var(--accent);min-width:20px}

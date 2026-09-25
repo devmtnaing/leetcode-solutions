@@ -176,7 +176,7 @@ export function mountLesson(cfg) {
               <h2>${esc(pick(cfg.stripLabel ?? UI.array))}</h2>
               <span class="op mono" data-op>${esc(pick(UI.ready))}</span>
             </div>
-            <div class="strip" data-strip></div>
+            <div class="strip" data-strip tabindex="0" role="region" aria-label="${esc(pick(cfg.stripLabel ?? UI.array))}"></div>
           </div>` : ''}
           <div class="player-row player-run">
             <div class="transport">
@@ -209,7 +209,7 @@ export function mountLesson(cfg) {
                 <span class="note" data-code-label></span>
               </div>
               ${langBar(' mini')}
-              <div class="code" data-code></div>
+              <div class="code" data-code tabindex="0" role="region" aria-label="${esc(pick(UI.codeLive))}"></div>
               <p class="code-sub" data-code-sub hidden></p>
             </div>
           </div>
