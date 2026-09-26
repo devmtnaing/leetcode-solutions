@@ -6,6 +6,11 @@
 // command `npx wrangler deploy`. The custom domain below is created on the
 // first deploy, with its DNS record and certificate, because the zone
 // devmtnaing.com is on the same Cloudflare account.
+//
+// Other branches (pull requests) run `npx wrangler preview`, which needs the
+// `previews` block below. It is empty because a Preview needs nothing of its
+// own: assets stay at the top level and are uploaded from the branch, and
+// the production route is not applied to Previews.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "leetcode-solutions",
@@ -17,4 +22,5 @@
     "not_found_handling": "404-page",
   },
   "routes": [{ "pattern": "learn.devmtnaing.com", "custom_domain": true }],
+  "previews": {},
 }
