@@ -1,0 +1,11 @@
+/* Largest Rectangle in Histogram: the part 1 widget's histogram — one column
+   per bar, one square per unit of height; the rectangle of the chosen bar is
+   drawn over the bars it spans. */
+.hg{display:flex;align-items:flex-end;gap:3px;margin-bottom:12px;overflow-x:auto}
+.hg-col{display:flex;flex-direction:column;align-items:center;flex:none;padding:2px;border-radius:4px;cursor:pointer}
+.hg-col:focus-visible{outline:2px solid var(--accent)}
+.hg-u{display:block;width:24px;height:12px;margin-top:1px;border-radius:2px}
+.hg-u.bar{background:var(--ink-3)}
+.hg-u.in{background:var(--accent)}
+.hg-u.me{box-shadow:inset 0 0 0 2px var(--amber)}
+.hg-lab{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink-3);margin-top:3px}
