@@ -1,9 +1,10 @@
 ---
-import { SITE_NAME } from '../data/site';
+import { SITE_NAME, REPO } from '../data/site';
 ---
 <footer class="site-foot">
   <div class="shell">
     <span>Written and verified by hand — every solution on this site was compiled and run before it was published.</span>
+    <span>The source is public on <a class="foot-link" href={REPO} target="_blank" rel="noopener">GitHub ↗</a>. Found a bug, a wrong answer or a confusing step? <a class="foot-link" href={`${REPO}/issues/new/choose`} target="_blank" rel="noopener">Report it there ↗</a></span>
     <a class="sep" href="/">{SITE_NAME}</a>
   </div>
 </footer>

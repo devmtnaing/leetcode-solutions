@@ -550,3 +550,9 @@ td.mono{font-variant-numeric:tabular-nums}
 .deeper-block{display:flex;flex-direction:column;gap:6px}
 .deeper-block h4{font-size:16px;margin:0 0 6px}
 .deeper .cost{margin:0}
+
+/* ---------- the "spot a mistake?" box at the end of a page ---------- */
+.report{margin-top:34px;padding:18px 20px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.report h3{margin:0 0 6px;font-size:16px}
+.report p{margin:0 0 12px;color:var(--ink-2);font-size:14px;line-height:1.55}
+.report-links{display:flex;flex-wrap:wrap;gap:8px}

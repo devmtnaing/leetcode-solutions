@@ -12,6 +12,7 @@
  * JavaScript; the stepper moves it to the foot of 2·2, under the player.
  */
 import Lesson from './Lesson.astro';
+import { REPO } from '../data/site';
 import '../styles/lesson.css';
 import '../styles/kit.css';
 
@@ -44,6 +45,12 @@ interface Props {
 // Every prop is supplied by the lesson's page.js; scripts/check-lessons.mjs
 // fails a lesson that leaves one out.
 const p = Astro.props;
+// A new issue from the "page problem" form, already naming this page.
+const issueUrl = `${REPO}/issues/new?${new URLSearchParams({
+  template: 'page-problem.yml',
+  title: `[${p.slug}] `,
+  page: new URL(`/leetcode/${p.slug}`, Astro.site).href,
+})}`;
 const en = (v?: T) => (v == null ? '' : typeof v === 'string' ? v : v.en);
 const my = (v?: T) => (v == null || typeof v === 'string' ? undefined : v.my);
 const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
@@ -179,6 +186,15 @@ const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
     </div>
   </div>
   <div id="solutions"></div>
+
+  <aside class="report" aria-labelledby="report-h">
+    <h3 id="report-h" data-i18n="အမှား တွေ့သလား။">Spot a mistake?</h3>
+    <p data-i18n="ဤ site ၏ source code သည် GitHub ပေါ်တွင် public ဖြစ်သည်။ bug၊ မှားသော အဖြေ၊ ရှုပ်ထွေးသော အဆင့် သို့မဟုတ် ဘာသာပြန် အမှားကို issue တစ်ခုအဖြစ် report လုပ်နိုင်သည် — ပြင်ဆင်ချက် pull request များကိုလည်း ကြိုဆိုသည်။">This site's source is public on GitHub. A bug, a wrong answer, a step that doesn't add up or a clumsy translation can be reported there as an issue — and pull requests with a fix are welcome too.</p>
+    <div class="report-links">
+      <a class="plink" href={issueUrl} target="_blank" rel="noopener" data-i18n="ဤစာမျက်နှာအတွက် issue report လုပ်ရန် ↗">Report an issue with this page ↗</a>
+      <a class="plink" href={`${REPO}/tree/main/src/lessons/${p.slug}`} target="_blank" rel="noopener" data-i18n="ဤစာမျက်နှာ၏ source ကို ကြည့်ရန် ↗">View this page's source ↗</a>
+    </div>
+  </aside>
 </div>
 </Lesson>
 

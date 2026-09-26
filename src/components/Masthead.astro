@@ -1,5 +1,5 @@
 ---
-import { SITE_NAME } from '../data/site';
+import { SITE_NAME, REPO } from '../data/site';
 import ThemeToggle from './ThemeToggle.astro';
 
 ---
@@ -8,6 +8,7 @@ import ThemeToggle from './ThemeToggle.astro';
     <a class="brand" href="/"><span class="dot"></span>{SITE_NAME}</a>
     <nav>
       <a href="/">LeetCode</a>
+      <a href={REPO} target="_blank" rel="noopener">GitHub ↗</a>
     </nav>
     <ThemeToggle />
   </div>

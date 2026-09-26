@@ -1,0 +1,47 @@
+name: Problem with a solution page
+description: A wrong answer, code that fails on LeetCode, a walkthrough step that doesn't add up, a typo or a translation.
+title: "[page] "
+labels: ["page"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. The "Report an issue with this page" link at the bottom of every page fills in the page for you.
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: The address of the page, e.g. https://learn.devmtnaing.com/leetcode/two-sum
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of problem?
+      options:
+        - A solution is wrong, or fails when submitted to LeetCode
+        - The walkthrough shows something the code doesn't do
+        - Something on the page is broken (layout, a button, the widget)
+        - A typo or unclear explanation
+        - The Burmese translation
+        - Something else
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: Code language, if it's about a listing
+      options:
+        - Not about a listing
+        - Ruby
+        - Python
+        - JavaScript
+        - Go
+        - Rust
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected. For a failing solution, the input that breaks it helps most.
+    validations:
+      required: true

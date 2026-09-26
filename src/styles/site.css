@@ -159,4 +159,5 @@ a.ptitle::after{content:"";position:absolute;inset:0;border-radius:inherit}
 .site-foot .shell{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
 .site-foot a{color:var(--ink-2);text-decoration:none}
 .site-foot a:hover{color:var(--accent)}
+.site-foot .foot-link{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
 .site-foot .sep{margin-inline-start:auto}
