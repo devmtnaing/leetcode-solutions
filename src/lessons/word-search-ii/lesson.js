@@ -31,7 +31,6 @@ function parseWords(text) {
   return ws;
 }
 const fmtBoard = (b) => b.join('; ');
-const fmtWords = (ws) => ws.join(', ');
 const cell = (r, cc) => `(${r},${cc})`;
 const inside = (b, r, cc) => r >= 0 && r < b.length && cc >= 0 && cc < b[0].length;
 
@@ -166,7 +165,7 @@ function strip(s) {
     tone: Object.fromEntries(row.split('').map((_, cc) => [cc,
       s.at && s.at[0] === r && s.at[1] === cc ? (s.line === 'miss' ? 'leaving' : s.line === 'hit' ? 'entering' : 'inwin')
         : on.has(`${r},${cc}`) ? 'entering' : null]).filter(([, x]) => x)),
-  })]))}</div>`;
+  })]), { grid: true })}</div>`;
 }
 
 function draw(s) {
@@ -567,7 +566,7 @@ const QW_SETS = [
 function mountPathWidget(host) {
   const state = { set: 0, path: [] };
   host.innerHTML = `
-    <div class="ws-w" data-board></div>
+    <div class="ws-w q-grid" data-board></div>
     <div class="q-slider"><span class="q-presets" data-presets></span></div>
     <p class="q-tie" data-line></p>
     <div class="ledger">
@@ -660,8 +659,8 @@ const EX1 = { board: ['oaan', 'etae', 'ihkr', 'iflv'], words: ['oath', 'pea', 'e
 mountLesson({
   input: EX1,
   controls: [
-    { key: 'board', label: t('board (rows split by ;)', 'board (row များကို ; ဖြင့် ခွဲ)'), value: fmtBoard(EX1.board), parse: parseBoard, format: fmtBoard },
-    { key: 'words', label: 'words', value: fmtWords(EX1.words), parse: parseWords, format: fmtWords },
+    { key: 'board', label: t('board (rows split by ;)', 'board (row များကို ; ဖြင့် ခွဲ)'), parse: parseBoard, format: fmtBoard },
+    { key: 'words', label: 'words', parse: parseWords },
   ],
   presets: [
     { label: t('Example 1', 'ဥပမာ 1'), input: EX1 },

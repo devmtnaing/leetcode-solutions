@@ -10,8 +10,8 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, tree, stack, readout, panels, slots, stagePanel } from '../../lib/stage.js';
-import { t, plural, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, presetChips, widgetLabel } from '../../lib/kit.js';
-import { buildTree, levelOrder, asNested, preorderKeys, treeDepth, nameOf, treeInput, formatLevelOrder } from '../../lib/tree.js';
+import { t, plural, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, presetChips, widgetLabel, stageEmpty } from '../../lib/kit.js';
+import { buildTree, levelOrder, asNested, treeDepth, nameOf, treeInput, formatLevelOrder } from '../../lib/tree.js';
 
 const MAX_NODES = 15;
 
@@ -144,18 +144,16 @@ function strip(s, { level }) {
 }
 
 function treePicture(s, T) {
-  if (T.root == null) return '<p class="note mono stage-empty">root = null</p>';
-  const ids = preorderKeys(T.root, T.kids);
-  const id = (key) => ids.indexOf(key);
+  if (T.root == null) return stageEmpty('root = null');
   const tone = {};
   const badges = {};
   if (s.view === 'dfs') {
-    for (const [key, d] of Object.entries(s.depthOf)) { tone[id(Number(key))] = 'done'; badges[id(Number(key))] = d; }
-    for (const f of s.frames) if (f.key != null && f.key !== s.cur) tone[id(f.key)] = 'warn';
-    return tree(asNested(T.root, T.val, T.kids), { at: s.cur != null ? id(s.cur) : null, tone, badges });
+    for (const [key, d] of Object.entries(s.depthOf)) { tone[key] = 'done'; badges[key] = d; }
+    for (const f of s.frames) if (f.key != null && f.key !== s.cur) tone[f.key] = 'warn';
+    return tree(asNested(T.root, T.val, T.kids), { at: s.cur, tone, badges });
   }
-  s.seen.forEach((lvl, d) => lvl.forEach((key) => { tone[id(key)] = 'done'; badges[id(key)] = d + 1; }));
-  for (const key of s.level) tone[id(key)] = 'warn';
+  s.seen.forEach((lvl, d) => lvl.forEach((key) => { tone[key] = 'done'; badges[key] = d + 1; }));
+  for (const key of s.level) tone[key] = 'warn';
   return tree(asNested(T.root, T.val, T.kids), { tone, badges });
 }
 
@@ -394,7 +392,6 @@ function mountPathWidget(host) {
     const p = Math.min(state.p, paths.length - 1);
     const path = paths[p];
     const best = treeDepth(T.root, T.kids);
-    const ids = preorderKeys(T.root, T.kids);
 
     q('[data-lbl]').textContent = pick(t('leaf', 'leaf'));
     const slider = q('#qw-p');
@@ -405,8 +402,8 @@ function mountPathWidget(host) {
     q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
 
     const tone = {};
-    path.forEach((key) => { tone[ids.indexOf(key)] = 'warn'; });
-    tone[ids.indexOf(path[path.length - 1])] = 'done';
+    path.forEach((key) => { tone[key] = 'warn'; });
+    tone[path[path.length - 1]] = 'done';
     q('[data-tree]').innerHTML = tree(asNested(T.root, T.val, T.kids), { tone });
     // kept = on a longest path · cut = on a shorter one
     q('[data-arr]').innerHTML = path.map((key, i) =>
@@ -491,7 +488,7 @@ const APPROACH = {
 mountLesson({
   input: { level: [3, 9, 20, null, null, 15, 7] },
   controls: [
-    { key: 'level', label: 'root', value: '3, 9, 20, null, null, 15, 7', parse: treeInput(MAX_NODES), format: formatLevelOrder },
+    { key: 'level', label: 'root', parse: treeInput(MAX_NODES), format: formatLevelOrder },
   ],
   presets: [
     { label: exampleTitle(1), input: { level: [3, 9, 20, null, null, 15, 7] } },

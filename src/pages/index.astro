@@ -64,11 +64,11 @@ const haystack = (p: Problem) => [p.id, p.title, p.category, ...p.tags].join(' '
       <aside class="cats">
         <nav aria-label="Patterns">
           <a class="cat" href="#top" data-cat="" aria-current="true">
-            <span>All problems</span><span class="cat-n" data-count="">{all.length}</span>
+            <span>All problems</span><span class="cat-n">{all.length}</span>
           </a>
           {groups.map((g) => (
             <a class="cat" href={`#${g.id}`} data-cat={g.id}>
-              <span>{g.name}</span><span class="cat-n" data-count={g.id}>{g.rows.length}</span>
+              <span>{g.name}</span><span class="cat-n">{g.rows.length}</span>
             </a>
           ))}
         </nav>

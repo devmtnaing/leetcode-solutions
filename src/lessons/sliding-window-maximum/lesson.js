@@ -10,7 +10,7 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, slots, stagePanel, readout } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, intList, intValue, listText, presetChips, widgetLabel } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, intList, intValue, presetChips, widgetLabel } from '../../lib/kit.js';
 
 const MAX_N = 12;
 const win = (arr) => `[${arr.join(', ')}]`;
@@ -413,8 +413,8 @@ const EX1 = [1, 3, -1, -3, 5, 3, 6, 7];
 mountLesson({
   input: { nums: EX1, k: 3 },
   controls: [
-    { key: 'nums', label: 'nums', value: listText(EX1), parse: intList({ max: MAX_N, lo: -10000, hi: 10000 }), format: listText },
-    { key: 'k', label: 'k', type: 'number', min: 1, max: MAX_N, value: 3, parse: intValue({ lo: 1, hi: MAX_N }) },
+    { key: 'nums', label: 'nums', parse: intList({ max: MAX_N, lo: -10000, hi: 10000 }) },
+    { key: 'k', label: 'k', type: 'number', min: 1, max: MAX_N, parse: intValue({ lo: 1, hi: MAX_N }) },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: EX1, k: 3 } },

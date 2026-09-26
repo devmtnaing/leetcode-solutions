@@ -146,6 +146,7 @@ function buildTrie({ ops }) {
 
 function strip(s, { ops }) {
   return cells(ops.map(([kind, w]) => `${kind === 'startsWith' ? 'prefix' : kind} ${w}`), {
+    wide: true,
     tone: Object.fromEntries(ops.map((_, j) => [j, j === s.op ? 'inwin' : (s.op != null && j < s.op) || s.finished ? 'done' : null]).filter(([, x]) => x)),
   });
 }
@@ -558,7 +559,7 @@ function mountPrefixWidget(host) {
     const letters = words.reduce((a, w) => a + w.length, 0);
     const reach = [...p].findIndex((_, i) => !nodes.has(p.slice(0, i + 1)));
     const links = reach === -1 ? p.length : reach + 1;
-    q('[data-words]').innerHTML = words.map((w) => `<div class="cell ${w.startsWith(p) ? 'kept' : 'cut'} tw-word"><span>${w}</span></div>`).join('');
+    q('[data-words]').innerHTML = words.map((w) => `<div class="cell wide ${w.startsWith(p) ? 'kept' : 'cut'}"><span>${w}</span></div>`).join('');
     q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
     if (input.value !== p) input.value = p;
     widgetLabel(pick(t('type a prefix', 'prefix ရိုက်ပါ')));
@@ -617,7 +618,7 @@ const EX1 = [['insert', 'apple'], ['search', 'apple'], ['search', 'app'], ['star
 mountLesson({
   input: { ops: EX1 },
   controls: [
-    { key: 'ops', label: t('calls', 'call များ'), value: fmtOps(EX1), parse: parseOps, format: fmtOps },
+    { key: 'ops', label: t('calls', 'call များ'), parse: parseOps, format: fmtOps },
   ],
   presets: [
     { label: exampleTitle(1), input: { ops: EX1 } },

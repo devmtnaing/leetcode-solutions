@@ -583,7 +583,7 @@ const brackets = (v) => {
 mountLesson({
   input: { s: '([])' },
   controls: [
-    { key: 's', label: 's', value: '([])', parse: brackets },
+    { key: 's', label: 's', parse: brackets },
   ],
   presets: [
     { label: exampleTitle(2), input: { s: '()[]{}' } },

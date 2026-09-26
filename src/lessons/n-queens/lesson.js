@@ -123,7 +123,7 @@ function board(s) {
       if (r >= s.cols.length && attacked(r, cc)) return [cc, 'done'];
       return [cc, null];
     }).filter(([, x]) => x)),
-  })]))}</div>`;
+  })]), { grid: true })}</div>`;
 }
 
 function draw(s) {
@@ -473,7 +473,7 @@ function mountDiagWidget(host) {
   const load = (i) => { state.set = i; state.q = new Map(QW_SETS[i].cols.map((cc, r) => [r, cc]).filter(([, cc]) => cc != null)); };
   load(0);
   host.innerHTML = `
-    <div class="nq-w" data-board></div>
+    <div class="nq-w q-grid" data-board></div>
     <div class="q-slider"><span class="q-presets" data-presets></span></div>
     <p class="q-tie" data-line></p>
     <div class="ledger">
@@ -562,7 +562,7 @@ const APPROACH = {
 mountLesson({
   input: { n: 4 },
   controls: [
-    { key: 'n', label: 'n', type: 'number', min: 1, max: MAX_N, value: 4, parse: intValue({ lo: 1, hi: MAX_N, why: 'n = 6 already takes hundreds of steps' }) },
+    { key: 'n', label: 'n', type: 'number', min: 1, max: MAX_N, parse: intValue({ lo: 1, hi: MAX_N, why: 'n = 6 already takes hundreds of steps' }) },
   ],
   presets: [
     { label: t('Example 1: n = 4', 'ဥပမာ 1 — n = 4'), input: { n: 4 } },

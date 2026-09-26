@@ -12,7 +12,7 @@
  * suffix, and the suffix is reachable only through the variable saved one line
  * earlier. Drawing it as one tidy list would hide the entire problem.
  */
-import { t, plural, exampleTitle, LANGUAGES, k, c, intList, listText, presetChips, widgetLabel } from '../../lib/kit.js';
+import { t, plural, exampleTitle, LANGUAGES, k, c, intList, presetChips, widgetLabel } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, chain, stack, panels, slots, stagePanel } from '../../lib/stage.js';
@@ -657,8 +657,8 @@ const APPROACH = {
 mountLesson({
   input: { nums: [1, 2, 3, 4, 5] },
   controls: [
-    { key: 'nums', label: 'head', value: '1, 2, 3, 4, 5',
-      parse: intList({ min: 0 }), format: listText },
+    { key: 'nums', label: 'head',
+      parse: intList({ min: 0 }) },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [1, 2, 3, 4, 5] } },

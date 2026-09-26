@@ -11,8 +11,8 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, slots, stagePanel, tree, stack, panels } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, presetChips, widgetLabel } from '../../lib/kit.js';
-import { buildTree, levelOrder, asNested, preorderKeys, nameOf, treeInput, formatLevelOrder } from '../../lib/tree.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, presetChips, widgetLabel, stageEmpty } from '../../lib/kit.js';
+import { buildTree, levelOrder, asNested, nameOf, treeInput, formatLevelOrder } from '../../lib/tree.js';
 
 const MAX_NODES = 12;
 
@@ -178,16 +178,10 @@ function draw(s, { level }) {
   const T = buildTree(level);
   const building = s.phase === 'de';
   const shown = building ? partial(T, s.made) : asNested(T.root, T.val, T.kids);
-  const order = [];
-  (function walk(n) { if (!n) return; order.push(n.key); walk(n.left); walk(n.right); })(shown);
   const tone = {};
-  order.forEach((key, i) => {
-    if (building) tone[i] = s.linked.includes(key) ? 'done' : 'warn';
-    else if (s.seen.includes(key)) tone[i] = 'done';
-  });
-  const at = s.cur != null ? order.indexOf(s.cur) : null;
-  const pic = shown ? tree(shown, { at: at >= 0 ? at : null, tone })
-    : `<p class="note mono stage-empty">${building ? 'null' : 'root = null'}</p>`;
+  for (const key of building ? s.made : s.seen) tone[key] = building && !s.linked.includes(key) ? 'warn' : 'done';
+  const pic = shown ? tree(shown, { at: s.cur, tone })
+    : stageEmpty(building ? 'null' : 'root = null');
   const side = s.view === 'preorder'
     ? stack(s.frames, { label: 'call stack' })
     : `<div class="st-box"><span class="st-label">queue</span>${stageRow(s.queue.length ? cells(s.queue.map((x) => (x === 'null' ? '∅' : x)), { index: false }) : '', pick(t('empty', 'ဗလာ')))}</div>`;
@@ -717,14 +711,10 @@ const APPROACH = {
 
 /* ---------------- mount ---------------- */
 
-function upTo12(text) {
-  return treeInput(MAX_NODES)(text);
-}
-
 mountLesson({
   input: { level: [1, 2, 3, null, null, 4, 5] },
   controls: [
-    { key: 'level', label: 'root', value: '1, 2, 3, null, null, 4, 5', parse: upTo12, format: formatLevelOrder },
+    { key: 'level', label: 'root', parse: treeInput(MAX_NODES), format: formatLevelOrder },
   ],
   presets: [
     { label: exampleTitle(1), input: { level: [1, 2, 3, null, null, 4, 5] } },

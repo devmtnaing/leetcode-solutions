@@ -8,10 +8,8 @@ import SiteFooter from '../components/SiteFooter.astro';
 interface Props {
   title: string;
   description: string;
-  /** Walkthrough pages pull in the stage/transport stylesheet; prose pages don't. */
-  interactive?: boolean;
 }
-const { title, description, interactive = false } = Astro.props;
+const { title, description } = Astro.props;
 // Pages build as .html files (astro.config.mjs) but are served without the
 // extension, so the canonical address drops it: /leetcode/two-sum, not .html.
 const canonical = new URL(Astro.url.pathname.replace(/(index)?\.html$/, ''), Astro.site);
@@ -39,7 +37,7 @@ const canonical = new URL(Astro.url.pathname.replace(/(index)?\.html$/, ''), Ast
     } catch (e) {}
   </script>
 </head>
-<body class={interactive ? 'has-stage' : undefined}>
+<body>
   <Masthead />
   <main><slot /></main>
   <SiteFooter />

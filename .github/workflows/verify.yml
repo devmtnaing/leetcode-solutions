@@ -57,6 +57,11 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: Cache Chromium between runs
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - run: npx playwright install --with-deps chromium
       - run: npm run build
       - run: npm run audit
@@ -137,11 +142,11 @@ jobs:
     name: verify ${{ matrix.slug }}
     steps:
       - uses: actions/checkout@v7
+      # Node runs the JavaScript listings and the walkthrough check; neither
+      # imports an npm package, so there is no npm ci here.
       - uses: actions/setup-node@v7
         with:
           node-version: 24
-          cache: npm
-      - run: npm ci
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'

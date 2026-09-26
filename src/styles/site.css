@@ -22,7 +22,6 @@
   padding:6px 10px;border-radius:7px;
 }
 .masthead nav a:hover{background:var(--sunk);color:var(--ink)}
-.masthead nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
 
 /* Keep the sticky bar to one line on a phone: wrapped, it took 84px of a
    fifth of the screen and never gave it back. */
@@ -151,7 +150,6 @@ a.ptitle::after{content:"";position:absolute;inset:0;border-radius:inherit}
 }
 .pager a:hover{border-color:var(--accent);color:var(--accent)}
 .pager .dir{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
-.pager .next{text-align:right;margin-left:auto}
 .pager .up .dir::before{content:"\2190\00a0"}
 
 /* ---------- footer ---------- */

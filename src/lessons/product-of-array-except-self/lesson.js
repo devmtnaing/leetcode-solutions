@@ -10,7 +10,7 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, readout, stagePanel } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, intList, listText, presetChips, widgetLabel } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, intList, presetChips, widgetLabel } from '../../lib/kit.js';
 
 const MAX_LEN = 10;
 
@@ -499,7 +499,7 @@ const APPROACH = {
 mountLesson({
   input: { nums: [1, 2, 3, 4] },
   controls: [
-    { key: 'nums', label: 'nums', value: '1, 2, 3, 4', parse: intList({ min: 2, max: MAX_LEN, lo: -30, hi: 30 }), format: listText },
+    { key: 'nums', label: 'nums', parse: intList({ min: 2, max: MAX_LEN, lo: -30, hi: 30 }) },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [1, 2, 3, 4] } },

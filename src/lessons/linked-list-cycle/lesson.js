@@ -5,7 +5,7 @@
  * passes and the other writes down nothing at all. Watching the visited set
  * grow next to two pointers that never grow is the whole lesson.
  */
-import { t, plural, exampleTitle, LANGUAGES, k, c, verdictAnswer, stageGap, intList, intValue, listText, presetChips, widgetLabel } from '../../lib/kit.js';
+import { t, plural, exampleTitle, LANGUAGES, k, c, verdictAnswer, stageGap, intList, intValue, presetChips, widgetLabel, stageEmpty } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, chain, kv, readout, stagePanel } from '../../lib/stage.js';
@@ -189,7 +189,7 @@ function strip(s, { values }) {
 }
 
 function shape(s, { values, pos }) {
-  if (!values.length) return '<p class="note mono stage-empty">head = null</p>';
+  if (!values.length) return stageEmpty('head = null');
   const tone = {};
   const marks = {};
   if (Array.isArray(s.seen)) {
@@ -555,9 +555,9 @@ const APPROACH = {
 mountLesson({
   input: { values: [3, 2, 0, -4], pos: 1 },
   controls: [
-    { key: 'values', label: 'head', value: '3, 2, 0, -4',
-      parse: intList({ min: 0 }), format: listText },     // an empty list is a legal input
-    { key: 'pos', label: 'pos', type: 'number', value: 1, min: -1,
+    { key: 'values', label: 'head',
+      parse: intList({ min: 0 }) },     // an empty list is a legal input
+    { key: 'pos', label: 'pos', type: 'number', min: -1,
       parse: intValue({ lo: -1 }) },
   ],
   presets: [

@@ -6,7 +6,7 @@
  * `slow` is already where it belongs — so the array is partially correct at
  * every single step, and no second array is ever allocated.
  */
-import { t, exampleTitle, LANGUAGES, k, c, intList, listText, presetChips, widgetLabel } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, intList, presetChips, widgetLabel } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { cells, panels, stagePanel } from '../../lib/stage.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
@@ -552,7 +552,7 @@ const APPROACH = {
 mountLesson({
   input: { nums: [0, 1, 0, 3, 12] },
   controls: [
-    { key: 'nums', label: 'nums', value: '0, 1, 0, 3, 12', parse: intList(), format: listText },
+    { key: 'nums', label: 'nums', parse: intList() },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [0, 1, 0, 3, 12] } },

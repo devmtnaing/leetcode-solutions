@@ -1,11 +1,8 @@
-/* Word Ladder: words are wider than numbers, so cells size to their word; a
-   reached word is solid. The part 1 widget lays the words out one row per
-   ladder length, numbered at the left. */
-.wl .cell{width:auto;min-width:42px;padding:0 8px;font-size:14px}
+/* Word Ladder: a reached word is solid. The part 1 widget lays the words out
+   one row per ladder length, numbered at the left. */
 .wl .cell.set{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
 .wl-w{margin-bottom:10px}
 .wl-w .q-arr{align-items:center;margin-bottom:6px}
-.wl-w .cell{width:auto;min-width:48px;padding:0 8px}
 .wl-lv{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);width:18px;flex:none}
 .wl-list{flex-wrap:wrap;gap:6px}
 .wl-lab{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);margin-right:4px}

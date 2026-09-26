@@ -6,9 +6,10 @@
  * the k largest is the kth largest, and a min-heap keeps it at the root.
  */
 import { mountLesson } from '../../lib/stepper.js';
+import { heapNested } from '../../lib/tree.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, tree, readout, slots, stagePanel } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, intList, intValue, listText, presetChips, widgetLabel } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, intList, intValue, presetChips, widgetLabel, stageEmpty } from '../../lib/kit.js';
 
 const MAX_LEN = 10;
 
@@ -106,16 +107,6 @@ function buildHeap({ nums, k }) {
  * whole array, sorted, counted from the right; or the heap, drawn as the tree
  * its array encodes, with the root — the answer so far — on top. */
 
-function heapTree(h) {
-  const build = (i) => (i < h.length ? { value: h[i], left: build(2 * i + 1), right: build(2 * i + 2) } : null);
-  const root = build(0);
-  // tree() identifies nodes by their order in treeNodes(); map heap indices onto it
-  const ids = {};
-  let next = 0;
-  (function walk(i) { if (i >= h.length) return; ids[i] = next++; walk(2 * i + 1); walk(2 * i + 2); })(0);
-  return { root, ids };
-}
-
 function strip(s, { nums }) {
   const tone = {};
   const marks = {};
@@ -142,13 +133,12 @@ function draw(s, { nums, k }) {
     return stagePanel(pick(t('All of it, sorted', 'အားလုံး — sort ပြီး')), pick(t(`${n} values sorted to find one`, `တစ်ခုကို ရှာရန် value ${n} ခု sort`)),
       stageRow(cells(s.sorted, { tone, marks }), ''));
   }
-  const { root, ids } = heapTree(s.heap);
   const tone = {};
-  if (s.at != null) tone[ids[s.at]] = 'warn';
-  if (s.heap.length && (s.finished || s.dropped != null)) tone[ids[0]] = 'done';
+  if (s.at != null) tone[s.at] = 'warn';
+  if (s.heap.length && (s.finished || s.dropped != null)) tone[0] = 'done';
   return stagePanel(pick(t(`min-heap — at most ${k}`, `min-heap — ${k} အထိ`)),
     pick(t(`${s.heap.length} held`, `${s.heap.length} ခု ထား`)),
-    (s.heap.length ? tree(root, { tone }) : `<p class="note mono stage-empty">${pick(t('empty', 'ဗလာ'))}</p>`)
+    (s.heap.length ? tree(heapNested(s.heap), { tone }) : stageEmpty(pick(t('empty', 'ဗလာ'))))
       + stageGap + readout({ root: s.heap.length ? s.heap[0] : '—', size: `${s.heap.length} / ${k}`, dropped: s.dropped ?? '—' }));
 }
 
@@ -433,8 +423,8 @@ const APPROACH = {
 mountLesson({
   input: { nums: [3, 2, 1, 5, 6, 4], k: 2 },
   controls: [
-    { key: 'nums', label: 'nums', value: '3, 2, 1, 5, 6, 4', parse: intList({ max: MAX_LEN }), format: listText },
-    { key: 'k', label: 'k', type: 'number', value: 2, parse: intValue({ lo: 1 }) },
+    { key: 'nums', label: 'nums', parse: intList({ max: MAX_LEN }) },
+    { key: 'k', label: 'k', type: 'number', parse: intValue({ lo: 1 }) },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [3, 2, 1, 5, 6, 4], k: 2 } },

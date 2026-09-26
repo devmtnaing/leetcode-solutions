@@ -8,9 +8,9 @@
  */
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
-import { cells, tree, treeNodes, stack, panels, slots, stagePanel } from '../../lib/stage.js';
-import { t, plural, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, presetChips, widgetLabel } from '../../lib/kit.js';
-import { buildTree, levelOrder, asNested, preorderKeys, treeDepth, copyKids as copy, nameOf, treeInput, formatLevelOrder } from '../../lib/tree.js';
+import { cells, tree, stack, panels, slots, stagePanel } from '../../lib/stage.js';
+import { t, plural, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, presetChips, widgetLabel, stageEmpty } from '../../lib/kit.js';
+import { buildTree, levelOrder, asNested, treeDepth, copyKids as copy, nameOf, treeInput, formatLevelOrder } from '../../lib/tree.js';
 
 /* The tree helpers — parsing LeetCode's level order, drawing, serializing —
  * live in lib/tree.js, shared with every tree lesson. */
@@ -164,14 +164,12 @@ function strip(s, { level }) {
 }
 
 function treePicture(s, T) {
-  if (T.root == null) return '<p class="note mono stage-empty">root = null</p>';
-  const ids = preorderKeys(T.root, s.kids);
-  const id = (key) => ids.indexOf(key);
+  if (T.root == null) return stageEmpty('root = null');
   const tone = {};
-  for (const key of s.done) tone[id(key)] = 'done';
-  if (s.swapped != null) for (const ch of s.kids[s.swapped]) if (ch != null) tone[id(ch)] = 'warn';
-  if (s.pushed != null) tone[id(s.pushed)] = 'warn';
-  return tree(asNested(T.root, T.val, s.kids), { at: s.cur != null ? id(s.cur) : null, tone });
+  for (const key of s.done) tone[key] = 'done';
+  if (s.swapped != null) for (const ch of s.kids[s.swapped]) if (ch != null) tone[ch] = 'warn';
+  if (s.pushed != null) tone[s.pushed] = 'warn';
+  return tree(asNested(T.root, T.val, s.kids), { at: s.cur, tone });
 }
 
 function draw(s, { level }) {
@@ -521,7 +519,7 @@ const APPROACH = {
 mountLesson({
   input: { level: [4, 2, 7, 1, 3, 6, 9] },
   controls: [
-    { key: 'level', label: 'root', value: '4, 2, 7, 1, 3, 6, 9', parse: treeInput(MAX_NODES), format: formatLevelOrder },
+    { key: 'level', label: 'root', parse: treeInput(MAX_NODES), format: formatLevelOrder },
   ],
   presets: [
     { label: exampleTitle(1), input: { level: [4, 2, 7, 1, 3, 6, 9] } },

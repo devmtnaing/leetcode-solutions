@@ -1,3 +1,105 @@
+/* x-sum's stage: the TOP and REST shelves of cards, the brute-force steps
+   with their tally bars, and the two-heap view. */
+/* shelves */
+.shelf{border-radius:8px;padding:11px 12px;border:1px solid var(--line)}
+.shelf-top{background:var(--accent-soft);border-color:var(--accent)}
+.shelf-rest{background:var(--sunk);border-style:dashed}
+.shelf-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:9px}
+.shelf-name{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.12em;font-weight:600}
+.shelf-top .shelf-name{color:var(--accent)}
+.shelf-rest .shelf-name{color:var(--ink-3)}
+.shelf-note{font-size:11.5px;color:var(--ink-3)}
+.cards{display:flex;flex-wrap:wrap;gap:7px;min-height:52px;align-items:flex-start}
+.kard{
+  display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 11px;border-radius:7px;
+  background:var(--surface);border:1px solid var(--line-2);font-family:"IBM Plex Mono",monospace;
+  font-variant-numeric:tabular-nums;
+}
+.kard .face{font-size:17px;font-weight:600;color:var(--ink);letter-spacing:.01em}
+.kard .face .x{color:var(--ink-3);font-weight:400;font-size:13px;margin-inline:1px}
+.kard .key{font-size:10px;color:var(--ink-3)}
+.shelf-top .kard{border-color:var(--accent);border-left-width:3px}
+.shelf-rest .kard{border-style:dashed;background:transparent}
+.kard.hl-up{border-color:var(--up);background:var(--up-soft)}
+.kard.hl-up .face{color:var(--up)}
+.kard.hl-down{border-color:var(--down);background:var(--down-soft)}
+.kard.hl-down .face{color:var(--down)}
+.kard.hl-new{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.kard.hl-cmp{outline:2px solid var(--amber);outline-offset:1px}
+
+.barrier{
+  display:flex;align-items:center;gap:10px;margin-block:9px;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);
+}
+.barrier::before,.barrier::after{content:"";height:1px;background:var(--line-2);flex:1}
+.barrier.broken{color:var(--amber);font-weight:500}
+.barrier.broken::before,.barrier.broken::after{background:var(--amber)}
+
+/* brute-force stage */
+.bf-steps{display:flex;flex-direction:column;gap:14px}
+.bf-step{padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--sunk);transition:opacity .2s}
+/* Not reached yet: dashed and unfilled, its text muted rather than faded. */
+.bf-step.pending{background:transparent;border-style:dashed}
+.bf-step.pending, .bf-step.pending *{color:var(--ink-3)}
+.bf-step.active{background:var(--surface);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.bf-step h3{margin-bottom:9px;color:var(--ink-2)}
+.bf-step h3 .n{font-family:"IBM Plex Mono",monospace;color:var(--accent);margin-right:6px}
+.bars{display:flex;flex-direction:column;gap:5px}
+.bar-row{display:grid;grid-template-columns:34px 1fr 30px;align-items:center;gap:8px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-variant-numeric:tabular-nums}
+.bar-track{background:var(--surface);border:1px solid var(--line);border-radius:4px;height:15px;overflow:hidden}
+.bar-fill{height:100%;background:var(--accent);opacity:.8}
+.bar-row.cut .bar-fill{background:var(--ink-3);opacity:.45}
+.rank{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.cutline{
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;color:var(--down);
+  border-left:2px dashed var(--down);padding-left:7px;align-self:stretch;display:flex;align-items:center;
+}
+.kard.dropped{border-style:dashed;background:transparent}
+.kard.dropped .face{color:var(--ink-3)}
+
+@media (prefers-reduced-motion: no-preference){
+  .kard.hl-up,.kard.hl-down,.kard.hl-new{animation:pop .32s ease-out}
+  @keyframes pop{from{transform:translateY(6px) scale(.94);opacity:.4}to{transform:none;opacity:1}}
+}
+
+/* ---------- heap view ---------- */
+.heap-block{border-radius:8px;padding:11px 12px;border:1px solid var(--line);margin-bottom:10px}
+.heap-block.is-top{background:var(--accent-soft);border-color:var(--accent)}
+.heap-block.is-rest{background:var(--sunk);border-style:dashed}
+.heap-block.is-top .shelf-name{color:var(--accent)}
+.heap-rows{display:flex;flex-direction:column;gap:6px;align-items:center;min-height:52px}
+.heap-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.hcard{
+  display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 10px;border-radius:7px;
+  background:var(--surface);border:1px solid var(--line-2);font-family:"IBM Plex Mono",monospace;
+  font-variant-numeric:tabular-nums;position:relative;
+}
+.hcard .face{font-size:16px;font-weight:600;color:var(--ink)}
+.hcard .face .x{color:var(--ink-3);font-weight:400;font-size:12px;margin-inline:1px}
+.hcard .key{font-size:9.5px;color:var(--ink-3)}
+.hcard .tag{
+  font-size:9px;letter-spacing:.04em;text-transform:uppercase;color:var(--down);
+  background:var(--down-soft);border-radius:4px;padding:1px 5px;margin-top:2px;
+}
+.hcard.is-root{border-color:var(--accent);border-width:2px;padding:4px 9px}
+.hcard.is-root::after{
+  content:"root";position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+  font-size:8.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);
+  background:var(--surface);padding:0 4px;border-radius:3px;
+}
+.hcard.is-stale{opacity:.5;border-style:dashed}
+.hcard.is-stale .face{color:var(--ink-3);text-decoration:line-through}
+.hcard.is-going{border-color:var(--down);background:var(--down-soft);opacity:1}
+.hcard.is-going .face{color:var(--down)}
+.hcard.hl-up{border-color:var(--up);background:var(--up-soft)}
+.hcard.hl-up .face{color:var(--up)}
+.hcard.hl-down{border-color:var(--down);background:var(--down-soft)}
+.hcard.hl-new{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.hcard.hl-cmp{outline:2px solid var(--amber);outline-offset:1px}
+@media (prefers-reduced-motion: no-preference){
+  .hcard.hl-up,.hcard.hl-new,.hcard.is-going{animation:pop .3s ease-out}
+}
+
 /* The brute-force tally draws a bar per value (a span, so it needs to be a
    block to take a width), its width in tenths of the
    most frequent one — as classes, so the lesson carries no inline styles. */

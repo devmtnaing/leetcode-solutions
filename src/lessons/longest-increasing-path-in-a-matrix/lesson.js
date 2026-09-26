@@ -190,12 +190,12 @@ function strip(s, { matrix: g }) {
       same(s.at, r, c) || same(s.scan, r, c) ? 'inwin'
         : same(s.look, r, c) ? (s.view === 'peel' || s.larger ? 'entering' : 'leaving')
           : (s.view === 'memo' ? s.memo[r][c] : s.peeled[r][c]) ? 'set' : null]).filter(([, x]) => x)),
-  })]))}</div>`;
+  })]), { grid: true })}</div>`;
 }
 
 function grid(values, tone) {
   return `<div class="lip">${labelledRows(values.map((row, r) => [`${r}`, cells(row, {
-    tone: Object.fromEntries(row.map((_, c) => [c, tone(r, c)]).filter(([, x]) => x)) })]))}</div>`;
+    tone: Object.fromEntries(row.map((_, c) => [c, tone(r, c)]).filter(([, x]) => x)) })]), { grid: true })}</div>`;
 }
 
 const SHOWN = 7;
@@ -609,7 +609,7 @@ function longestFrom(g, dirs) {
 function mountClimbWidget(host) {
   const state = { set: 0, eight: false, r: 2, c: 1 };
   host.innerHTML = `
-    <div class="lip-w" data-grid></div>
+    <div class="lip-w q-grid" data-grid></div>
     <div class="q-slider"><span class="q-presets" data-presets></span></div>
     <div class="q-slider"><span class="q-presets" data-conn></span></div>
     <p class="q-tie" data-line></p>
@@ -705,7 +705,7 @@ const exHtml = (g) => `<code>matrix = [${g.map((r) => `[${r.join(',')}]`).join('
 mountLesson({
   input: { matrix: EX1 },
   controls: [
-    { key: 'matrix', label: t('matrix (rows split by ;)', 'matrix (row များကို ; ဖြင့် ခွဲ)'), value: fmtMatrix(EX1), parse: parseMatrix, format: fmtMatrix },
+    { key: 'matrix', label: t('matrix (rows split by ;)', 'matrix (row များကို ; ဖြင့် ခွဲ)'), parse: parseMatrix, format: fmtMatrix },
   ],
   presets: [
     { label: exampleTitle(1), input: { matrix: EX1 } },

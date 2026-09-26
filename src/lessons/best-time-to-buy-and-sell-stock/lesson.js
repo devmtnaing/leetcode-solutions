@@ -11,7 +11,7 @@
  * after the buy, which is the whole reason the answer is not
  * max(prices) - min(prices).
  */
-import { t, plural, exampleTitle, LANGUAGES, k, c, intList, listText, presetChips, widgetLabel } from '../../lib/kit.js';
+import { t, plural, exampleTitle, LANGUAGES, k, c, intList, presetChips, widgetLabel } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { bars, cells, slots, stagePanel } from '../../lib/stage.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
@@ -588,8 +588,8 @@ const APPROACH = {
 mountLesson({
   input: { prices: [7, 1, 5, 3, 6, 4] },
   controls: [
-    { key: 'prices', label: L.prices, value: '7, 1, 5, 3, 6, 4',
-      parse: intList({ lo: 0 }), format: listText },
+    { key: 'prices', label: L.prices,
+      parse: intList({ lo: 0 }) },
   ],
   presets: [
     { label: exampleTitle(1), input: { prices: [7, 1, 5, 3, 6, 4] } },

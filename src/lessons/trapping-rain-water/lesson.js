@@ -429,7 +429,7 @@ const EX2 = [4, 2, 0, 3, 2, 5];
 mountLesson({
   input: { height: EX1 },
   controls: [
-    { key: 'height', label: 'height', value: listText(EX1), parse: intList({ max: MAX_N, lo: 0, hi: MAX_H, why: 'so the landscape fits' }), format: listText },
+    { key: 'height', label: 'height', parse: intList({ max: MAX_N, lo: 0, hi: MAX_H, why: 'so the landscape fits' }) },
   ],
   presets: [
     { label: exampleTitle(1), input: { height: EX1 } },

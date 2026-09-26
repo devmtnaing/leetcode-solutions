@@ -23,8 +23,6 @@
   border-radius:7px;flex:0 0 auto;
 }
 .st-cell.on{background:var(--accent-soft);border-color:var(--accent)}
-.st-cell.dim{background:transparent;border-style:dashed}
-.st-cell.dim .st-val{color:var(--ink-3)}
 .st-val{font-family:"IBM Plex Mono",monospace;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
 .st-cell.on .st-val{color:var(--accent);font-weight:600}
 .st-idx{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink-3);margin-top:2px}
@@ -105,12 +103,10 @@
 }
 .st-read b{color:var(--ink-3);font-weight:500;margin-right:7px}
 
-/* Code tokens. Kit listings mark keywords, comments, strings and numbers as
-   k / c / s / n, scoped to code so the one-letter classes cannot leak. */
+/* Code tokens. Kit listings mark keywords and comments as k / c, scoped to
+   code so the one-letter classes cannot leak. */
 .code .k,pre.full .k{color:var(--accent)}
 .code .c,pre.full .c{color:var(--ink-3);font-style:italic}
-.code .s,pre.full .s{color:var(--up)}
-.code .n,pre.full .n{color:var(--amber)}
 
 /* Uppercased chips mix Burmese and Latin badly — the Latin half shouts and the
    Burmese is untouched — so drop the transform in Burmese. */
@@ -156,6 +152,10 @@
 /* Two or more labelled input rows in the strip card: labelledRows(). */
 .rows{display:flex;flex-direction:column;gap:22px}
 .rows .row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+/* labelledRows(rows, { grid: true }): a board or matrix, its columns lined up.
+   A lesson sets only its cell size. */
+.rows.grid{gap:6px}
+.rows.grid .row{flex-wrap:nowrap}
 .row-label{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);min-width:42px}
 /* The same, as rows of the part 1 widget. */
 .q-row-label{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);align-self:center;min-width:38px}

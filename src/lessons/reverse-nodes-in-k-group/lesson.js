@@ -151,7 +151,7 @@ function strip(s, { values, k: kk }) {
   });
 }
 
-const chainOf = (idList, vals, o = {}) => chain(idList.map((id) => ({ value: vals[id] })), { nullTail: o.nullTail ?? true, ...o });
+const chainOf = (idList, vals, o = {}) => chain(idList.map((id) => ({ value: vals[id] })), o);
 
 function draw(s) {
   const vals = s.vals;
@@ -484,8 +484,8 @@ const APPROACH = {
 mountLesson({
   input: { values: [1, 2, 3, 4, 5], k: 2 },
   controls: [
-    { key: 'values', label: 'head', value: listText([1, 2, 3, 4, 5]), parse: intList({ max: MAX_N, lo: 0, hi: 1000 }), format: listText },
-    { key: 'k', label: 'k', type: 'number', min: 1, max: MAX_N, value: 2, parse: intValue({ lo: 1, hi: MAX_N }) },
+    { key: 'values', label: 'head', parse: intList({ max: MAX_N, lo: 0, hi: 1000 }) },
+    { key: 'k', label: 'k', type: 'number', min: 1, max: MAX_N, parse: intValue({ lo: 1, hi: MAX_N }) },
   ],
   presets: [
     { label: exampleTitle(1), input: { values: [1, 2, 3, 4, 5], k: 2 } },

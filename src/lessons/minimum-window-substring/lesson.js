@@ -530,8 +530,8 @@ const APPROACH = {
 mountLesson({
   input: { s: 'ADOBECODEBANC', t: 'ABC' },
   controls: [
-    { key: 's', label: 's', value: 'ADOBECODEBANC', parse: letters(MAX_S, 's') },
-    { key: 't', label: 't', value: 'ABC', parse: letters(MAX_T, 't') },
+    { key: 's', label: 's', parse: letters(MAX_S, 's') },
+    { key: 't', label: 't', parse: letters(MAX_T, 't') },
   ],
   presets: [
     { label: exampleTitle(1), input: { s: 'ADOBECODEBANC', t: 'ABC' } },

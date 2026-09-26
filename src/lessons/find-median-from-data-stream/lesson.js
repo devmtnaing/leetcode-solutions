@@ -9,9 +9,10 @@
  * middle, and each add is O(log n).
  */
 import { mountLesson } from '../../lib/stepper.js';
+import { heapNested } from '../../lib/tree.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, slots, stagePanel, tree, readout, panels } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, presetChips, widgetLabel } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, presetChips, widgetLabel, stageEmpty } from '../../lib/kit.js';
 
 const MAX_OPS = 12;
 
@@ -146,26 +147,18 @@ function buildHeaps({ ops }) {
  * low's largest and high's smallest on top. */
 
 function strip(s, { ops }) {
-  return `<div class="strip wraps mf">${cells(ops.map((o) => (o === 'f' ? 'find' : `add ${o}`)), {
+  return `<div class="strip wraps">${cells(ops.map((o) => (o === 'f' ? 'find' : `add ${o}`)), {
+    wide: true,
     tone: Object.fromEntries(ops.map((_, j) => [j, j === s.op ? 'inwin' : (s.op != null && j < s.op) || s.finished ? 'done' : null]).filter(([, x]) => x)),
   })}</div>`;
 }
 
-function heapTree(h) {
-  const build = (i) => (i < h.length ? { value: h[i], left: build(2 * i + 1), right: build(2 * i + 2) } : null);
-  const ids = {};
-  let next = 0;
-  (function walk(i) { if (i >= h.length) return; ids[i] = next++; walk(2 * i + 1); walk(2 * i + 2); })(0);
-  return { root: build(0), ids };
-}
-
 function heapPanel(h, name, s) {
-  if (!h.length) return `<div class="st-box"><span class="st-label">${name}</span><p class="note mono stage-empty">${pick(t('empty', 'ဗလာ'))}</p></div>`;
-  const { root, ids } = heapTree(h);
+  if (!h.length) return `<div class="st-box"><span class="st-label">${name}</span>${stageEmpty(pick(t('empty', 'ဗလာ')))}</div>`;
   const tone = {};
-  if (s.top && s.top.includes(name)) tone[ids[0]] = 'warn';
-  if (s.moved && s.moved[0] === name) { const i = h.indexOf(s.moved[1]); if (i >= 0) tone[ids[i]] = 'done'; }
-  return tree(root, { tone, label: name });
+  if (s.top && s.top.includes(name)) tone[0] = 'warn';
+  if (s.moved && s.moved[0] === name) { const i = h.indexOf(s.moved[1]); if (i >= 0) tone[i] = 'done'; }
+  return tree(heapNested(h), { tone, label: name });
 }
 
 function draw(s) {
@@ -598,7 +591,7 @@ const EX1 = [1, 2, 'f', 3, 'f'];
 mountLesson({
   input: { ops: EX1 },
   controls: [
-    { key: 'ops', label: t('calls', 'call များ'), value: fmtOps(EX1), parse: parseOps, format: fmtOps },
+    { key: 'ops', label: t('calls', 'call များ'), parse: parseOps, format: fmtOps },
   ],
   presets: [
     { label: exampleTitle(1), input: { ops: EX1 } },

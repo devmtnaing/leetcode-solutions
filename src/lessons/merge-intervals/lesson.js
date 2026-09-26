@@ -10,7 +10,7 @@
 import { mountLesson, esc } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, readout, slots, stagePanel } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageGap, presetChips, widgetLabel } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageGap, presetChips, widgetLabel, stageEmpty } from '../../lib/kit.js';
 
 const MAX_LEN = 8;
 const TOP = 20;
@@ -163,7 +163,7 @@ function strip(s) {
   });
   if (s.idx != null) { tone[s.idx] = s.added || s.grew ? 'entering' : 'inwin'; marks[s.idx] = 'next'; }
   if (s.finished) s.order.forEach((_, x) => { tone[x] = 'done'; });
-  return cells(s.order.map(fmt), { tone, marks });
+  return cells(s.order.map(fmt), { tone, marks, wide: true });
 }
 
 function draw(s) {
@@ -185,7 +185,7 @@ function draw(s) {
   const merged = s.result.length;
   return stagePanel(pick(t('Merged so far, with the interval being placed', 'ယခုထိ ပေါင်းပြီး — နေရာချနေသော interval နှင့်')),
     pick(t(`${merged} merged`, `${merged} ခု ပေါင်းပြီး`)),
-    (rows.length ? timeline(rows) : `<p class="note mono stage-empty">${esc(pick(t('nothing yet', 'ဘာမျှ မရှိသေး')))}</p>`)
+    (rows.length ? timeline(rows) : stageEmpty(esc(pick(t('nothing yet', 'ဘာမျှ မရှိသေး')))))
       + stageGap + readout(s.cur ? { lo: s.cur[0], hi: s.cur[1] } : { lo: '—', hi: '—' }));
 }
 
@@ -521,7 +521,7 @@ const EX1 = [[1, 3], [2, 6], [8, 10], [15, 18]];
 mountLesson({
   input: { intervals: EX1 },
   controls: [
-    { key: 'intervals', label: 'intervals', value: fmtAll(EX1), parse: parseIntervals, format: fmtAll },
+    { key: 'intervals', label: 'intervals', parse: parseIntervals, format: fmtAll },
   ],
   presets: [
     { label: exampleTitle(1), input: { intervals: EX1 } },

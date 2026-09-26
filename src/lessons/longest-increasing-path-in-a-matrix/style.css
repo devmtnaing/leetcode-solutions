@@ -1,11 +1,7 @@
 /* Longest Increasing Path in a Matrix: the matrix, memo and higher tables are
-   rows of cells packed tight so they read as grids; a settled cell is solid. */
-.lip .rows{gap:6px}
-.lip .rows .row{flex-wrap:nowrap}
+   labelledRows grids; a settled cell is solid. */
 .lip .cell{width:38px;height:42px;font-size:14px}
 .lip .cell.set{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
-/* the part 1 widget: one .q-arr per row; the start cell is ringed */
-.lip-w .q-arr{flex-wrap:nowrap;margin-bottom:6px}
-.lip-w{margin-bottom:10px;overflow-x:auto}
+/* the part 1 widget (a .q-grid): the start cell is ringed */
 .lip-w .cell{cursor:pointer}
 .lip-w .cell.start{outline:2px solid var(--amber);outline-offset:1px}

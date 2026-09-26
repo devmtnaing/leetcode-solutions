@@ -161,7 +161,7 @@ function strip(s, { grid }) {
         : same(s.miss, r, c) ? 'leaving'
           : grid[r][c] === '1' && v === '0' ? 'entering'
             : v === '1' ? 'land' : null]).filter(([, x]) => x)),
-  })]))}</div>`;
+  })]), { grid: true })}</div>`;
 }
 
 const SHOWN = 8;
@@ -504,7 +504,7 @@ function label(g, dirs) {
 function mountIslandWidget(host) {
   const state = { set: 0, eight: false, g: QW_SETS[0].g.map((r) => r.split('')) };
   host.innerHTML = `
-    <div class="isl-w" data-grid></div>
+    <div class="isl-w q-grid" data-grid></div>
     <div class="q-slider"><span class="q-presets" data-presets></span></div>
     <div class="q-slider"><span class="q-presets" data-conn></span></div>
     <p class="q-tie" data-line></p>
@@ -596,7 +596,7 @@ const exHtml = (g) => `<code>grid = [${g.map((r) => `[${r.split('').map((v) => `
 mountLesson({
   input: { grid: EX2 },
   controls: [
-    { key: 'grid', label: t('grid (rows split by ;)', 'grid (row များကို ; ဖြင့် ခွဲ)'), value: fmtGrid(EX2), parse: parseGrid, format: fmtGrid },
+    { key: 'grid', label: t('grid (rows split by ;)', 'grid (row များကို ; ဖြင့် ခွဲ)'), parse: parseGrid, format: fmtGrid },
   ],
   presets: [
     { label: exampleTitle(1), input: { grid: EX1 } },

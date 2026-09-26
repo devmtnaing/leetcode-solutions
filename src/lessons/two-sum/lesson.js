@@ -5,7 +5,7 @@
  * complete this one?" once per element. Same answer, and the second question
  * can be answered without looking at anything else.
  */
-import { t, exampleTitle, LANGUAGES, k, c, intList, intValue, listText, presetChips, widgetLabel } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, intList, intValue, presetChips, widgetLabel } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, kv, readout, slots, stagePanel } from '../../lib/stage.js';
@@ -379,8 +379,8 @@ function mountComplementWidget(host) {
 mountLesson({
   input: { nums: [2, 7, 11, 15], target: 9 },
   controls: [
-    { key: 'nums', label: 'nums', value: '2, 7, 11, 15', parse: intList({ min: 2 }), format: listText },
-    { key: 'target', label: 'target', type: 'number', value: 9, parse: intValue() },
+    { key: 'nums', label: 'nums', parse: intList({ min: 2 }) },
+    { key: 'target', label: 'target', type: 'number', parse: intValue() },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [2, 7, 11, 15], target: 9 } },
