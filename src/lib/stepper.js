@@ -41,10 +41,33 @@ const $ = (sel, el = document) => el.querySelector(sel);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const nameOf = (k) => (typeof k === 'string' ? k : k?.en ?? '');
 
+/* A tab's selection attributes. Only the selected tab sits in the Tab order;
+ * the arrow keys move between the rest (tabKeys below). */
+const tabAttrs = (on) => `aria-selected="${on}" tabindex="${on ? 0 : -1}"`;
+const selectTabs = (tabs, isOn) => tabs.forEach((b) => {
+  const on = isOn(b);
+  b.setAttribute('aria-selected', String(on));
+  b.tabIndex = on ? 0 : -1;
+});
+
+/* Arrow keys, Home and End inside a tablist: move to that tab and select it. */
+function tabKeys(e) {
+  const tab = e.target.closest('[role="tab"]');
+  if (!tab || e.altKey || e.ctrlKey || e.metaKey) return;
+  const tabs = [...tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]')];
+  const i = tabs.indexOf(tab);
+  const j = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+  if (j == null) return;
+  e.preventDefault();
+  const to = tabs[(j + tabs.length) % tabs.length];
+  to.click();
+  to.focus();
+}
+
 /* The code-language tabs: `mini` above the live code, plain above part 3. */
 const langBar = (langs, active, cls = '') => `
       <div class="lang-bar${cls}" role="tablist">${langs.map((l) =>
-        `<button class="lang" role="tab" data-lang="${l.id}" aria-selected="${l.id === active}">${esc(l.name)}</button>`).join('')}
+        `<button class="lang" role="tab" data-lang="${l.id}" ${tabAttrs(l.id === active)}>${esc(l.name)}</button>`).join('')}
       </div>`;
 
 /* Chrome owned by the engine rather than by any one lesson. */
@@ -58,6 +81,7 @@ const UI = {
   pause:     { en: 'Pause', my: 'ရပ်' },
   scrub:     { en: 'Scrub through steps', my: 'အဆင့်များကို ဆွဲကြည့်ရန်' },
   step:      { en: 'step', my: 'အဆင့်' },
+  stepOf:    { en: 'Step {i} of {n}', my: 'အဆင့် {i} / {n}' },
   answer:    { en: 'answer', my: 'answer' },
   codeLive:  { en: 'The code, live', my: 'အလုပ်လုပ်နေသော code' },
   input:     { en: 'Input', my: 'Input' },
@@ -146,7 +170,7 @@ export function mountLesson(cfg) {
       </div>` : '';
 
     const tabs = cfg.modes.map((m) => `
-      <button class="atab" role="tab" data-mode="${m.id}" aria-selected="${m.id === state.mode}">
+      <button class="atab" role="tab" data-mode="${m.id}" ${tabAttrs(m.id === state.mode)}>
         <span class="atab-name">${esc(pick(m.name))}${m.sub ? ` <span class="sub-name">&middot; ${esc(pick(m.sub))}</span>` : ''}</span>
         <span class="atab-desc">${esc(pick(m.desc ?? ''))}</span>
         <span class="atab-cost">${esc(pick(m.cost ?? ''))}</span>
@@ -183,7 +207,7 @@ export function mountLesson(cfg) {
               <input type="range" data-scrub min="0" max="0" value="0" aria-label="${esc(pick(UI.scrub))}">
               <span class="counter" data-count>0 / 0</span>
             </div>
-            <div class="narration">
+            <div class="narration" data-narration aria-live="polite" aria-atomic="true">
               <span class="tag" data-tag>${esc(pick(UI.step))}</span>
               <p class="text" data-note></p>
             </div>
@@ -253,6 +277,9 @@ export function mountLesson(cfg) {
     const scrub = $('[data-scrub]', root);
     scrub.max = String(state.steps.length - 1);
     scrub.value = String(state.i);
+    // what a screen reader says for the scrubber: "Step 2 of 12: tally"
+    const where = pick(UI.stepOf).replace('{i}', state.i + 1).replace('{n}', state.steps.length);
+    scrub.setAttribute('aria-valuetext', pick(s.tag) ? `${where}: ${pick(s.tag)}` : where);
     $('[data-count]', root).textContent = `${state.i + 1} / ${state.steps.length}`;
   }
 
@@ -287,15 +314,21 @@ export function mountLesson(cfg) {
     state.i = Math.max(0, Math.min(state.steps.length - 1, i));
     render();
   }
+  // The narration is a live region, so a screen reader reads each step the
+  // reader moves to. While playing it goes quiet — a step every 700 ms would
+  // queue up faster than it can be read — and speaks again on stop.
+  const narrate = (on) => $('[data-narration]', root)?.setAttribute('aria-live', on ? 'polite' : 'off');
   function stop() {
     clearInterval(state.timer);
     state.timer = null;
     const b = $('[data-act="play"]', root);
     if (b) b.textContent = pick(UI.play);
+    narrate(true);
   }
   function play() {
     if (state.i >= state.steps.length - 1) state.i = 0;
     $('[data-act="play"]', root).textContent = pick(UI.pause);
+    narrate(false);
     state.timer = setInterval(() => {
       if (state.i >= state.steps.length - 1) return stop();
       go(state.i + 1);
@@ -310,8 +343,7 @@ export function mountLesson(cfg) {
 
   function setLangAll(id) {
     state.lang = id;
-    document.querySelectorAll('[data-lang]').forEach((b) =>
-      b.setAttribute('aria-selected', String(b.dataset.lang === id)));
+    selectTabs(document.querySelectorAll('[data-lang]'), (b) => b.dataset.lang === id);
     document.querySelectorAll('[data-pane]').forEach((p) => { p.hidden = p.dataset.pane !== id; });
     render();
   }
@@ -358,8 +390,7 @@ export function mountLesson(cfg) {
     if (card) {
       stop();
       state.mode = card.dataset.mode;
-      root.querySelectorAll('[data-mode]').forEach((b) =>
-        b.setAttribute('aria-selected', String(b.dataset.mode === state.mode)));
+      selectTabs(root.querySelectorAll('[data-mode]'), (b) => b.dataset.mode === state.mode);
       rebuild();
       return;
     }
@@ -372,10 +403,15 @@ export function mountLesson(cfg) {
   });
 
   // Arrow keys and space — never while someone is typing, and only while the
-  // walkthrough is on screen, so a widget elsewhere keeps its own keys.
+  // walkthrough is on screen, so a widget elsewhere keeps its own keys. A
+  // modified key is the browser's (Alt+← is Back), a tab's arrows move between
+  // tabs, and space on a focused control presses that control, not Play.
+  root.addEventListener('keydown', tabKeys);
   document.addEventListener('keydown', (e) => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
     if (e.target.closest('input,textarea,select,[contenteditable]')) return;
-    if (e.target.closest('#q-widget')) return;
+    if (e.target.closest('#q-widget, [role="tab"]')) return;
+    if (e.key === ' ' && e.target.closest('button, a[href], summary, [role="button"]')) return;
     const r = root.getBoundingClientRect();
     if (r.bottom < 0 || r.top > innerHeight) return;
     const name = { ArrowRight: 'next', ArrowLeft: 'prev', ' ': 'play' }[e.key];
@@ -538,6 +574,7 @@ function renderSolutions(cfg, activeLang) {
         }).join('')}
       </div>`).join('')}`;
 
+  host.onkeydown = tabKeys;
   host.onclick = (e) => {
     const langBtn = e.target.closest('[data-lang]');
     // the live code panel's tab switches every tab and pane on the page
