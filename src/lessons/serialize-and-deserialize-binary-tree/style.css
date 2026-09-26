@@ -1,0 +1,9 @@
+/* Serialize and Deserialize Binary Tree: the data string is a row of token
+   cells; tokens already read are drawn hollow. The part 1 widget sets two trees side by
+   side, each over the string it writes. */
+.sd .cell{width:auto;min-width:30px;padding:0 6px;height:40px;font-size:14px}
+.sd .cell.past{background:transparent;border-style:dashed}
+.sd-w{display:flex;flex-wrap:wrap;gap:18px;margin-bottom:10px}
+.sd-one{flex:1 1 200px;min-width:0}
+.sd-one .q-arr{flex-wrap:wrap;gap:4px;margin-top:6px}
+.sd-one .cell{width:auto;min-width:28px;padding:0 5px;height:36px}

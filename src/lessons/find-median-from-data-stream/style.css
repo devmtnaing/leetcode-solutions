@@ -1,0 +1,9 @@
+/* Find Median from Data Stream: the calls are words, so their cells size to
+   fit. The part 1 widget shows the stream, then the sorted numbers split into
+   two halves either side of a bar. */
+.mf .cell{width:auto;min-width:42px;padding:0 8px;font-size:13px}
+.mf-w{margin-bottom:10px}
+.mf-stream{margin-bottom:12px;flex-wrap:wrap}
+.mf-halves{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mf-halves .q-arr{flex-wrap:wrap}
+.mf-bar{width:2px;align-self:stretch;min-height:40px;background:var(--amber);border-radius:1px}

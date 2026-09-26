@@ -1,0 +1,9 @@
+<p data-i18n="အဘိဓာန် <code>wordList</code> ကို သုံး၍ စကားလုံး <code>beginWord</code> မှ စကားလုံး <code>endWord</code> သို့ <strong>ပြောင်းလဲမှု sequence</strong> ဆိုသည်မှာ အောက်ပါအတိုင်း ဖြစ်သော <code>beginWord -&gt; s<sub>1</sub> -&gt; s<sub>2</sub> -&gt; ... -&gt; s<sub>k</sub></code> စကားလုံး sequence ဖြစ်သည် —">A <strong>transformation sequence</strong> from word <code>beginWord</code> to word <code>endWord</code> using a dictionary <code>wordList</code> is a sequence of words <code>beginWord -&gt; s<sub>1</sub> -&gt; s<sub>2</sub> -&gt; ... -&gt; s<sub>k</sub></code> such that:</p>
+
+<ul>
+	<li data-i18n="ကပ်လျက် စကားလုံး အတွဲတိုင်းသည် စာလုံး တစ်လုံးတည်း ကွာသည်။">Every adjacent pair of words differs by a single letter.</li>
+	<li data-i18n="<code>1 &lt;= i &lt;= k</code> အတွက် <code>s<sub>i</sub></code> တိုင်းသည် <code>wordList</code> ထဲ ရှိသည်။ <code>beginWord</code> သည် <code>wordList</code> ထဲ ရှိရန် မလိုကြောင်း သတိပြုပါ။">Every <code>s<sub>i</sub></code> for <code>1 &lt;= i &lt;= k</code> is in <code>wordList</code>. Note that <code>beginWord</code> does not need to be in <code>wordList</code>.</li>
+	<li><code>s<sub>k</sub> == endWord</code></li>
+</ul>
+
+<p data-i18n="စကားလုံး နှစ်လုံး <code>beginWord</code> နှင့် <code>endWord</code> နှင့် အဘိဓာန် <code>wordList</code> ပေးထားလျှင် <code>beginWord</code> <em>မှ</em> <code>endWord</code> <em>သို့ <strong>အတိုဆုံး ပြောင်းလဲမှု sequence</strong> ရှိ <strong>စကားလုံး အရေအတွက်</strong></em>ကို ပြန်ပေးပါ၊ <em>ထိုကဲ့သို့ sequence မရှိလျှင် </em><code>0</code><em> ကို ပြန်ပေးပါ။</em>">Given two words, <code>beginWord</code> and <code>endWord</code>, and a dictionary <code>wordList</code>, return <em>the <strong>number of words</strong> in the <strong>shortest transformation sequence</strong> from</em> <code>beginWord</code> <em>to</em> <code>endWord</code><em>, or </em><code>0</code><em> if no such sequence exists.</em></p>
