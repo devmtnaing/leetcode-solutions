@@ -617,7 +617,7 @@ const APPROACH = {
 mountLesson({
   input: { s: 'A man, a plan, a canal: Panama' },
   controls: [
-    { key: 's', label: 's', value: 'A man, a plan, a canal: Panama',
+    { key: 's', label: 's',
       // Capped only so the strip stays readable; the algorithms have no such limit.
       parse: (v) => {
         if (!v.length) throw new Error('needs at least one character');

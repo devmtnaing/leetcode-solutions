@@ -11,8 +11,8 @@
  * mounts below. The play hint sits after #lesson so it still shows without
  * JavaScript; the stepper moves it to the foot of 2·2, under the player.
  */
-import Lesson from './Lesson.astro';
-import { REPO } from '../data/site';
+import Base from './Base.astro';
+import { REPO, SITE_NAME } from '../data/site';
 import '../styles/lesson.css';
 import '../styles/kit.css';
 
@@ -54,14 +54,16 @@ const issueUrl = `${REPO}/issues/new?${new URLSearchParams({
 const en = (v?: T) => (v == null ? '' : typeof v === 'string' ? v : v.en);
 const my = (v?: T) => (v == null || typeof v === 'string' ? undefined : v.my);
 const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
+const lcUrl = (slug: string) => `https://leetcode.com/problems/${slug}/`;
 ---
-<Lesson
-  title={plain(p.title)}
-  summary={p.summary}
-  interactive
-  ownHeader
-  up={{ href: '/', title: 'All problems' }}
->
+<Base title={`${plain(p.title)} · ${SITE_NAME}`} description={p.summary}>
+<div class="shell">
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <a href="/">LeetCode</a><span>/</span>
+    <span>{plain(p.title)}</span>
+  </nav>
+</div>
+
 <div class="wrap">
   {p.css && <style is:inline set:html={p.css} />}
   <header>
@@ -79,7 +81,7 @@ const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
       <a href="#part-2"><b>2</b> <span data-i18n="အဖြေ">The answer</span></a>
       <a href="#part-3"><b>3</b> <span data-i18n="Code">The code</span></a>
       {p.links.map((l) => (
-        <a class="lc" href={`https://leetcode.com/problems/${l.slug}/`} target="_blank" rel="noopener">
+        <a class="lc" href={lcUrl(l.slug)} target="_blank" rel="noopener">
           {p.links.length > 1 && <b>{l.id}</b>}
           <span data-i18n="LeetCode တွင် ကြည့်ရန် ↗">View on LeetCode ↗</span>
         </a>
@@ -106,7 +108,7 @@ const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
       {p.constraints && <div class="constraints" data-i18n={my(p.constraints)} set:html={en(p.constraints)} />}
       <div class="source-links">
         {p.links.map((l) => (
-          <a class="plink" href={`https://leetcode.com/problems/${l.slug}/`} target="_blank" rel="noopener">
+          <a class="plink" href={lcUrl(l.slug)} target="_blank" rel="noopener">
             <span class="pnum">{l.id}</span> {l.title} <span class={`pdiff ${l.difficulty.toLowerCase()}`}>{l.difficulty}</span>
           </a>
         ))}
@@ -196,7 +198,13 @@ const plain = (v: T) => en(v).replace(/<[^>]+>/g, '');
     </div>
   </aside>
 </div>
-</Lesson>
+
+<div class="shell">
+  <nav class="pager" aria-label="Lesson navigation">
+    <a class="up" href="/"><span class="dir">Back to</span><span>All problems</span></a>
+  </nav>
+</div>
+</Base>
 
 <script>
   import { initLangSwitch } from '../lib/i18n.js';

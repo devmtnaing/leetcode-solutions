@@ -9,7 +9,7 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, kv, stack, readout, slots, stagePanel } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, intList, intValue, listText, presetChips, widgetLabel } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageRow, stageGap, intList, intValue, presetChips, widgetLabel } from '../../lib/kit.js';
 
 const MAX_AMOUNT = 11;
 
@@ -480,8 +480,8 @@ const APPROACH = {
 mountLesson({
   input: { coins: [1, 2, 5], amount: 7 },
   controls: [
-    { key: 'coins', label: 'coins', value: '1, 2, 5', parse: intList({ max: 5, lo: 1, distinct: true }), format: listText },
-    { key: 'amount', label: 'amount', type: 'number', value: 7, parse: intValue({ lo: 0, hi: MAX_AMOUNT, why: 'the recursion makes hundreds of calls already' }) },
+    { key: 'coins', label: 'coins', parse: intList({ max: 5, lo: 1, distinct: true }) },
+    { key: 'amount', label: 'amount', type: 'number', parse: intValue({ lo: 0, hi: MAX_AMOUNT, why: 'the recursion makes hundreds of calls already' }) },
   ],
   presets: [
     { label: exampleTitle(1), input: { coins: [1, 2, 5], amount: 11 } },

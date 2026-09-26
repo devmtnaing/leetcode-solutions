@@ -473,8 +473,8 @@ const APPROACH = {
 mountLesson({
   input: { nums1: [1, 3], nums2: [2] },
   controls: [
-    { key: 'nums1', label: 'nums1', value: '1, 3', parse: sortedList, format: listText },
-    { key: 'nums2', label: 'nums2', value: '2', parse: sortedList, format: listText },
+    { key: 'nums1', label: 'nums1', parse: sortedList },
+    { key: 'nums2', label: 'nums2', parse: sortedList },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums1: [1, 3], nums2: [2] } },

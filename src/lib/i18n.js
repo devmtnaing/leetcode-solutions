@@ -19,7 +19,7 @@
 const KEY = 'learn-lang';
 const subs = new Set();
 
-export let lang = 'en';
+let lang = 'en';
 
 // The first page stored the choice under its own key; readers who chose a
 // language there still have it. Read either, write both.

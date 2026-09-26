@@ -1,9 +1,7 @@
-/* Shapes the stage can draw.
- *
- * Fifteen easy problems turn out to need six pictures between them: a row of
- * cells, a key/value table, a stack, a linked list, a binary tree, and a bar
- * chart. Each function here takes plain data and returns an HTML string, so a
- * lesson's draw() is usually one or two calls and a wrapper div.
+/* Shapes the stage can draw: a row of cells, a key/value table, a stack, a
+ * linked list, a binary tree, a bar chart and a trie, plus the pieces that lay
+ * them out. Each function here takes plain data and returns an HTML string, so
+ * a lesson's draw() is usually one or two calls and a wrapper div.
  *
  * Every one takes the same optional decorations:
  *   at    index (or key) to highlight as the element being looked at
@@ -21,8 +19,7 @@ export function strip(items, o = {}) {
   const cells = items
     .map((v, i) => {
       const on = at === i ? ' on' : '';
-      const dim = o.dim && o.dim.includes(i) ? ' dim' : '';
-      return `<div class="st-cell${on}${dim}${tones(tone[i])}">
+      return `<div class="st-cell${on}${tones(tone[i])}">
         <span class="st-val">${esc(v)}</span>
         ${index ? `<span class="st-idx">${i}</span>` : ''}
         ${marks[i] ? `<span class="st-mark">${esc(marks[i])}</span>` : ''}
@@ -38,11 +35,12 @@ export function strip(items, o = {}) {
  *   entering green — the element that just joined, or that matched
  *   leaving  red, dashed — the element that just dropped out, or failed
  *   done     faded — already settled, out of play
- * `marks` puts a pointer label (i, j, slow, fast…) under a cell. */
+ * `marks` puts a pointer label (i, j, slow, fast…) under a cell. `wide`
+ * sizes each cell to its text, for words and calls rather than numbers. */
 export function cells(items, o = {}) {
-  const { tone = {}, marks = {}, index = true } = o;
+  const { tone = {}, marks = {}, index = true, wide = false } = o;
   const hasMarks = Object.keys(marks).length > 0;
-  const html = items.map((v, i) => `<div class="cell${tone[i] ? ` ${tone[i]}` : ''}">
+  const html = items.map((v, i) => `<div class="cell${wide ? ' wide' : ''}${tone[i] ? ` ${tone[i]}` : ''}">
       <span>${esc(v)}</span>${index ? `<span class="idx">${i}</span>` : ''}${
       marks[i] ? `<span class="ptr">${esc(marks[i])}</span>` : ''}</div>`).join('');
   return hasMarks ? `<div class="strip has-ptr">${html}</div>` : html;
@@ -116,8 +114,9 @@ export function chain(nodes, o = {}) {
 }
 
 /* A binary tree, laid out by depth and in-order position so edges never cross.
- * Pass a plain {value, left, right} structure; `at` takes a node id produced by
- * walking in the same order, which lesson code gets from treeNodes(). */
+ * Pass a plain {value, left, right} structure. `at`, `tone` and `badges` name
+ * nodes by their `key` when they carry one (asNested() in tree.js gives every
+ * node its key), and otherwise by pre-order position. */
 export function tree(root, o = {}) {
   const { at, badges = {}, tone = {}, label } = o;
   const nodes = treeNodes(root);
@@ -141,8 +140,8 @@ export function tree(root, o = {}) {
 
   const circles = nodes
     .map((n) => {
-      const on = at === n.id;
-      const t = tone[n.id];
+      const on = at === n.key;
+      const t = tone[n.key];
       // done: settled (green) · warn: being changed right now (amber)
       const fill = on ? 'var(--accent)' : t === 'done' ? 'var(--up-soft)' : t === 'warn' ? 'var(--amber-soft)' : 'var(--surface)';
       const stroke = on ? 'var(--accent)' : t === 'done' ? 'var(--up)' : t === 'warn' ? 'var(--amber)' : 'var(--line-2)';
@@ -151,9 +150,9 @@ export function tree(root, o = {}) {
         <circle cx="${x(n)}" cy="${y(n)}" r="17" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
         <text x="${x(n)}" y="${y(n) + 4.5}" text-anchor="middle" fill="${ink}"
               font-family="IBM Plex Mono, monospace" font-size="13">${esc(n.value)}</text>
-        ${badges[n.id] != null
+        ${badges[n.key] != null
           ? `<text x="${x(n) + 23}" y="${y(n) - 10}" fill="var(--accent)"
-                  font-family="IBM Plex Mono, monospace" font-size="11">${esc(badges[n.id])}</text>`
+                  font-family="IBM Plex Mono, monospace" font-size="11">${esc(badges[n.key])}</text>`
           : ''}
       </g>`;
     })
@@ -165,18 +164,16 @@ export function tree(root, o = {}) {
 
 /* Flatten a tree into positioned nodes. Column comes from an in-order walk,
  * which is what keeps edges from crossing at any shape. */
-export function treeNodes(root) {
+function treeNodes(root) {
   const out = [];
   let col = 0;
   (function walk(n, depth, parent) {
-    if (!n) return -1;
+    if (!n) return;
     const id = out.length;
-    out.push({ id, value: n.value ?? n.val, depth, parent, col: 0 });
-    const L = walk(n.left, depth + 1, id);
+    out.push({ id, key: n.key ?? id, value: n.value, depth, parent, col: 0 });
+    walk(n.left, depth + 1, id);
     out[id].col = col++;
-    const R = walk(n.right, depth + 1, id);
-    void L; void R;
-    return id;
+    walk(n.right, depth + 1, id);
   })(root, 0, null);
   return out;
 }
@@ -203,8 +200,8 @@ export function bars(values, o = {}) {
  * showing its letter and the prefix it stands for. Nodes are named by their
  * prefix ('' is the root). `ends` marks nodes where a word ends; `at` is the
  * node being visited (its ancestors are drawn as the path to it), `made` a
- * node just created, `miss` a child looked for and not found, drawn as a
- * ghost row, and `gone` nodes just pruned. Styled by kit.css (.trie). */
+ * node just created, and `miss` a child looked for and not found, drawn as a
+ * ghost row. Styled by kit.css (.trie). */
 export function trieOutline({ nodes, ends = [], at = null, made = null, miss = null, endLabel = 'end' }) {
   const rows = [...nodes];
   if (miss != null && !nodes.includes(miss)) rows.push(miss);

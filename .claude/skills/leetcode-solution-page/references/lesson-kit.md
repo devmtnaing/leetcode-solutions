@@ -96,11 +96,13 @@ verify/<slug>/adapter.mjs            a corpus line → the lesson's input; a las
 **Use the shared helpers, and no inline styles.** `src/lib/kit.js` has what
 every lesson needs — `t(en, my)`, `plural`, `exampleTitle(n)`, `LANGUAGES`, the
 code-token helpers `k` / `c`, `verdictAnswer` for a true/false answer card,
-`stageRow` / `stageGap` inside the stage, `labelledRows` for a strip card with
-two inputs. Controls parse with `intList({ min, max, lo, hi, distinct, check })`
+`stageRow` / `stageGap` inside the stage, `stageEmpty(text)` where a structure
+is empty ("root = null"), `labelledRows` for a strip card with two inputs
+(`labelledRows(rows, { grid: true })` for a board or matrix, its columns
+lined up; the widget's board is a `.q-grid` of `.q-arr` rows). Controls parse with `intList({ min, max, lo, hi, distinct, check })`
 and `intValue({ lo, hi })` — they reject rather than trim, and `check` takes
-the lesson's own rule (sorted, a majority exists); show a list back with
-`listText`. The part 1 widget uses `presetChips(sets, active)` for its chips
+the lesson's own rule (sorted, a majority exists). A control shows a list back
+as `1, 2, 3` by itself; give it a `format` only for another shape. The part 1 widget uses `presetChips(sets, active)` for its chips
 (the active one is `aria-pressed`, which lesson.css draws as selected; a
 widget's own toggle chips should set it too) and `widgetLabel(text)` for the
 note beside its heading. Anything a lesson draws uses a class from `lesson.css`, `kit.css`
@@ -147,6 +149,8 @@ mountLesson({
   in a `caveats` note too.
 - Trees: `src/lib/tree.js` parses LeetCode's level order and draws through
   `stage.tree()`; the strip card can show the tree back in level order.
+  `tree()`'s `at`, `tone` and `badges` take node keys, the same keys the
+  lesson's steps hold. `heapNested(h)` draws an array heap, keyed by index.
 - **Put `mountLesson(...)` last in the file.** It calls the widget immediately,
   so any `const` the widget reads must already be initialised; a `const`
   declared below the call is in its temporal dead zone and throws.
@@ -171,6 +175,8 @@ fails a lesson whose `page.js` leaves one out.
 
 `cells` tones: `inwin` (amber, looking at it), `entering` (green, joined or
 matched), `leaving` (red dashed, dropped or failed), `done` (faded, settled).
+`cells(items, { wide: true })` sizes each cell to its text, for words and calls
+("put 1,1", "[15,18]"); in a widget, give the cell the class `wide`.
 
 A stage the primitives can't draw (x-sum's shelves and heaps) is the lesson's
 own markup, styled by its `style.css` or, if another lesson would use it, by

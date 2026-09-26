@@ -530,7 +530,7 @@ const APPROACH = {
 mountLesson({
   input: { n: 5 },
   controls: [
-    { key: 'n', label: 'n', value: '5', parse: intValue({ lo: 1, hi: MAX_N, why: 'so the plain recursion stays steppable' }), format: String },
+    { key: 'n', label: 'n', parse: intValue({ lo: 1, hi: MAX_N, why: 'so the plain recursion stays steppable' }) },
   ],
   presets: [
     { label: exampleTitle(1), input: { n: 2 } },

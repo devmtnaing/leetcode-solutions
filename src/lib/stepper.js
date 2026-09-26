@@ -8,9 +8,9 @@
  *
  *   mountLesson({
  *     input,                 the starting input
- *     controls,              [{ key, label, type, value, parse, format? }]
+ *     controls,              [{ key, label, type, parse, format? }]
  *     presets,               [{ label, input }]          chips beside the fields
- *     examples,              [{ title, input, output, why, load }]  part 1 cards
+ *     examples,              [{ title, inputHtml, output, why, load }]  part 1 cards
  *     modes,                 [{ id, name, sub?, desc, cost, build(input) }]
  *     languages,             [{ id, name }]
  *     code,                  { [mode]: { [lang]: [[lineKey, html], ...] } }
@@ -41,9 +41,14 @@ const $ = (sel, el = document) => el.querySelector(sel);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const nameOf = (k) => (typeof k === 'string' ? k : k?.en ?? '');
 
+/* The code-language tabs: `mini` above the live code, plain above part 3. */
+const langBar = (langs, active, cls = '') => `
+      <div class="lang-bar${cls}" role="tablist">${langs.map((l) =>
+        `<button class="lang" role="tab" data-lang="${l.id}" aria-selected="${l.id === active}">${esc(l.name)}</button>`).join('')}
+      </div>`;
+
 /* Chrome owned by the engine rather than by any one lesson. */
 const UI = {
-  pick:      { en: 'Pick a walkthrough', my: 'လမ်းညွှန်တစ်ခု ရွေးပါ' },
   loadEx:    { en: 'load an example', my: 'ဥပမာ ထည့်ရန်' },
   array:     { en: 'The array', my: 'Array' },
   ready:     { en: 'ready', my: 'အသင့်' },
@@ -75,7 +80,7 @@ export function mountLesson(cfg) {
   // the config and skip everything that needs a DOM — scripts/check-lessons.mjs.
   if (globalThis.__LESSON_PROBE__) return globalThis.__LESSON_PROBE__(cfg);
 
-  const root = cfg.root || document.getElementById('lesson');
+  const root = document.getElementById('lesson');
   if (!root) throw new Error('mountLesson: no #lesson element');
 
   const langs = cfg.languages;
@@ -84,8 +89,7 @@ export function mountLesson(cfg) {
     lang: langs[0].id,
     i: 0,
     steps: [],
-    playing: false,
-    timer: null,
+    timer: null,                               // set while playing
     input: structuredClone(cfg.input),
     varNames: [],
   };
@@ -94,7 +98,9 @@ export function mountLesson(cfg) {
 
   const mode = () => cfg.modes.find((m) => m.id === state.mode);
 
-  function rebuild() {
+  // `at` keeps the reader's place across a language change; an input or mode
+  // change starts again at step 1.
+  function rebuild(at = 0) {
     // the chosen approach in brief, under the mode cards; rebuild runs on every
     // mode switch, input change and language change
     const approach = $('[data-approach]', root);
@@ -108,7 +114,7 @@ export function mountLesson(cfg) {
       showWarn(`${pick(UI.badInput)}: ${err.message}`);
     }
     state.steps = steps.length ? steps : [{ line: null, note: '' }];
-    state.i = 0;                               // input changes always reset to step 1
+    state.i = Math.max(0, Math.min(state.steps.length - 1, at));
     // Every identifier any step of this mode reports, so the code panel marks
     // a stable set and the tooltip can say "not set yet" rather than vanish.
     const names = new Set();
@@ -119,6 +125,10 @@ export function mountLesson(cfg) {
 
   /* ---------------- markup ---------------- */
 
+  /* Part 2's interactive half, as two sub-sections: 2·1 the approach as a tab
+   * with its explanation attached, then 2·2 one player card holding
+   * everything the walkthrough needs, divided by rules rather than boxed
+   * separately. (2·3, going deeper, is static and lives in Walkthrough.astro.) */
   function shell() {
     const fields = (cfg.controls || []).map((c) => `
       <div class="field">
@@ -135,19 +145,6 @@ export function mountLesson(cfg) {
           `<button class="chip" data-preset="${i}">${esc(pick(p.label))}</button>`).join('')}</div>
       </div>` : '';
 
-    const langBar = (cls) => `
-      <div class="lang-bar${cls}" role="tablist">${langs.map((l) =>
-        `<button class="lang" role="tab" data-lang="${l.id}" aria-selected="${l.id === state.lang}">${esc(l.name)}</button>`).join('')}
-      </div>`;
-
-    return sectionsShell({ fields, presets, langBar });
-  }
-
-  /* Part 2's interactive half, as two sub-sections: 2·1 the approach as a tab
-   * with its explanation attached, then 2·2 one player card holding
-   * everything the walkthrough needs, divided by rules rather than boxed
-   * separately. (2·3, going deeper, is static and lives in Walkthrough.astro.) */
-  function sectionsShell({ fields, presets, langBar }) {
     const tabs = cfg.modes.map((m) => `
       <button class="atab" role="tab" data-mode="${m.id}" aria-selected="${m.id === state.mode}">
         <span class="atab-name">${esc(pick(m.name))}${m.sub ? ` <span class="sub-name">&middot; ${esc(pick(m.sub))}</span>` : ''}</span>
@@ -197,7 +194,7 @@ export function mountLesson(cfg) {
               ${cfg.answer ? `
               <div class="panel answer-card">
                 <div class="strip-head">
-                  <h2>${esc(pick(cfg.answerLabel ?? UI.answer))}</h2>
+                  <h2>${esc(pick(UI.answer))}</h2>
                   <span class="note mono" data-ans-note></span>
                 </div>
                 <div class="answer-row" data-answer></div>
@@ -208,7 +205,7 @@ export function mountLesson(cfg) {
                 <h2>${esc(pick(UI.codeLive))}</h2>
                 <span class="note" data-code-label></span>
               </div>
-              ${langBar(' mini')}
+              ${langBar(langs, state.lang, ' mini')}
               <div class="code" data-code tabindex="0" role="region" aria-label="${esc(pick(UI.codeLive))}"></div>
               <p class="code-sub" data-code-sub hidden></p>
             </div>
@@ -266,10 +263,10 @@ export function mountLesson(cfg) {
 
   function renderCode(s, m) {
     const box = $('[data-code]', root);
-    const aliases = cfg.hover?.[state.lang] || {};
+    const mark = varMarker(state.varNames, cfg.hover?.[state.lang] || {});
     box.innerHTML = listing().map(([key, html]) => {
       const hot = s.line != null && key === s.line ? ' hot' : '';
-      return `<span class="ln${hot}">${markVars(html || ' ', state.varNames, aliases)}</span>`;
+      return `<span class="ln${hot}">${mark(html || ' ')}</span>`;
     }).join('');
 
     const hot = $('.ln.hot', box);
@@ -291,19 +288,24 @@ export function mountLesson(cfg) {
     render();
   }
   function stop() {
-    state.playing = false;
     clearInterval(state.timer);
+    state.timer = null;
     const b = $('[data-act="play"]', root);
     if (b) b.textContent = pick(UI.play);
   }
   function play() {
     if (state.i >= state.steps.length - 1) state.i = 0;
-    state.playing = true;
     $('[data-act="play"]', root).textContent = pick(UI.pause);
     state.timer = setInterval(() => {
       if (state.i >= state.steps.length - 1) return stop();
       go(state.i + 1);
     }, 700);
+  }
+  // The transport buttons and their keys: prev, next, play/pause.
+  function act(name) {
+    if (name === 'play') return state.timer != null ? stop() : play();
+    stop();
+    go(state.i + (name === 'next' ? 1 : -1));
   }
 
   function setLangAll(id) {
@@ -365,12 +367,8 @@ export function mountLesson(cfg) {
     if (langBtn) return setLangAll(langBtn.dataset.lang);
     const chip = e.target.closest('[data-preset]');
     if (chip) return loadInput(cfg.presets[Number(chip.dataset.preset)].input);
-    const act = e.target.closest('[data-act]')?.dataset.act;
-    if (!act) return;
-    if (act === 'play') return state.playing ? stop() : play();
-    stop();
-    if (act === 'prev') go(state.i - 1);
-    if (act === 'next') go(state.i + 1);
+    const btn = e.target.closest('[data-act]');
+    if (btn) act(btn.dataset.act);
   });
 
   // Arrow keys and space — never while someone is typing, and only while the
@@ -380,9 +378,8 @@ export function mountLesson(cfg) {
     if (e.target.closest('#q-widget')) return;
     const r = root.getBoundingClientRect();
     if (r.bottom < 0 || r.top > innerHeight) return;
-    if (e.key === 'ArrowRight') { e.preventDefault(); stop(); go(state.i + 1); }
-    else if (e.key === 'ArrowLeft') { e.preventDefault(); stop(); go(state.i - 1); }
-    else if (e.key === ' ') { e.preventDefault(); state.playing ? stop() : play(); }
+    const name = { ArrowRight: 'next', ArrowLeft: 'prev', ' ': 'play' }[e.key];
+    if (name) { e.preventDefault(); act(name); }
   });
 
   /* ---------------- hover to inspect ---------------- */
@@ -427,22 +424,14 @@ export function mountLesson(cfg) {
     paint();
     renderExamples(cfg, loadInput);
     renderSolutions(cfg, state.lang);
-    rebuildKeepingPlace();
-  }
-  function rebuildKeepingPlace() {
-    const at = state.i;
-    rebuild();
-    go(at);
+    rebuild(state.i);
   }
 
-  paint();
-  renderExamples(cfg, loadInput);
-  renderSolutions(cfg, state.lang);
+  paintAll();
   if (cfg.widget) {
     const host = document.getElementById('q-widget');
     if (host) cfg.widget(host);
   }
-  rebuild();
 
   // Narration is generated per step and the chrome is rendered by this file, so
   // a language change redraws both — holding the mode, the language tab, the
@@ -452,30 +441,32 @@ export function mountLesson(cfg) {
   return { rebuild, go, stop, state };
 }
 
-/* Wrap known identifiers in a rendered listing, never inside a tag and never in
- * the middle of a longer identifier, so the reader can hover one and see its
- * value at the current step. */
-function markVars(lineHtml, names, aliases) {
+/* A function that wraps known identifiers in a rendered listing line, never
+ * inside a tag and never in the middle of a longer identifier, so the reader
+ * can hover one and see its value at the current step. Built once per listing. */
+function varMarker(names, aliases) {
   const wanted = new Map(names.map((n) => [n, n]));
   for (const [ident, name] of Object.entries(aliases)) wanted.set(ident, name);
   const keys = [...wanted.keys()].filter(Boolean).sort((a, b) => b.length - a.length);
-  if (!keys.length) return lineHtml;
+  if (!keys.length) return (lineHtml) => lineHtml;
   const pattern = new RegExp(`(${keys.map((k) => k.replace(/[.*+?^${}()|[\]\\@]/g, '\\$&')).join('|')})(?![A-Za-z0-9_])`, 'g');
   // A comment is prose about the code, not the code: "every word" in one
   // must not light up as the variable `word`. Comments are c() spans.
-  let inComment = false;
-  return lineHtml.split(/(<[^>]*>|&[a-z#0-9]+;)/i).map((part) => {
-    if (part.startsWith('<')) {
-      if (part === '<span class="c">') inComment = true;
-      else if (part === '</span>') inComment = false;
-      return part;
-    }
-    if (part.startsWith('&') || inComment) return part;
-    return part.replace(pattern, (tok, _m, offset) => {
-      if (/[A-Za-z0-9_.@$]/.test(part.charAt(offset - 1))) return tok;
-      return `<span class="var" data-c="${esc(wanted.get(tok))}">${tok}</span>`;
-    });
-  }).join('');
+  return (lineHtml) => {
+    let inComment = false;
+    return lineHtml.split(/(<[^>]*>|&[a-z#0-9]+;)/i).map((part) => {
+      if (part.startsWith('<')) {
+        if (part === '<span class="c">') inComment = true;
+        else if (part === '</span>') inComment = false;
+        return part;
+      }
+      if (part.startsWith('&') || inComment) return part;
+      return part.replace(pattern, (tok, _m, offset) => {
+        if (/[A-Za-z0-9_.@$]/.test(part.charAt(offset - 1))) return tok;
+        return `<span class="var" data-c="${esc(wanted.get(tok))}">${tok}</span>`;
+      });
+    }).join('');
+  };
 }
 
 /* Part 1 — the worked examples, each loadable into the stepper. */
@@ -528,10 +519,7 @@ function renderSolutions(cfg, activeLang) {
     return `<span class="verify ${unrun ? 'warn' : 'ok'}">${esc(how)}</span>`;
   };
 
-  host.innerHTML = `
-    <div class="lang-bar" role="tablist">${langs.map((l) =>
-      `<button class="lang" role="tab" data-lang="${l.id}" aria-selected="${l.id === activeLang}">${esc(l.name)}</button>`).join('')}
-    </div>
+  host.innerHTML = `${langBar(langs, activeLang)}
     ${langs.map((l) => `
       <div class="lang-pane" data-pane="${l.id}" ${l.id === activeLang ? '' : 'hidden'}>
         ${cfg.modes.map((m) => {
@@ -552,14 +540,8 @@ function renderSolutions(cfg, activeLang) {
 
   host.onclick = (e) => {
     const langBtn = e.target.closest('[data-lang]');
-    if (langBtn) {
-      const id = langBtn.dataset.lang;
-      host.querySelectorAll('[data-lang]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.lang === id)));
-      host.querySelectorAll('[data-pane]').forEach((p) => { p.hidden = p.dataset.pane !== id; });
-      // keep the live code panel on the same language
-      document.querySelector(`#lesson [data-lang="${id}"]`)?.click();
-      return;
-    }
+    // the live code panel's tab switches every tab and pane on the page
+    if (langBtn) return document.querySelector(`#lesson [data-lang="${langBtn.dataset.lang}"]`)?.click();
     const copy = e.target.closest('[data-copy]');
     if (copy) {
       const text = copy.closest('.src').querySelector('pre.full').textContent;

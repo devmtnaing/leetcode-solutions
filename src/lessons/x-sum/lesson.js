@@ -14,8 +14,8 @@
  */
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
-import { cells, slots } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, intList, intValue, listText, presetChips, widgetLabel } from '../../lib/kit.js';
+import { cells, slots, stagePanel } from '../../lib/stage.js';
+import { t, exampleTitle, LANGUAGES, k, c, intList, intValue, presetChips, widgetLabel } from '../../lib/kit.js';
 
 const MAX_N = 12;
 
@@ -400,7 +400,7 @@ function drawShelves(s) {
   const cards = (list) => (list.length ? list.map((e) => cardHTML(e, mark(e))).join('') : `<span class="empty">${pick(L.empty)}</span>`);
   const broken = !!hl.cmpUp;
   const expr = s.top.length ? s.top.slice().reverse().map((e) => `${e.v}×${e.c}`).join('  +  ') : pick(L.nothingKept);
-  return `<div class="panel-head"><h2>${pick(L.shelves)}</h2><span class="note">${pick(L.rankedBy)}</span></div>`
+  return stagePanel(pick(L.shelves), pick(L.rankedBy), '')
     + `<div class="shelf shelf-top"><div class="shelf-head"><span class="shelf-name">TOP</span>`
     + `<span class="shelf-note">${pick(L.topNote(s.keep, s.top.length))}</span></div><div class="cards">${cards(top)}</div></div>`
     + `<div class="barrier${broken ? ' broken' : ''}">${pick(broken ? L.barrierBroken : L.barrier)}</div>`
@@ -418,7 +418,7 @@ function drawBrute(s, { k }) {
     (i === s.keep && i > 0 ? `<span class="cutline">${pick(L.cutKeep(s.keep))}</span>` : '') + cardHTML(e, i < s.keep ? '' : 'dropped')).join('');
   const kept = s.ranked.slice(0, s.keep);
   const cls = (n) => (s.stage === n ? 'active' : s.stage < n ? 'pending' : '');
-  return `<div class="panel-head"><h2>${pick(L.windowFromScratch(s.lo))}</h2><span class="note">[${s.win.join(', ')}]</span></div>`
+  return stagePanel(pick(L.windowFromScratch(s.lo)), `[${s.win.join(', ')}]`, '')
     + '<div class="bf-steps">'
     + `<div class="bf-step ${cls(1)}"><h3><span class="n">1</span>${pick(L.tallyHead(k))}</h3>`
     + `<div class="bars">${s.stage >= 1 ? bars : `<span class="empty">${pick(L.notCounted)}</span>`}</div></div>`
@@ -446,7 +446,7 @@ function drawHeaps(s) {
     return rows || `<span class="empty">${pick(L.empty)}</span>`;
   };
   const live = (list) => list.filter((e) => e.live).length;
-  return `<div class="panel-head"><h2>${pick(L.heaps)}</h2><span class="note">${pick(L.rootsOnly)}</span></div>`
+  return stagePanel(pick(L.heaps), pick(L.rootsOnly), '')
     + `<div class="heap-block is-top"><div class="shelf-head"><span class="shelf-name">TOP heap</span>`
     + `<span class="shelf-note">${pick(L.topHeapNote(s.topSize, s.top.length, s.topSize, s.keep))}</span></div>`
     + `<div class="heap-rows">${levels(s.top)}</div></div>`
@@ -2015,9 +2015,9 @@ const APPROACH = {
 mountLesson({
   input: { nums: [1, 1, 2, 2, 3, 4, 2, 3], k: 6, x: 2 },
   controls: [
-    { key: 'nums', label: 'nums', value: '1, 1, 2, 2, 3, 4, 2, 3', parse: intList({ max: MAX_N, lo: 1 }), format: listText },
-    { key: 'k', label: t('k — window', 'k — window အရွယ်'), type: 'number', value: 6, min: 1, parse: intValue({ lo: 1 }) },
-    { key: 'x', label: t('x — keep', 'x — ထားမည့်အရေအတွက်'), type: 'number', value: 2, min: 1, parse: intValue({ lo: 1 }) },
+    { key: 'nums', label: 'nums', parse: intList({ max: MAX_N, lo: 1 }) },
+    { key: 'k', label: t('k — window', 'k — window အရွယ်'), type: 'number', min: 1, parse: intValue({ lo: 1 }) },
+    { key: 'x', label: t('x — keep', 'x — ထားမည့်အရေအတွက်'), type: 'number', min: 1, parse: intValue({ lo: 1 }) },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [1, 1, 2, 2, 3, 4, 2, 3], k: 6, x: 2 } },

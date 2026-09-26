@@ -558,8 +558,8 @@ const word = (v) => {
 };
 
 const CONTROLS = [
-  { key: 's', label: { en: 'word s', my: 'စကားလုံး s' }, size: 14, value: 'anagram', parse: word },
-  { key: 't', label: { en: 'word t', my: 'စကားလုံး t' }, size: 14, value: 'nagaram', parse: word },
+  { key: 's', label: { en: 'word s', my: 'စကားလုံး s' }, parse: word },
+  { key: 't', label: { en: 'word t', my: 'စကားလုံး t' }, parse: word },
 ];
 
 /* ---------------- strip card, answer card ---------------- */

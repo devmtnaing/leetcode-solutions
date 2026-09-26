@@ -11,7 +11,7 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, slots, stagePanel, stack, readout } from '../../lib/stage.js';
-import { t, exampleTitle, LANGUAGES, k, c, stageGap, presetChips, widgetLabel } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, stageGap, presetChips, widgetLabel, stageEmpty } from '../../lib/kit.js';
 
 const MAX_LEN = 24;
 
@@ -177,7 +177,7 @@ function draw(s) {
   const items = s.frames.map((f) => `expr() · total ${f.total} · sign ${sgn(f.sign)} · num ${f.num}`);
   return stagePanel(pick(t('The call stack — one expr() per open bracket', 'call stack — ဖွင့်ထားသော ကွင်းတစ်ခုလျှင် expr() တစ်ခု')),
     pick(t(`${s.frames.length} deep`, `${s.frames.length} ဆင့်`)), stack(items))
-    + stageGap + stagePanel(pick(t('The running call', 'run နေသော call')), '', s.frames.length ? now : `<p class="note mono stage-empty">—</p>`);
+    + stageGap + stagePanel(pick(t('The running call', 'run နေသော call')), '', s.frames.length ? now : stageEmpty('—'));
 }
 
 function answer(s) {
@@ -576,7 +576,7 @@ const APPROACH = {
 mountLesson({
   input: { s: '(1+(4+5+2)-3)+(6+8)' },
   controls: [
-    { key: 's', label: 's', value: '(1+(4+5+2)-3)+(6+8)', parse: parseExpr },
+    { key: 's', label: 's', parse: parseExpr },
   ],
   presets: [
     { label: exampleTitle(1), input: { s: '1 + 1' } },

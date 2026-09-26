@@ -6,7 +6,7 @@
  * pointer hanging off a dummy node. The recursion holds it in the call stack,
  * and does not link anything until the calls start returning.
  */
-import { t, plural, exampleTitle, LANGUAGES, k, labelledRows, intList, presetChips, widgetLabel } from '../../lib/kit.js';
+import { t, plural, exampleTitle, LANGUAGES, k, labelledRows, intList, presetChips, widgetLabel, stageEmpty } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, chain, stack, panels, slots, stagePanel } from '../../lib/stage.js';
@@ -226,7 +226,7 @@ function draw(s) {
   const hot = s.hot != null ? s.hot : s.at;
   const merged = nodes.length
     ? chain(nodes, { at: hot != null ? hot + off : null, marks, tone })
-    : '<p class="note mono stage-empty">null</p>';
+    : stageEmpty('null');
 
   if (s.dummy) {
     return stagePanel(pick(t('merged — the dummy in front', 'merged — ရှေ့တွင် dummy')),
@@ -607,8 +607,8 @@ const parseList = (name) => intList({ min: 0, max: 8, why: 'as many as the stage
 mountLesson({
   input: { list1: [1, 2, 4], list2: [1, 3, 4] },
   controls: [
-    { key: 'list1', label: 'list1', value: '1, 2, 4', parse: parseList('list1') },
-    { key: 'list2', label: 'list2', value: '1, 3, 4', parse: parseList('list2') },
+    { key: 'list1', label: 'list1', parse: parseList('list1') },
+    { key: 'list2', label: 'list2', parse: parseList('list2') },
   ],
   presets: [
     { label: exampleTitle(1), input: { list1: [1, 2, 4], list2: [1, 3, 4] } },

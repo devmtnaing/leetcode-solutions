@@ -502,7 +502,7 @@ const APPROACH = {
 mountLesson({
   input: { nums: [1, 2, 3] },
   controls: [
-    { key: 'nums', label: 'nums', value: listText([1, 2, 3]), parse: intList({ max: MAX_N, lo: -10, hi: 10, distinct: true, why: `${fact(MAX_N)} permutations is plenty to watch` }), format: listText },
+    { key: 'nums', label: 'nums', parse: intList({ max: MAX_N, lo: -10, hi: 10, distinct: true, why: `${fact(MAX_N)} permutations is plenty to watch` }) },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [1, 2, 3] } },

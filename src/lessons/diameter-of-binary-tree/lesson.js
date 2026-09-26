@@ -11,7 +11,7 @@
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, tree, stack, readout, panels, slots, stagePanel } from '../../lib/stage.js';
-import { t, plural, exampleTitle, LANGUAGES, k, c, stageGap, presetChips, widgetLabel } from '../../lib/kit.js';
+import { t, plural, exampleTitle, LANGUAGES, k, c, stageGap, presetChips, widgetLabel, stageEmpty } from '../../lib/kit.js';
 import { buildTree, levelOrder, asNested, preorderKeys, treeDepth, nameOf, treeInput, formatLevelOrder } from '../../lib/tree.js';
 
 const MAX_NODES = 15;
@@ -219,16 +219,14 @@ function strip(s, { level }) {
 }
 
 function treePicture(s, T) {
-  if (T.root == null) return '<p class="note mono stage-empty">root = null</p>';
-  const ids = preorderKeys(T.root, T.kids);
-  const id = (key) => ids.indexOf(key);
+  if (T.root == null) return stageEmpty('root = null');
   const tone = {};
   const badges = {};
   const shown = s.view === 'brute' ? s.diaOf : s.hOf;
-  for (const [key, v] of Object.entries(shown)) { tone[id(Number(key))] = 'done'; badges[id(Number(key))] = v; }
-  if (s.view === 'brute') for (const key of s.measuring) tone[id(key)] = 'warn';
-  for (const key of s.path ?? []) tone[id(key)] = 'warn';
-  return tree(asNested(T.root, T.val, T.kids), { at: s.cur != null ? id(s.cur) : null, tone, badges });
+  for (const [key, v] of Object.entries(shown)) { tone[key] = 'done'; badges[key] = v; }
+  if (s.view === 'brute') for (const key of s.measuring) tone[key] = 'warn';
+  for (const key of s.path ?? []) tone[key] = 'warn';
+  return tree(asNested(T.root, T.val, T.kids), { at: s.cur, tone, badges });
 }
 
 function draw(s, { level }) {
@@ -526,8 +524,8 @@ function mountBendWidget(host) {
     q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
 
     const tone = {};
-    path.forEach((key) => { tone[order.indexOf(key)] = 'warn'; });
-    q('[data-tree]').innerHTML = tree(asNested(T.root, val, kids), { at: b, tone });
+    path.forEach((key) => { tone[key] = 'warn'; });
+    q('[data-tree]').innerHTML = tree(asNested(T.root, val, kids), { at: bend, tone });
     // kept = a longest path · cut = a shorter one
     q('[data-arr]').innerHTML = path.map((key, i) =>
       `<div class="cell ${len === best ? 'kept' : 'cut'}"><span>${val[key]}</span><span class="idx">${i}</span></div>`).join('');
@@ -621,7 +619,7 @@ const APPROACH = {
 mountLesson({
   input: { level: [1, 2, 3, 4, 5] },
   controls: [
-    { key: 'level', label: 'root', value: '1, 2, 3, 4, 5', parse: atLeastOne, format: formatLevelOrder },
+    { key: 'level', label: 'root', parse: atLeastOne, format: formatLevelOrder },
   ],
   presets: [
     { label: exampleTitle(1), input: { level: [1, 2, 3, 4, 5] } },

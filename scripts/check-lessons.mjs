@@ -10,24 +10,14 @@
  *
  * Exits non-zero if anything fails, so it can gate a commit.
  */
-import { readdirSync, existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 import { setLang } from '../src/lib/i18n.js';
+import { LESSONS, lessonSlugs, loadLesson } from './verify/lesson.mjs';
 
-const LESSONS = resolve('src/lessons');
 const only = process.argv[2];
-const slugs = readdirSync(LESSONS, { withFileTypes: true })
-  .filter((d) => d.isDirectory() && existsSync(resolve(LESSONS, d.name, 'lesson.js')))
-  .map((d) => d.name)
-  .filter((s) => !only || s === only);
-
-// Enough of a DOM for a lesson to reach its mountLesson call and stop there.
-globalThis.document = {
-  getElementById: () => null, addEventListener() {}, querySelector: () => null, querySelectorAll: () => [],
-  documentElement: { setAttribute() {} },
-};
-globalThis.window = globalThis;
+const slugs = lessonSlugs().filter((s) => !only || s === only);
 
 let failures = 0;
 const fail = (slug, msg) => { failures++; console.log(`  FAIL  ${slug}: ${msg}`); };
@@ -38,15 +28,13 @@ const warnMy = (slug, msg) => { untranslated++; console.log(`  note  ${slug}: ${
 
 for (const slug of slugs) {
   const before = failures;
-  let cfg = null;
-  globalThis.__LESSON_PROBE__ = (c) => { cfg = c; };
+  let cfg;
   try {
-    await import(pathToFileURL(resolve(LESSONS, slug, 'lesson.js')).href);
+    cfg = await loadLesson(slug);
   } catch (err) {
-    fail(slug, `import threw — ${err.message}`);
+    fail(slug, `could not load — ${err.message}`);
     continue;
   }
-  if (!cfg) { fail(slug, 'never called mountLesson'); continue; }
 
   const langs = cfg.languages.map((l) => l.id);
   const notes = [];

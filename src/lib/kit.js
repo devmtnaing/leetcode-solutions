@@ -39,13 +39,16 @@ export function verdictAnswer(verdict, { yes, no, pending }) {
   };
 }
 
+/** What the stage shows in place of an empty structure: "root = null", "empty". */
+export const stageEmpty = (html) => `<p class="note mono stage-empty">${html}</p>`;
+
 /**
  * A row of cells inside the stage. Unlike the strip card it wraps instead of
  * scrolling, and an empty row shows `empty` rather than nothing.
  */
 export const stageRow = (html, empty) => (html
   ? (html.startsWith('<div class="strip') ? html : `<div class="strip wraps">${html}</div>`)
-  : `<p class="note mono stage-empty">${empty}</p>`);
+  : stageEmpty(empty));
 
 /** Vertical space between two blocks inside the stage. */
 export const stageGap = '<div class="stage-gap"></div>';
@@ -53,8 +56,9 @@ export const stageGap = '<div class="stage-gap"></div>';
 /**
  * Several labelled rows in the strip card, for problems with more than one
  * input sequence (two strings, two lists). `rows` is [[label, html], ...].
+ * `grid` packs them close and never wraps a row, for a board or matrix.
  */
-export const labelledRows = (rows) => `<div class="rows">${rows
+export const labelledRows = (rows, { grid = false } = {}) => `<div class="rows${grid ? ' grid' : ''}">${rows
   .map(([label, html]) => `<div class="row"><span class="row-label">${label}</span>${html}</div>`)
   .join('')}</div>`;
 

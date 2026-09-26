@@ -1,15 +1,12 @@
-/* The walkthrough machinery: stage, transport, code panel, tooltips.
-   Loaded only by lessons that carry one. */
+/* The solution page: its header, part 1, the stepper's part 2 (approach
+   tabs, player, code panel, tooltips), 2·3 and part 3. Loaded by
+   Walkthrough.astro; x-sum's own stage lives in its style.css. */
 /* ---------- header ---------- */
 .wrap > header{display:flex;flex-direction:column;gap:12px;margin-bottom:26px}
 .lede{color:var(--ink-2);max-width:66ch;font-size:16px}
 
 /* ---------- controls ---------- */
-.controls{
-  display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px 18px;
-  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-  padding:14px 16px;margin-bottom:18px;
-}
+.controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px 18px}
 .field{display:flex;flex-direction:column;gap:5px;min-width:0}
 .field label{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
 input[type=text],input[type=number]{
@@ -50,18 +47,13 @@ input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid 
 .cell.leaving .idx{color:var(--ink-2)}
 
 /* ---------- transport ---------- */
-.transport{
-  display:flex;flex-wrap:wrap;align-items:center;gap:10px;
-  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-  padding:10px 14px;margin-bottom:16px;
-}
+.transport{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 .btn{
   cursor:pointer;background:var(--surface);color:var(--ink);border:1px solid var(--line-2);
   border-radius:7px;padding:6px 12px;font-size:13px;font-family:inherit;font-weight:500;
 }
 .btn:hover{border-color:var(--accent);color:var(--accent)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-:root[data-theme="dark"] .btn.primary,
 :root:not([data-theme="light"]) .btn.primary{color:#07191B}
 @media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .btn.primary{color:#fff}}
 .btn.primary:hover{opacity:.88;color:inherit}
@@ -72,7 +64,7 @@ input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-width:120px}
 .narration{
   display:flex;gap:12px;align-items:flex-start;
   background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);
-  border-radius:0 var(--radius) var(--radius) 0;padding:12px 15px;margin-bottom:18px;min-height:64px;
+  border-radius:0 var(--radius) var(--radius) 0;padding:12px 15px;min-height:52px;
 }
 .narration .tag{
   flex:0 0 auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.09em;
@@ -85,7 +77,6 @@ input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-width:120px}
 /* ---------- workbench ---------- */
 .bench{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px;align-items:start}
 .bench .col{display:flex;flex-direction:column;gap:18px;min-width:0}
-.bench .answer-card{margin:0}
 .bench .answer-card .note{color:var(--ink-3);font-size:12px}
 @media (max-width:900px){.bench{grid-template-columns:minmax(0,1fr)}}
 .panel{
@@ -93,44 +84,9 @@ input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-width:120px}
   padding:16px;box-shadow:var(--shadow);
 }
 .panel-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 10px;margin-bottom:12px}
-.panel-head .note{min-width:0}
-.panel-head .note{font-size:12px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+.panel-head .note{min-width:0;font-size:12px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
 
-/* shelves */
-.shelf{border-radius:8px;padding:11px 12px;border:1px solid var(--line)}
-.shelf-top{background:var(--accent-soft);border-color:var(--accent)}
-.shelf-rest{background:var(--sunk);border-style:dashed}
-.shelf-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:9px}
-.shelf-name{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.12em;font-weight:600}
-.shelf-top .shelf-name{color:var(--accent)}
-.shelf-rest .shelf-name{color:var(--ink-3)}
-.shelf-note{font-size:11.5px;color:var(--ink-3)}
-.cards{display:flex;flex-wrap:wrap;gap:7px;min-height:52px;align-items:flex-start}
-.kard{
-  display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 11px;border-radius:7px;
-  background:var(--surface);border:1px solid var(--line-2);font-family:"IBM Plex Mono",monospace;
-  font-variant-numeric:tabular-nums;
-}
-.kard .face{font-size:17px;font-weight:600;color:var(--ink);letter-spacing:.01em}
-.kard .face .x{color:var(--ink-3);font-weight:400;font-size:13px;margin-inline:1px}
-.kard .key{font-size:10px;color:var(--ink-3)}
-.shelf-top .kard{border-color:var(--accent);border-left-width:3px}
-.shelf-rest .kard{border-style:dashed;background:transparent}
-.kard.hl-up{border-color:var(--up);background:var(--up-soft)}
-.kard.hl-up .face{color:var(--up)}
-.kard.hl-down{border-color:var(--down);background:var(--down-soft)}
-.kard.hl-down .face{color:var(--down)}
-.kard.hl-new{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.kard.hl-cmp{outline:2px solid var(--amber);outline-offset:1px}
 .empty{font-size:12.5px;color:var(--ink-3);font-style:italic;padding:6px 2px}
-
-.barrier{
-  display:flex;align-items:center;gap:10px;margin-block:9px;
-  font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);
-}
-.barrier::before,.barrier::after{content:"";height:1px;background:var(--line-2);flex:1}
-.barrier.broken{color:var(--amber);font-weight:500}
-.barrier.broken::before,.barrier.broken::after{background:var(--amber)}
 
 .ledger{
   display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin-top:14px;padding-top:13px;
@@ -142,28 +98,6 @@ input[type=range]{accent-color:var(--accent);flex:1 1 180px;min-width:120px}
   font-variant-numeric:tabular-nums;line-height:1;margin-left:auto;
 }
 .ledger .total small{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);font-weight:400;display:block;text-align:right;letter-spacing:.08em}
-
-/* brute-force stage */
-.bf-steps{display:flex;flex-direction:column;gap:14px}
-.bf-step{padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--sunk);transition:opacity .2s}
-/* Not reached yet: dashed and unfilled, its text muted rather than faded. */
-.bf-step.pending{background:transparent;border-style:dashed}
-.bf-step.pending, .bf-step.pending *{color:var(--ink-3)}
-.bf-step.active{background:var(--surface);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.bf-step h3{margin-bottom:9px;color:var(--ink-2)}
-.bf-step h3 .n{font-family:"IBM Plex Mono",monospace;color:var(--accent);margin-right:6px}
-.bars{display:flex;flex-direction:column;gap:5px}
-.bar-row{display:grid;grid-template-columns:34px 1fr 30px;align-items:center;gap:8px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-variant-numeric:tabular-nums}
-.bar-track{background:var(--surface);border:1px solid var(--line);border-radius:4px;height:15px;overflow:hidden}
-.bar-fill{height:100%;background:var(--accent);opacity:.8}
-.bar-row.cut .bar-fill{background:var(--ink-3);opacity:.45}
-.rank{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
-.cutline{
-  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;color:var(--down);
-  border-left:2px dashed var(--down);padding-left:7px;align-self:stretch;display:flex;align-items:center;
-}
-.kard.dropped{border-style:dashed;background:transparent}
-.kard.dropped .face{color:var(--ink-3)}
 
 /* code */
 .code{
@@ -193,7 +127,6 @@ pre.full:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .copy.done{border-color:var(--up);color:var(--up)}
 
 /* answer */
-.answer-card{margin-top:16px}
 .answer-row{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
 .slot{
   font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:15px;font-weight:500;
@@ -203,10 +136,8 @@ pre.full:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .slot.filled{background:var(--accent-soft);border:1px solid var(--accent);color:var(--ink);font-weight:600}
 .slot.just{outline:2px solid var(--amber);outline-offset:1px}
 
-/* teaching */
-.notes{margin-top:34px;display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:14px}
-
-.cost{margin-top:34px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;overflow-x:auto}
+/* cost table */
+.cost{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;overflow-x:auto}
 .wrap table{border-collapse:collapse;width:100%;min-width:520px;font-size:13.5px}
 .wrap th,.wrap td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
 .wrap th{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
@@ -223,10 +154,6 @@ td.mono{font-variant-numeric:tabular-nums}
 .play-hint{margin:10px 2px 0;font-size:12.5px;line-height:1.7;color:var(--ink-3)}
 .wrap kbd{font-family:"IBM Plex Mono",monospace;font-size:11px;background:var(--sunk);border:1px solid var(--line-2);border-bottom-width:2px;border-radius:4px;padding:1px 5px;color:var(--ink-2)}
 
-@media (prefers-reduced-motion: no-preference){
-  .kard.hl-up,.kard.hl-down,.kard.hl-new{animation:pop .32s ease-out}
-  @keyframes pop{from{transform:translateY(6px) scale(.94);opacity:.4}to{transform:none;opacity:1}}
-}
 @media (max-width:520px){
   .ledger .total{margin-left:0}
   input[type=text]{min-width:min(240px,70vw)}
@@ -236,9 +163,6 @@ td.mono{font-variant-numeric:tabular-nums}
 .question{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:18px;margin-bottom:22px;align-items:start}
 @media (max-width:900px){.question{grid-template-columns:minmax(0,1fr)}}
 .q-statement{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
-.procedure{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
-.procedure li{display:flex;gap:10px;font-size:14px;color:var(--ink-2);line-height:1.5}
-.procedure b{color:var(--ink);font-weight:600}
 .constraints{display:flex;flex-wrap:wrap;gap:6px;margin-top:13px}
 .constraints span{
   font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);
@@ -250,6 +174,13 @@ td.mono{font-variant-numeric:tabular-nums}
 .q-arr .cell.kept{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
 /* Out of play: dashed and see-through, but the value stays readable (WCAG AA). */
 .q-arr .cell.cut{background:transparent;border-style:dashed;color:var(--ink-3)}
+/* A cell holding a word or a call ("put 1,1", "[15,18]") rather than a number:
+   as wide as its text, at the text size of where it sits.
+   cells(items, { wide: true }), or class "cell wide". */
+.cell.wide{width:auto;min-width:46px;padding-inline:8px}
+/* A board in the part 1 widget: one .q-arr per row, never wrapped. */
+.q-grid{margin-bottom:10px;overflow-x:auto}
+.q-grid .q-arr{flex-wrap:nowrap;margin-bottom:6px}
 .q-slider{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px}
 .q-slider label{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
 .q-slider output{font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:600;color:var(--accent);min-width:20px}
@@ -276,7 +207,7 @@ td.mono{font-variant-numeric:tabular-nums}
 .verify.ok{color:var(--up);background:var(--up-soft)}
 .verify.warn{color:var(--amber);background:var(--amber-soft)}
 
-/* ---------- problem links, original statement, examples ---------- */
+/* ---------- problem links, examples ---------- */
 .source-links{display:flex;flex-direction:column;gap:6px;margin-top:14px}
 .plink{
   display:flex;align-items:center;gap:8px;text-decoration:none;font-size:13px;color:var(--ink-2);
@@ -290,23 +221,6 @@ td.mono{font-variant-numeric:tabular-nums}
 }
 .pdiff.easy{color:var(--up);background:var(--up-soft)}
 .pdiff.hard{color:var(--down);background:var(--down-soft)}
-.original{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
-.original summary{
-  cursor:pointer;font-size:12.5px;color:var(--accent);font-weight:500;list-style:none;
-  font-family:"IBM Plex Mono",monospace;
-}
-.original summary::-webkit-details-marker{display:none}
-.original summary::before{content:"\25B8  "}
-.original[open] summary::before{content:"\25BE  "}
-.original .statement{
-  margin-top:11px;padding-left:13px;border-left:2px solid var(--line-2);
-  font-size:13.5px;color:var(--ink-2);line-height:1.6;display:flex;flex-direction:column;gap:9px;
-}
-.original .statement ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
-.original .statement pre{
-  margin:0;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-2);
-  background:var(--sunk);border-radius:6px;padding:9px 11px;overflow-x:auto;line-height:1.6;
-}
 
 .ex-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(272px,1fr));gap:14px;margin-bottom:18px}
 /* An example's input can be one long unbroken array (the design problems'
@@ -316,7 +230,6 @@ td.mono{font-variant-numeric:tabular-nums}
   background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:15px;
   display:flex;flex-direction:column;gap:9px;
 }
-.ex-card.traps{border-left:3px solid var(--amber)}
 .ex-card h3{color:var(--ink);font-size:14.5px}
 .ex-card .io{font-size:13px;color:var(--ink-2)}
 .ex-card .io b{
@@ -385,47 +298,8 @@ td.mono{font-variant-numeric:tabular-nums}
 .disclose-body{padding:0 15px 14px 43px;font-size:13.5px;color:var(--ink-2);line-height:1.55}
 .disclose-body p+p{margin-top:8px}
 .notes .disclose{margin-bottom:10px}
-.notes{display:block;margin-top:0}
 
 .sub-name{font-weight:500;color:var(--ink-3);font-size:14px}
-
-/* ---------- heap view ---------- */
-.heap-block{border-radius:8px;padding:11px 12px;border:1px solid var(--line);margin-bottom:10px}
-.heap-block.is-top{background:var(--accent-soft);border-color:var(--accent)}
-.heap-block.is-rest{background:var(--sunk);border-style:dashed}
-.heap-block.is-top .shelf-name{color:var(--accent)}
-.heap-rows{display:flex;flex-direction:column;gap:6px;align-items:center;min-height:52px}
-.heap-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
-.hcard{
-  display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 10px;border-radius:7px;
-  background:var(--surface);border:1px solid var(--line-2);font-family:"IBM Plex Mono",monospace;
-  font-variant-numeric:tabular-nums;position:relative;
-}
-.hcard .face{font-size:16px;font-weight:600;color:var(--ink)}
-.hcard .face .x{color:var(--ink-3);font-weight:400;font-size:12px;margin-inline:1px}
-.hcard .key{font-size:9.5px;color:var(--ink-3)}
-.hcard .tag{
-  font-size:9px;letter-spacing:.04em;text-transform:uppercase;color:var(--down);
-  background:var(--down-soft);border-radius:4px;padding:1px 5px;margin-top:2px;
-}
-.hcard.is-root{border-color:var(--accent);border-width:2px;padding:4px 9px}
-.hcard.is-root::after{
-  content:"root";position:absolute;top:-8px;left:50%;transform:translateX(-50%);
-  font-size:8.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);
-  background:var(--surface);padding:0 4px;border-radius:3px;
-}
-.hcard.is-stale{opacity:.5;border-style:dashed}
-.hcard.is-stale .face{color:var(--ink-3);text-decoration:line-through}
-.hcard.is-going{border-color:var(--down);background:var(--down-soft);opacity:1}
-.hcard.is-going .face{color:var(--down)}
-.hcard.hl-up{border-color:var(--up);background:var(--up-soft)}
-.hcard.hl-up .face{color:var(--up)}
-.hcard.hl-down{border-color:var(--down);background:var(--down-soft)}
-.hcard.hl-new{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.hcard.hl-cmp{outline:2px solid var(--amber);outline-offset:1px}
-@media (prefers-reduced-motion: no-preference){
-  .hcard.hl-up,.hcard.hl-new,.hcard.is-going{animation:pop .3s ease-out}
-}
 
 /* ---------- language switch + Burmese typography ---------- */
 .top-row{display:flex;justify-content:space-between;align-items:center;gap:12px 16px;flex-wrap:wrap}
@@ -489,7 +363,7 @@ td.mono{font-variant-numeric:tabular-nums}
 .tip-label{color:var(--ink-3);font-size:10.5px;letter-spacing:.04em}
 .tip-val{color:var(--ink);word-break:break-word;font-variant-numeric:tabular-nums}
 
-/* ---------- part 2, sectioned (page.js layout: 'sections') ----------
+/* ---------- part 2, sectioned ----------
    2·1 pick an approach (a tab with its explanation attached), 2·2 watch it
    run (one player card, rows divided by rules), 2·3 going deeper. */
 .subsec{margin-top:30px}
@@ -532,11 +406,8 @@ td.mono{font-variant-numeric:tabular-nums}
 .player{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
 .player-row{padding:14px 18px}
 .player-row + .player-row{border-top:1px solid var(--line)}
-.player .controls{background:none;border:0;border-radius:0;margin:0}
 .player .strip-head{margin-bottom:8px}
 .player-run{display:flex;flex-direction:column;gap:12px;background:var(--sunk)}
-.player .transport{background:none;border:0;padding:0;margin:0}
-.player .narration{background:var(--surface);margin:0;min-height:52px}
 .player .bench{padding:0;gap:0}
 .player .bench > *{padding:16px 18px}
 .player .panel{background:none;border:0;border-radius:0;box-shadow:none;padding:0}
@@ -549,7 +420,6 @@ td.mono{font-variant-numeric:tabular-nums}
 .deeper{display:flex;flex-direction:column;gap:22px}
 .deeper-block{display:flex;flex-direction:column;gap:6px}
 .deeper-block h4{font-size:16px;margin:0 0 6px}
-.deeper .cost{margin:0}
 
 /* ---------- the "spot a mistake?" box at the end of a page ---------- */
 .report{margin-top:34px;padding:18px 20px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}

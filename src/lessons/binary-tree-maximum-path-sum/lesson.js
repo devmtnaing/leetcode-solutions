@@ -173,13 +173,11 @@ function strip(s, { level }) {
 
 function draw(s, { level }) {
   const T = buildTree(level);
-  const ids = preorderKeys(T.root, T.kids);
-  const id = (key) => ids.indexOf(key);
   const tone = {}, badges = {};
-  for (const [key, v] of Object.entries(s.marks)) { tone[id(Number(key))] = 'done'; badges[id(Number(key))] = v; }
-  for (const key of s.measuring ?? []) tone[id(key)] = 'warn';
-  for (const key of s.path ?? []) tone[id(key)] = 'warn';
-  const pic = tree(asNested(T.root, T.val, T.kids), { at: s.cur != null ? id(s.cur) : null, tone, badges });
+  for (const [key, v] of Object.entries(s.marks)) { tone[key] = 'done'; badges[key] = v; }
+  for (const key of s.measuring ?? []) tone[key] = 'warn';
+  for (const key of s.path ?? []) tone[key] = 'warn';
+  const pic = tree(asNested(T.root, T.val, T.kids), { at: s.cur, tone, badges });
   if (s.view === 'every') {
     const frames = s.frames.map((f) => `best(${nameOf(f.key, T.val)})${f.top != null ? ` · top ${f.top}` : ''}`);
     return stagePanel(pick(t('The tree — a badge is the best path under that node', 'tree — badge သည် ထို node အောက်ရှိ အကောင်းဆုံး လမ်းကြောင်း')), pick(t(`${s.calls} down() calls`, `down() call ${s.calls}`)),
@@ -436,8 +434,8 @@ function mountTopWidget(host) {
     const all = order.map((key) => T.val[key] + Math.max(0, down(T.kids[key][0], T)) + Math.max(0, down(T.kids[key][1], T)));
     const best = Math.max(...all);
     const tone = {};
-    bendPath(top, T).forEach((key) => { tone[order.indexOf(key)] = 'warn'; });
-    q('[data-tree]').innerHTML = tree(asNested(T.root, T.val, T.kids), { at: b, tone });
+    bendPath(top, T).forEach((key) => { tone[key] = 'warn'; });
+    q('[data-tree]').innerHTML = tree(asNested(T.root, T.val, T.kids), { at: top, tone });
     q('[data-lbl]').textContent = pick(t('top', 'ထိပ်'));
     const el = q('#mps-b'); el.max = String(order.length); el.value = String(b + 1);
     q('[data-out]').textContent = String(T.val[top]);
@@ -495,7 +493,7 @@ const APPROACH = {
 mountLesson({
   input: { level: [-10, 9, 20, null, null, 15, 7] },
   controls: [
-    { key: 'level', label: 'root', value: '-10, 9, 20, null, null, 15, 7', parse: atLeastOne, format: formatLevelOrder },
+    { key: 'level', label: 'root', parse: atLeastOne, format: formatLevelOrder },
   ],
   presets: [
     { label: exampleTitle(1), input: { level: [1, 2, 3] } },

@@ -32,6 +32,7 @@ What it does, in order:
 A language that could not run is reported as SKIPPED, never as passing.
 """
 import argparse, importlib.util, os, re, shutil, subprocess, sys
+from concurrent.futures import ThreadPoolExecutor
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..'))
@@ -45,8 +46,9 @@ def command(lang, work, big_stack=False):
         return ['python3', f'{work}/main.py']
     if lang == 'javascript':
         return ['node'] + (['--stack-size=16000'] if big_stack else []) + [f'{work}/main.cjs']
-    if lang == 'go':
-        return ['docker', 'run', '--rm', '-i', '-v', f'{work}:/w', '-w', '/w', 'golang:1.23-alpine',
+    if lang == 'go':   # the build cache outlives the container, so the standard library compiles once
+        return ['docker', 'run', '--rm', '-i', '-v', f'{work}:/w', '-v', 'leetcode-go-build:/root/.cache/go-build',
+                '-w', '/w', 'golang:1.23-alpine',
                 'sh', '-c', 'go build -o m main.go && ./m']
     if lang == 'rust':
         return ['docker', 'run', '--rm', '-i', '-v', f'{work}:/w', '-w', '/w', 'rust:1-slim',
@@ -103,45 +105,64 @@ def main():
         print('Ruby and Node run with a larger stack (BIG_STACK) — the default one overflows, as the badges say')
     env = dict(os.environ, RUBY_THREAD_VM_STACK_SIZE='64000000') if big_stack else None
 
-    docker = shutil.which('docker') and subprocess.run(['docker', 'info'], capture_output=True).returncode == 0
-    failed = skipped = 0
-    for mode in modes:
-        todo = [(c, e) for c, e in corpus if not (mode in skip and skip[mode](c))]
-        cases = ''.join(c + '\n' for c, _ in todo)
-        for lang, ext in EXT.items():
-            if args.lang and lang != args.lang:
-                continue
-            if lang in ('go', 'rust') and (args.no_docker or not docker):
-                print(f'SKIPPED {mode}/{lang}: Docker is not running' if not args.no_docker else f'SKIPPED {mode}/{lang}')
-                skipped += 1
-                continue
-            work = f'{cache}/run/{mode}-{lang}'
-            os.makedirs(work)
-            with open(f'{listings}/{mode}.{ext}') as f:
-                solution = f.read()
-            if args.source:   # listing files still carry their ⟦key⟧ markers
-                solution = re.sub(r' ⟦\w+⟧$', '', solution, flags=re.M)
-            # .cjs: the repo's package.json says "type": "module", and drivers use require()
-            main_name = 'main.cjs' if lang == 'javascript' else 'main.' + ext
-            with open(f'{work}/{main_name}', 'w') as f:
-                f.write(S.DRIVERS[lang].replace('{SOL}', solution))
-            r = subprocess.run(command(lang, work, big_stack), input=cases, capture_output=True, text=True, env=env,
-                               preexec_fn=raise_stack if big_stack and lang in ('ruby', 'javascript') else None)
-            got = r.stdout.split('\n')
-            bad = [i for i, (_, e) in enumerate(todo) if i >= len(got) or got[i] != e]
-            if bad:
-                failed += 1
-                i = bad[0]
-                print(f'FAIL {mode}/{lang}: {len(bad)} of {len(todo)} wrong; first case #{i}: '
-                      f'got {got[i] if i < len(got) else None!r}, want {todo[i][1]!r}')
-                if r.stderr.strip():
-                    print('   ' + r.stderr.strip()[-500:].replace('\n', '\n   '))
-            else:
-                print(f'ok   {mode}/{lang}: {len(todo)} cases')
+    wants_docker = not args.no_docker and args.lang in (None, 'go', 'rust')
+    docker = wants_docker and shutil.which('docker') and subprocess.run(['docker', 'info'], capture_output=True).returncode == 0
 
-    if not args.source:   # the walkthrough lives in lesson.js, which --from bypasses
-        steps = subprocess.run(['node', os.path.join(HERE, 'steps.mjs'), args.slug,
-                                f'{cache}/cases.txt', f'{cache}/expected.txt'])
+    # Each approach x language is its own process with its own folder, so they
+    # run side by side; results print in the same order as one at a time.
+    # preexec_fn is not thread-safe, so a BIG_STACK lesson runs them in turn.
+    def run_one(mode, lang, todo, cases):
+        ext = EXT[lang]
+        work = f'{cache}/run/{mode}-{lang}'
+        os.makedirs(work)
+        with open(f'{listings}/{mode}.{ext}') as f:
+            solution = f.read()
+        if args.source:   # listing files still carry their ⟦key⟧ markers
+            solution = re.sub(r' ⟦\w+⟧$', '', solution, flags=re.M)
+        # .cjs: the repo's package.json says "type": "module", and drivers use require()
+        main_name = 'main.cjs' if lang == 'javascript' else 'main.' + ext
+        with open(f'{work}/{main_name}', 'w') as f:
+            f.write(S.DRIVERS[lang].replace('{SOL}', solution))
+        r = subprocess.run(command(lang, work, big_stack), input=cases, capture_output=True, text=True, env=env,
+                           preexec_fn=raise_stack if big_stack and lang in ('ruby', 'javascript') else None)
+        got = r.stdout.split('\n')
+        bad = [i for i, (_, e) in enumerate(todo) if i >= len(got) or got[i] != e]
+        if not bad:
+            return False, f'ok   {mode}/{lang}: {len(todo)} cases'
+        i = bad[0]
+        msg = (f'FAIL {mode}/{lang}: {len(bad)} of {len(todo)} wrong; first case #{i}: '
+               f'got {got[i] if i < len(got) else None!r}, want {todo[i][1]!r}')
+        if r.stderr.strip():
+            msg += '\n   ' + r.stderr.strip()[-500:].replace('\n', '\n   ')
+        return True, msg
+
+    failed = skipped = 0
+    jobs = []   # in print order: a finished message, or a future
+    with ThreadPoolExecutor(max_workers=1 if big_stack else os.cpu_count() or 4) as pool:
+        for mode in modes:
+            todo = [(c, e) for c, e in corpus if not (mode in skip and skip[mode](c))]
+            cases = ''.join(c + '\n' for c, _ in todo)
+            for lang in EXT:
+                if args.lang and lang != args.lang:
+                    continue
+                if lang in ('go', 'rust') and (args.no_docker or not docker):
+                    jobs.append(f'SKIPPED {mode}/{lang}: Docker is not running' if not args.no_docker else f'SKIPPED {mode}/{lang}')
+                    skipped += 1
+                    continue
+                jobs.append(pool.submit(run_one, mode, lang, todo, cases))
+        # the walkthrough lives in lesson.js, which --from bypasses
+        steps = None if args.source else subprocess.Popen(
+            ['node', os.path.join(HERE, 'steps.mjs'), args.slug, f'{cache}/cases.txt', f'{cache}/expected.txt'],
+            stdout=subprocess.PIPE, text=True)
+        for job in jobs:
+            if isinstance(job, str):
+                print(job)
+                continue
+            bad, msg = job.result()
+            failed += bad
+            print(msg)
+    if steps:
+        print(steps.communicate()[0], end='')
         failed += steps.returncode != 0
     if args.strict and skipped:
         failed += 1

@@ -497,7 +497,7 @@ const APPROACH = {
 mountLesson({
   input: { s: 'abcabcbb' },
   controls: [
-    { key: 's', label: 's', value: '"abcabcbb"', parse: parseS, format: quote },
+    { key: 's', label: 's', parse: parseS, format: quote },
   ],
   presets: [
     { label: exampleTitle(1), input: { s: 'abcabcbb' } },

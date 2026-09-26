@@ -23,5 +23,3 @@
 /* the axis: a number under every fifth point */
 .tl-axis .tl-c{height:auto;position:relative;overflow:visible;white-space:nowrap;font-family:"IBM Plex Mono",monospace;font-size:9.5px;color:var(--ink-3)}
 .tl-sep{height:1px;background:var(--line);margin:2px 0}
-/* The strip's cells hold whole intervals like [15,18], wider than a number. */
-#lesson .strip .cell{width:auto;min-width:46px;padding-inline:7px}

@@ -655,8 +655,8 @@ const APPROACH = {
 mountLesson({
   input: { numCourses: 4, prerequisites: [[1, 0], [2, 0], [3, 1], [3, 2]] },
   controls: [
-    { key: 'numCourses', label: 'numCourses', type: 'number', min: 1, max: MAX_N, value: 4, parse: intValue({ lo: 1, hi: MAX_N, why: 'so the graph stays readable' }) },
-    { key: 'prerequisites', label: 'prerequisites', value: fmtPairs([[1, 0], [2, 0], [3, 1], [3, 2]]), parse: parsePairs, format: fmtPairs },
+    { key: 'numCourses', label: 'numCourses', type: 'number', min: 1, max: MAX_N, parse: intValue({ lo: 1, hi: MAX_N, why: 'so the graph stays readable' }) },
+    { key: 'prerequisites', label: 'prerequisites', parse: parsePairs, format: fmtPairs },
   ],
   presets: [
     { label: exampleTitle(1), input: { numCourses: 2, prerequisites: [[1, 0]] } },

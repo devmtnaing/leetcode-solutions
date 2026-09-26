@@ -546,7 +546,7 @@ const EX1 = [[1, 4, 5], [1, 3, 4], [2, 6]];
 mountLesson({
   input: { lists: EX1 },
   controls: [
-    { key: 'lists', label: 'lists', value: fmtLists(EX1), parse: parseLists, format: fmtLists },
+    { key: 'lists', label: 'lists', parse: parseLists, format: fmtLists },
   ],
   presets: [
     { label: exampleTitle(1), input: { lists: EX1 } },

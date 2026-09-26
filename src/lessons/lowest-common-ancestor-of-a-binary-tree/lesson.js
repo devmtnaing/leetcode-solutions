@@ -168,26 +168,24 @@ function strip(s, { level, p, q }) {
 }
 
 function picture(s, T, p, q) {
-  const ids = preorderKeys(T.root, T.kids);
-  const id = (key) => ids.indexOf(key);
   const tone = {};
   const badges = {};
   for (const [key, v] of Object.entries(T.val)) {
-    if (v === p) badges[id(Number(key))] = 'p';
-    if (v === q) badges[id(Number(key))] = badges[id(Number(key))] ? `${badges[id(Number(key))]} q` : 'q';
+    if (v === p) badges[key] = 'p';
+    if (v === q) badges[key] = badges[key] ? `${badges[key]} q` : 'q';
   }
   if (s.view === 'parents') {
-    for (const key of Object.keys(s.parent)) tone[id(Number(key))] = 'done';
-    for (const key of s.ancestors) tone[id(key)] = 'warn';
+    for (const key of Object.keys(s.parent)) tone[key] = 'done';
+    for (const key of s.ancestors) tone[key] = 'warn';
   } else {
     for (const [key, r] of Object.entries(s.reported)) {
-      tone[id(Number(key))] = 'done';
-      if (r !== Number(key)) badges[id(Number(key))] = `→${T.val[r]}`;
+      tone[key] = 'done';
+      if (r !== Number(key)) badges[key] = `→${T.val[r]}`;
     }
-    for (const f of s.frames) if (f.key != null && !(f.key in s.reported)) tone[id(f.key)] = 'warn';
+    for (const f of s.frames) if (f.key != null && !(f.key in s.reported)) tone[f.key] = 'warn';
   }
-  if (s.finished) tone[id(s.answerKey)] = 'done';
-  return tree(asNested(T.root, T.val, T.kids), { at: s.cur != null ? id(s.cur) : null, tone, badges });
+  if (s.finished) tone[s.answerKey] = 'done';
+  return tree(asNested(T.root, T.val, T.kids), { at: s.cur, tone, badges });
 }
 
 function draw(s, { level, p, q }) {
@@ -482,13 +480,12 @@ function mountPathsWidget(host) {
     let shared = 0;
     while (shared < pp.length && shared < qp.length && pp[shared] === qp[shared]) shared++;
     const lcaKey = pp[shared - 1];
-    const ids = preorderKeys(T.root, T.kids);
     const tone = {};
     const badges = {};
-    for (const key of [...pp, ...qp]) tone[ids.indexOf(key)] = 'warn';
-    tone[ids.indexOf(lcaKey)] = 'done';
-    badges[ids.indexOf(keyOf(state.p))] = 'p';
-    badges[ids.indexOf(keyOf(state.q))] = state.p === state.q ? 'p q' : 'q';
+    for (const key of [...pp, ...qp]) tone[key] = 'warn';
+    tone[lcaKey] = 'done';
+    badges[keyOf(state.p)] = 'p';
+    badges[keyOf(state.q)] = state.p === state.q ? 'p q' : 'q';
     q('[data-pic]').innerHTML = tree(asNested(T.root, T.val, T.kids), { tone, badges });
     const row = (which) => `<span class="q-row-label">${which}</span>${keys.map((key) => {
       const on = T.val[key] === state[which];
@@ -552,9 +549,9 @@ const APPROACH = {
 mountLesson({
   input: { level: EX, p: 5, q: 1 },
   controls: [
-    { key: 'level', label: 'root', value: formatLevelOrder(EX), parse: treeInput(15), format: formatLevelOrder },
-    { key: 'p', label: 'p', type: 'number', value: 5, parse: intValue() },
-    { key: 'q', label: 'q', type: 'number', value: 1, parse: intValue() },
+    { key: 'level', label: 'root', parse: treeInput(15), format: formatLevelOrder },
+    { key: 'p', label: 'p', type: 'number', parse: intValue() },
+    { key: 'q', label: 'q', type: 'number', parse: intValue() },
   ],
   presets: [
     { label: exampleTitle(1), input: { level: EX, p: 5, q: 1 } },

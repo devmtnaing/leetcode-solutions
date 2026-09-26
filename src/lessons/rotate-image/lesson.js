@@ -395,7 +395,7 @@ const EX2 = [[5, 1, 9, 11], [2, 4, 8, 10], [13, 3, 6, 7], [15, 14, 12, 16]];
 mountLesson({
   input: { matrix: EX1 },
   controls: [
-    { key: 'matrix', label: 'matrix', value: fmtM(EX1), parse: parseMatrix, format: fmtM },
+    { key: 'matrix', label: 'matrix', parse: parseMatrix, format: fmtM },
   ],
   presets: [
     { label: exampleTitle(1), input: { matrix: EX1 } },

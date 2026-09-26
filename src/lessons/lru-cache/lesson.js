@@ -192,6 +192,7 @@ function buildLinked({ capacity, ops }) {
 
 function strip(s, { ops }) {
   return cells(ops.map((o) => (o[0] === 'put' ? `put ${o[1]},${o[2]}` : `get ${o[1]}`)), {
+    wide: true,
     tone: Object.fromEntries(ops.map((_, j) => [j, j === s.op ? 'inwin' : s.op != null && j < s.op ? 'done' : s.finished ? 'done' : null]).filter(([, x]) => x)),
   });
 }
@@ -829,8 +830,8 @@ const EX1 = [['put', 1, 1], ['put', 2, 2], ['get', 1], ['put', 3, 3], ['get', 2]
 mountLesson({
   input: { capacity: 2, ops: EX1 },
   controls: [
-    { key: 'capacity', label: 'capacity', type: 'number', min: 1, max: 4, value: 2, parse: intValue({ lo: 1, hi: 4, why: 'so the stage stays readable' }) },
-    { key: 'ops', label: t('calls', 'call များ'), value: fmtOps(EX1), parse: parseOps, format: fmtOps },
+    { key: 'capacity', label: 'capacity', type: 'number', min: 1, max: 4, parse: intValue({ lo: 1, hi: 4, why: 'so the stage stays readable' }) },
+    { key: 'ops', label: t('calls', 'call များ'), parse: parseOps, format: fmtOps },
   ],
   presets: [
     { label: exampleTitle(1), input: { capacity: 2, ops: EX1 } },

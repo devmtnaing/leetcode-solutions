@@ -74,7 +74,7 @@ export function levelOrder({ root, val }, kids) {
 export const asNested = (key, val, kids) => (key == null ? null
   : { key, value: val[key], left: asNested(kids[key][0], val, kids), right: asNested(kids[key][1], val, kids) });
 
-/** stage.tree() numbers nodes in pre-order; this maps keys onto those ids. */
+/** Every key in pre-order: the order a slider walks the nodes in. */
 export function preorderKeys(key, kids, out = []) {
   if (key == null) return out;
   out.push(key);
@@ -82,6 +82,11 @@ export function preorderKeys(key, kids, out = []) {
   preorderKeys(kids[key][1], kids, out);
   return out;
 }
+
+/** An array heap as the nested shape stage.tree() draws, each node keyed by
+ * its index in the array. */
+export const heapNested = (h, i = 0) => (i < h.length
+  ? { key: i, value: h[i], left: heapNested(h, 2 * i + 1), right: heapNested(h, 2 * i + 2) } : null);
 
 /** Number of levels below and including `key`; 0 for an empty tree. */
 export const treeDepth = (key, kids) => (key == null ? 0

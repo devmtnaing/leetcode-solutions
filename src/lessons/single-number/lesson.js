@@ -8,7 +8,7 @@
  * 1-bits flip those columns of the accumulator, and the second copy of that
  * value flips them straight back.
  */
-import { t, exampleTitle, LANGUAGES, k, c, intList, listText, presetChips, widgetLabel } from '../../lib/kit.js';
+import { t, exampleTitle, LANGUAGES, k, c, intList, presetChips, widgetLabel } from '../../lib/kit.js';
 import { mountLesson } from '../../lib/stepper.js';
 import { pick, onLangChange } from '../../lib/i18n.js';
 import { cells, kv, strip as bitRow, slots, stagePanel } from '../../lib/stage.js';
@@ -494,8 +494,8 @@ const APPROACH = {
 mountLesson({
   input: { nums: [4, 1, 2, 1, 2] },
   controls: [
-    { key: 'nums', label: 'nums', value: '4, 1, 2, 1, 2',
-      parse: intList({ lo: 0, hi: MAXV, max: 13, why: 'and trimming one would break the pairing', check: loneValue }), format: listText },
+    { key: 'nums', label: 'nums',
+      parse: intList({ lo: 0, hi: MAXV, max: 13, why: 'and trimming one would break the pairing', check: loneValue }) },
   ],
   presets: [
     { label: exampleTitle(1), input: { nums: [2, 2, 1] } },

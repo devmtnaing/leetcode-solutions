@@ -28,7 +28,6 @@ function parseWords(text) {
   if (new Set(ws).size !== ws.length) throw new Error('each word only once — the statement says they are unique');
   return ws;
 }
-const fmtWords = (ws) => ws.join(', ');
 
 function check({ beginWord: b, endWord: e, wordList: ws }) {
   if (b === e) throw new Error('beginWord and endWord must differ');
@@ -163,7 +162,7 @@ function buildLetters(input) {
 function strip(s, { beginWord: b, wordList: ws }) {
   const reached = new Set(s.reached);
   const tone = (w) => (w === s.word ? 'inwin' : w === s.other ? (s.match ? 'entering' : 'leaving') : reached.has(w) ? 'set' : null);
-  const row = (list) => cells(list, { tone: Object.fromEntries(list.map((w, i) => [i, tone(w)]).filter(([, x]) => x)) });
+  const row = (list) => cells(list, { wide: true, tone: Object.fromEntries(list.map((w, i) => [i, tone(w)]).filter(([, x]) => x)) });
   return `<div class="wl">${labelledRows([['begin', row([b])], ['list', row(ws)]])}</div>`;
 }
 
@@ -171,16 +170,16 @@ function draw(s) {
   const q = s.queue.map(([w, n]) => `${w} ${n}`);
   const queue = stagePanel(pick(t('The queue, front first — word and ladder length', 'Queue — ရှေ့ဆုံးမှ — စကားလုံးနှင့် ladder အရှည်')),
     pick(t(`${s.queue.length} waiting`, `${s.queue.length} ခု စောင့်`)),
-    `<div class="wl">${stageRow(cells(q, { index: false, tone: s.other && s.match ? Object.fromEntries(q.map((x, i) => [i, x.startsWith(`${s.other} `) ? 'entering' : null]).filter(([, v]) => v)) : {} }), pick(t('empty', 'ဗလာ')))}</div>`);
+    `<div class="wl">${stageRow(cells(q, { index: false, wide: true, tone: s.other && s.match ? Object.fromEntries(q.map((x, i) => [i, x.startsWith(`${s.other} `) ? 'entering' : null]).filter(([, v]) => v)) : {} }), pick(t('empty', 'ဗလာ')))}</div>`);
   const unseen = s.unseen ?? [];
-  const un = cells(unseen, { index: false, tone: Object.fromEntries(unseen.map((w, i) => [i, w === s.other ? (s.match ? 'entering' : 'leaving') : null]).filter(([, v]) => v)) });
+  const un = cells(unseen, { index: false, wide: true, tone: Object.fromEntries(unseen.map((w, i) => [i, w === s.other ? (s.match ? 'entering' : 'leaving') : null]).filter(([, v]) => v)) });
   const title = s.view === 'pairs'
     ? pick(t('unseen — a list, compared word by word', 'unseen — စကားလုံးတစ်ခုချင်း နှိုင်းယှဉ်သော list'))
     : pick(t('unseen — a hash set, looked up', 'unseen — lookup လုပ်သော hash set'));
   const pieces = [queue, stagePanel(title, pick(t(`${unseen.length} left`, `${unseen.length} ကျန်`)), `<div class="wl">${stageRow(un, pick(t('empty', 'ဗလာ')))}</div>`)];
   if (s.view === 'letters' && s.pattern) {
     pieces.push(stagePanel(pick(t('Position being changed', 'ပြောင်းနေသော နေရာ')), `${s.pattern} · 26 ${pick(t('lookups', 'lookup'))}`,
-      `<div class="wl">${stageRow(cells(s.found, { index: false, tone: Object.fromEntries(s.found.map((w, i) => [i, 'entering'])) }), pick(t('no unreached word fits', 'ကိုက်ညီသော မရောက်ရသေးသည့် စကားလုံး မရှိ')))}</div>`));
+      `<div class="wl">${stageRow(cells(s.found, { index: false, wide: true, tone: Object.fromEntries(s.found.map((w, i) => [i, 'entering'])) }), pick(t('no unreached word fits', 'ကိုက်ညီသော မရောက်ရသေးသည့် စကားလုံး မရှိ')))}</div>`));
   }
   return pieces.join(stageGap) + (s.word ? stageGap + readout({ word: s.word, steps: s.steps }) : '');
 }
@@ -571,7 +570,7 @@ function mountLadderWidget(host) {
     const byLevel = [];
     for (const [w, d] of dist) (byLevel[d - 1] ||= []).push(w);
     q('[data-levels]').innerHTML = byLevel.map((ws2, d) => `<div class="q-arr"><span class="wl-lv">${d + 1}</span>${ws2.map((w) =>
-      `<div class="cell ${path.has(w) ? 'kept' : 'cut'}"><span>${w}</span></div>`).join('')}</div>`).join('');
+      `<div class="cell wide ${path.has(w) ? 'kept' : 'cut'}"><span>${w}</span></div>`).join('')}</div>`).join('');
     q('[data-presets]').innerHTML = presetChips(QW_SETS, state.set);
     q('[data-list]').innerHTML = `<span class="wl-lab">wordList</span>${ws.map((w) =>
       `<button class="chip" data-word="${w}"${state.off.has(w) ? '' : ' aria-pressed="true"'}>${w}</button>`).join('')}`;
@@ -634,9 +633,9 @@ const exHtml = (x) => `<code>beginWord = "${x.beginWord}", endWord = "${x.endWor
 mountLesson({
   input: EX1,
   controls: [
-    { key: 'beginWord', label: 'beginWord', value: EX1.beginWord, parse: parseWord },
-    { key: 'endWord', label: 'endWord', value: EX1.endWord, parse: parseWord },
-    { key: 'wordList', label: 'wordList', value: fmtWords(EX1.wordList), parse: parseWords, format: fmtWords },
+    { key: 'beginWord', label: 'beginWord', parse: parseWord },
+    { key: 'endWord', label: 'endWord', parse: parseWord },
+    { key: 'wordList', label: 'wordList', parse: parseWords },
   ],
   presets: [
     { label: exampleTitle(1), input: EX1 },

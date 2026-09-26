@@ -124,7 +124,9 @@ Shapes for the stage are in `src/lib/stage.js` (`cells`, `kv`, `stack`,
 `chain`, `tree`, `bars`, `readout`). Small helpers are in `src/lib/kit.js` —
 including `intList` / `intValue` for a control's `parse`, and `presetChips` /
 `widgetLabel` for the widget — and LeetCode binary trees in `src/lib/tree.js`. Use their classes, never a
-`style="…"`; a class only your page needs goes in its own `style.css`.
+`style="…"`; a class only your page needs goes in its own `style.css`. Words
+and calls get `cells(items, { wide: true })` and a board or matrix
+`labelledRows(rows, { grid: true })`, so neither needs CSS of its own.
 
 Give a failed comparison its own frame. The branch that *doesn't* fire is often
 the one worth seeing.

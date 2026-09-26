@@ -67,7 +67,6 @@ function serve() {
   });
   return new Promise((ok) => server.listen(0, '127.0.0.1', () => ok(server)));
 }
-let BASE;
 
 /* Runs inside the page: step every frame of every approach × code language. */
 async function stepEverything() {
@@ -98,13 +97,11 @@ async function stepEverything() {
       el.value = good; el.dispatchEvent(new Event('input', { bubbles: true })); await wait();
       const warn = document.querySelector('#lesson [data-warn]');
       if (el.classList.contains('bad')) out.fields.push(`${mode}: field ${el.dataset.field} rejects its own value "${good}": ${warn?.textContent}`);
-      const field = document.querySelector(`#lesson [data-field="${el.dataset.field}"]`);
-      if (field.type !== 'number' && /^[-\d\s,\[\]null]*$/.test(good)) {   // number lists only: "@@" is a fine string
-        field.value = '@@'; field.dispatchEvent(new Event('input', { bubbles: true })); await wait();
-        if (!field.classList.contains('bad')) out.fields.push(`${mode}: field ${el.dataset.field} accepts "@@"`);
+      if (el.type !== 'number' && /^[-\d\s,\[\]null]*$/.test(good)) {   // number lists only: "@@" is a fine string
+        el.value = '@@'; el.dispatchEvent(new Event('input', { bubbles: true })); await wait();
+        if (!el.classList.contains('bad')) out.fields.push(`${mode}: field ${el.dataset.field} accepts "@@"`);
       }
-      const again = document.querySelector(`#lesson [data-field="${el.dataset.field}"]`);
-      again.value = good; again.dispatchEvent(new Event('input', { bubbles: true })); await wait();
+      el.value = good; el.dispatchEvent(new Event('input', { bubbles: true })); await wait();
     }
     for (const chip of document.querySelectorAll('#lesson [data-preset]')) {
       chip.click(); await wait();
@@ -140,9 +137,11 @@ async function widestAt400() {
 
 async function main() {
   const server = await serve();
-  BASE = `http://127.0.0.1:${server.address().port}`;
+  const BASE = `http://127.0.0.1:${server.address().port}`;
   const browser = await chromium.launch();
   const page = await browser.newPage();
+  // Every page starts in English, whatever the last one switched to.
+  await page.addInitScript(() => { try { localStorage.setItem('learn-lang', 'en'); } catch {} });
   let failures = 0;
   const report = (slug, problems) => {
     if (!problems.length) { console.log(`ok   ${slug}`); return; }
@@ -158,8 +157,6 @@ async function main() {
     page.on('pageerror', onError);
     await page.setViewportSize({ width: 1300, height: 900 });
     await page.goto(`${BASE}/leetcode/${slug}`);
-    await page.evaluate(() => { try { localStorage.setItem('learn-lang', 'en'); } catch {} });
-    await page.reload();
     await page.waitForSelector('#lesson .atab');
     const r = await page.evaluate(stepEverything);
     const a11y = [];
